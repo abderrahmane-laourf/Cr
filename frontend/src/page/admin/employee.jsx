@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { 
   Search, Plus, Edit2, Trash2, Eye, X, Upload, Check, 
   User, FileText, Shield, ChevronLeft, ChevronRight, EyeOff, 
-  Camera, AlertCircle, CheckCircle, Lock 
+  Camera, AlertCircle, CheckCircle, Lock, ChevronDown 
 } from 'lucide-react';
+import { employeeAPI } from '../../services/api';
+import Swal from 'sweetalert2';
 
 // --- 1. CONSTANTES & DONNÉES ---
 
@@ -54,31 +56,6 @@ const PERMISSION_MODULES = [
       { id: 'payments', label: 'Paiements' },
     ]
   }
-];
-
-const INITIAL_DATA = [
-  { 
-    id: 1, 
-    firstName: 'Azer', lastName: 'Masud', name: 'Azer Masud', 
-    phone: '0661-234567', cin: 'KB12345', cnss: '11223344',
-    salary: '8000', bank: 'CIH', rib: '230230230230230230230111',
-    project: 'Alpha', business: 'Herboclear',
-    role: 'Manager', active: true, 
-    login: 'azer.m', password: 'password123',
-    permissions: ['dashboard', 'products'], // Exemple de permissions
-    avatar: 'https://i.pravatar.cc/150?img=12' 
-  },
-  { 
-    id: 2, 
-    firstName: 'Bernard', lastName: 'Anouith', name: 'Bernard Anouith', 
-    phone: '0662-897654', cin: 'J58569', cnss: '55667788',
-    salary: '12000', bank: 'Attijari', rib: '111122223333444455556666',
-    project: 'Beta', business: 'Commit',
-    role: 'Admin', active: true, 
-    login: 'bernard.a', password: 'password123',
-    permissions: ['dashboard', 'payments', 'parcels_view'],
-    avatar: 'https://i.pravatar.cc/150?img=33' 
-  },
 ];
 
 // --- 2. COMPOSANTS UTILITAIRES ---
@@ -132,6 +109,181 @@ const InputField = ({ label, type = "text", placeholder, options, value, onChang
           onChange={onChange}
         />
       )}
+    </div>
+  </div>
+);
+
+// --- SOUS-COMPOSANTS DU MODAL (STEPS) ---
+
+const Stepper = ({ step, setStep }) => {
+  // 4 étapes maintenant
+  const steps = [ 
+    { id: 1, label: "Infos", icon: User }, 
+    { id: 2, label: "Docs", icon: FileText }, 
+    { id: 3, label: "Accès", icon: Shield },
+    { id: 4, label: "Perms", icon: Lock } // Nouvelle étape
+  ];
+  
+  const progress = ((step - 1) / (steps.length - 1)) * 100;
+  
+  return (
+    <div className="mb-8 px-4">
+      <div className="relative h-1 bg-slate-100 rounded-full mb-6 mx-8 mt-2">
+        <div className="absolute top-0 left-0 h-full bg-blue-600 rounded-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
+        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 flex justify-between">
+          {steps.map((s) => {
+            const Icon = s.icon;
+            const isActive = step >= s.id;
+            return (
+              <button 
+                key={s.id} 
+                // ICI : On rend l'icône cliquable pour naviguer
+                onClick={() => setStep(s.id)}
+                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 z-10 cursor-pointer
+                  ${isActive ? 'bg-blue-600 border-blue-600 text-white shadow-lg scale-110' : 'bg-white border-slate-200 text-slate-300 hover:border-blue-300'}`}
+                title={s.label}
+              >
+                <Icon size={16} />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="flex justify-between px-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+         {steps.map(s => <span key={s.id} className={`${step >= s.id ? 'text-blue-600' : ''}`}>{s.label}</span>)}
+      </div>
+    </div>
+  );
+};
+
+const Step1 = ({ formData, handleInputChange, isViewMode, setFormData }) => (
+  <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+    <div className="flex justify-center mb-8">
+      <div className="relative group">
+        <div className="w-28 h-28 rounded-full bg-slate-50 border-4 border-white shadow-xl flex items-center justify-center overflow-hidden ring-1 ring-slate-100">
+           {formData.avatar ? <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" /> : <User size={40} className="text-slate-300" />}
+        </div>
+        {!isViewMode && (
+          <label className="absolute bottom-1 right-1 bg-blue-600 p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-blue-700 transition-all">
+            <Camera size={16} />
+            <input type="button" className="hidden" onClick={() => setFormData(p => ({...p, avatar: 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random()*50)}))} />
+          </label>
+        )}
+      </div>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <InputField label="Prénom" value={formData.firstName} onChange={(e) => handleInputChange('firstName', e)} disabled={isViewMode} />
+      <InputField label="Nom" value={formData.lastName} onChange={(e) => handleInputChange('lastName', e)} disabled={isViewMode} />
+      <InputField label="Téléphone" value={formData.phone} onChange={(e) => handleInputChange('phone', e)} disabled={isViewMode} />
+      <InputField label="CIN" value={formData.cin} onChange={(e) => handleInputChange('cin', e)} disabled={isViewMode} />
+      <InputField label="N° CNSS" value={formData.cnss} onChange={(e) => handleInputChange('cnss', e)} disabled={isViewMode} />
+      <InputField label="Salaire (MAD)" type="number" value={formData.salary} onChange={(e) => handleInputChange('salary', e)} disabled={isViewMode} />
+      <InputField label="Banque" type="select" options={["CIH", "Attijari", "BMCE"]} value={formData.bank} onChange={(e) => handleInputChange('bank', e)} disabled={isViewMode} />
+      <InputField label="RIB" value={formData.rib} onChange={(e) => handleInputChange('rib', e)} disabled={isViewMode} />
+      <InputField label="Projet" type="select" options={["Alpha", "Beta"]} value={formData.project} onChange={(e) => handleInputChange('project', e)} disabled={isViewMode} />
+      <InputField label="Business" value={formData.business} onChange={(e) => handleInputChange('business', e)} disabled={isViewMode} />
+    </div>
+  </div>
+);
+
+const Step2 = ({ isViewMode }) => (
+  <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+     <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-start gap-3">
+      <AlertCircle className="text-blue-600 shrink-0 mt-0.5" size={18} />
+      <div><h4 className="text-sm font-bold text-blue-800">Documents</h4><p className="text-xs text-blue-600 mt-1">Gérer les documents ici (CIN, Contrat, Diplôme).</p></div>
+    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {['cin', 'contract', 'diploma'].map(key => (
+          <div key={key} className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center ${isViewMode ? 'opacity-70 bg-gray-50' : 'hover:border-blue-400 cursor-pointer bg-white group'}`}>
+              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><Upload size={20}/></div>
+              <h4 className="text-sm font-bold text-slate-700 capitalize">{key}</h4>
+          </div>
+      ))}
+    </div>
+  </div>
+);
+
+const Step3 = ({ formData, handleInputChange, isViewMode, showPassword, setShowPassword }) => (
+  <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+    <div className="bg-slate-50 p-6 rounded-2xl mb-6 border border-slate-100">
+      <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Shield size={16} className="text-blue-500"/> Connexion</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <InputField label="Login" value={formData.login} onChange={(e) => handleInputChange('login', e)} disabled={isViewMode} />
+          <div className="relative">
+              <InputField label="Mot de passe" type={showPassword ? "text" : "password"} value={formData.password} onChange={(e) => handleInputChange('password', e)} disabled={isViewMode} />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 bottom-3 text-slate-400 hover:text-blue-600"><Eye size={18}/></button>
+          </div>
+          <div className="md:col-span-2">
+              <InputField label="Rôle" type="select" options={["Employé", "Manager", "Admin"]} value={formData.role} onChange={(e) => handleInputChange('role', e)} disabled={isViewMode} />
+          </div>
+      </div>
+    </div>
+  </div>
+);
+
+// --- NOUVELLE ÉTAPE : PERMISSIONS ---
+const Step4 = ({ formData, toggleCategory, togglePermission, isViewMode }) => (
+  <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-6">
+    <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 flex items-start gap-3">
+      <Lock className="text-orange-600 shrink-0 mt-0.5" size={18} />
+      <div>
+        <h4 className="text-sm font-bold text-orange-800">Permissions Avancées</h4>
+        <p className="text-xs text-orange-600 mt-1">
+          Définissez précisément ce que cet utilisateur peut voir ou faire.
+        </p>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {PERMISSION_MODULES.map((module, idx) => {
+        const allSelected = module.items.every(i => (formData.permissions || []).includes(i.id));
+        
+        return (
+          <div key={idx} className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
+            {/* En-tête de catégorie */}
+            <div 
+              className="bg-slate-50 px-4 py-3 border-b border-slate-100 flex justify-between items-center cursor-pointer hover:bg-slate-100"
+              onClick={() => toggleCategory(module.items)}
+            >
+              <h4 className="font-bold text-sm text-slate-700">{module.category}</h4>
+              {!isViewMode && (
+                <span className={`text-xs px-2 py-0.5 rounded-full border ${allSelected ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-white text-slate-500 border-slate-200'}`}>
+                  {allSelected ? 'Tout' : 'Sélect'}
+                </span>
+              )}
+            </div>
+            
+            {/* Liste des permissions */}
+            <div className="p-3 space-y-2">
+              {module.items.map(item => {
+                const isChecked = (formData.permissions || []).includes(item.id);
+                return (
+                  <div 
+                    key={item.id} 
+                    onClick={() => togglePermission(item.id)}
+                    className={`flex items-center gap-3 p-2 rounded-lg transition-all duration-200 select-none
+                      ${isViewMode ? 'cursor-default' : 'cursor-pointer hover:bg-slate-50'}
+                      ${isChecked ? 'bg-blue-50/50' : ''}
+                    `}
+                  >
+                    <div className={`
+                      w-5 h-5 rounded border flex items-center justify-center transition-colors
+                      ${isChecked 
+                        ? 'bg-blue-600 border-blue-600 text-white' 
+                        : 'bg-white border-slate-300 text-transparent'}
+                    `}>
+                      <Check size={12} strokeWidth={4} />
+                    </div>
+                    <span className={`text-sm ${isChecked ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
+                      {item.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   </div>
 );
@@ -215,181 +367,6 @@ const EmployeeModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
     onSave({ ...formData, name: fullName });
   };
 
-  // --- SOUS-COMPOSANTS DU MODAL (STEPS) ---
-
-  const Stepper = () => {
-    // 4 étapes maintenant
-    const steps = [ 
-      { id: 1, label: "Infos", icon: User }, 
-      { id: 2, label: "Docs", icon: FileText }, 
-      { id: 3, label: "Accès", icon: Shield },
-      { id: 4, label: "Perms", icon: Lock } // Nouvelle étape
-    ];
-    
-    const progress = ((step - 1) / (steps.length - 1)) * 100;
-    
-    return (
-      <div className="mb-8 px-4">
-        <div className="relative h-1 bg-slate-100 rounded-full mb-6 mx-8 mt-2">
-          <div className="absolute top-0 left-0 h-full bg-blue-600 rounded-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
-          <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 flex justify-between">
-            {steps.map((s) => {
-              const Icon = s.icon;
-              const isActive = step >= s.id;
-              return (
-                <button 
-                  key={s.id} 
-                  // ICI : On rend l'icône cliquable pour naviguer
-                  onClick={() => setStep(s.id)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 z-10 cursor-pointer
-                    ${isActive ? 'bg-blue-600 border-blue-600 text-white shadow-lg scale-110' : 'bg-white border-slate-200 text-slate-300 hover:border-blue-300'}`}
-                  title={s.label}
-                >
-                  <Icon size={16} />
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        <div className="flex justify-between px-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-           {steps.map(s => <span key={s.id} className={`${step >= s.id ? 'text-blue-600' : ''}`}>{s.label}</span>)}
-        </div>
-      </div>
-    );
-  };
-
-  const Step1 = () => (
-    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-      <div className="flex justify-center mb-8">
-        <div className="relative group">
-          <div className="w-28 h-28 rounded-full bg-slate-50 border-4 border-white shadow-xl flex items-center justify-center overflow-hidden ring-1 ring-slate-100">
-             {formData.avatar ? <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" /> : <User size={40} className="text-slate-300" />}
-          </div>
-          {!isViewMode && (
-            <label className="absolute bottom-1 right-1 bg-blue-600 p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-blue-700 transition-all">
-              <Camera size={16} />
-              <input type="button" className="hidden" onClick={() => setFormData(p => ({...p, avatar: 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random()*50)}))} />
-            </label>
-          )}
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <InputField label="Prénom" value={formData.firstName} onChange={(e) => handleInputChange('firstName', e)} disabled={isViewMode} />
-        <InputField label="Nom" value={formData.lastName} onChange={(e) => handleInputChange('lastName', e)} disabled={isViewMode} />
-        <InputField label="Téléphone" value={formData.phone} onChange={(e) => handleInputChange('phone', e)} disabled={isViewMode} />
-        <InputField label="CIN" value={formData.cin} onChange={(e) => handleInputChange('cin', e)} disabled={isViewMode} />
-        <InputField label="N° CNSS" value={formData.cnss} onChange={(e) => handleInputChange('cnss', e)} disabled={isViewMode} />
-        <InputField label="Salaire (MAD)" type="number" value={formData.salary} onChange={(e) => handleInputChange('salary', e)} disabled={isViewMode} />
-        <InputField label="Banque" type="select" options={["CIH", "Attijari", "BMCE"]} value={formData.bank} onChange={(e) => handleInputChange('bank', e)} disabled={isViewMode} />
-        <InputField label="RIB" value={formData.rib} onChange={(e) => handleInputChange('rib', e)} disabled={isViewMode} />
-        <InputField label="Projet" type="select" options={["Alpha", "Beta"]} value={formData.project} onChange={(e) => handleInputChange('project', e)} disabled={isViewMode} />
-        <InputField label="Business" value={formData.business} onChange={(e) => handleInputChange('business', e)} disabled={isViewMode} />
-      </div>
-    </div>
-  );
-
-  const Step2 = () => (
-    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-       <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-start gap-3">
-        <AlertCircle className="text-blue-600 shrink-0 mt-0.5" size={18} />
-        <div><h4 className="text-sm font-bold text-blue-800">Documents</h4><p className="text-xs text-blue-600 mt-1">Gérer les documents ici (CIN, Contrat, Diplôme).</p></div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {['cin', 'contract', 'diploma'].map(key => (
-            <div key={key} className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center ${isViewMode ? 'opacity-70 bg-gray-50' : 'hover:border-blue-400 cursor-pointer bg-white group'}`}>
-                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><Upload size={20}/></div>
-                <h4 className="text-sm font-bold text-slate-700 capitalize">{key}</h4>
-            </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const Step3 = () => (
-    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-      <div className="bg-slate-50 p-6 rounded-2xl mb-6 border border-slate-100">
-        <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Shield size={16} className="text-blue-500"/> Connexion</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <InputField label="Login" value={formData.login} onChange={(e) => handleInputChange('login', e)} disabled={isViewMode} />
-            <div className="relative">
-                <InputField label="Mot de passe" type={showPassword ? "text" : "password"} value={formData.password} onChange={(e) => handleInputChange('password', e)} disabled={isViewMode} />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 bottom-3 text-slate-400 hover:text-blue-600"><Eye size={18}/></button>
-            </div>
-            <div className="md:col-span-2">
-                <InputField label="Rôle" type="select" options={["Employé", "Manager", "Admin"]} value={formData.role} onChange={(e) => handleInputChange('role', e)} disabled={isViewMode} />
-            </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // --- NOUVELLE ÉTAPE : PERMISSIONS ---
-  const Step4 = () => (
-    <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-6">
-      <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 flex items-start gap-3">
-        <Lock className="text-orange-600 shrink-0 mt-0.5" size={18} />
-        <div>
-          <h4 className="text-sm font-bold text-orange-800">Permissions Avancées</h4>
-          <p className="text-xs text-orange-600 mt-1">
-            Définissez précisément ce que cet utilisateur peut voir ou faire.
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {PERMISSION_MODULES.map((module, idx) => {
-          const allSelected = module.items.every(i => (formData.permissions || []).includes(i.id));
-          
-          return (
-            <div key={idx} className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
-              {/* En-tête de catégorie */}
-              <div 
-                className="bg-slate-50 px-4 py-3 border-b border-slate-100 flex justify-between items-center cursor-pointer hover:bg-slate-100"
-                onClick={() => toggleCategory(module.items)}
-              >
-                <h4 className="font-bold text-sm text-slate-700">{module.category}</h4>
-                {!isViewMode && (
-                  <span className={`text-xs px-2 py-0.5 rounded-full border ${allSelected ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-white text-slate-500 border-slate-200'}`}>
-                    {allSelected ? 'Tout' : 'Sélect'}
-                  </span>
-                )}
-              </div>
-              
-              {/* Liste des permissions */}
-              <div className="p-3 space-y-2">
-                {module.items.map(item => {
-                  const isChecked = (formData.permissions || []).includes(item.id);
-                  return (
-                    <div 
-                      key={item.id} 
-                      onClick={() => togglePermission(item.id)}
-                      className={`flex items-center gap-3 p-2 rounded-lg transition-all duration-200 select-none
-                        ${isViewMode ? 'cursor-default' : 'cursor-pointer hover:bg-slate-50'}
-                        ${isChecked ? 'bg-blue-50/50' : ''}
-                      `}
-                    >
-                      <div className={`
-                        w-5 h-5 rounded border flex items-center justify-center transition-colors
-                        ${isChecked 
-                          ? 'bg-blue-600 border-blue-600 text-white' 
-                          : 'bg-white border-slate-300 text-transparent'}
-                      `}>
-                        <Check size={12} strokeWidth={4} />
-                      </div>
-                      <span className={`text-sm ${isChecked ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
-                        {item.label}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
@@ -399,11 +376,11 @@ const EmployeeModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
         </div>
         
         <div className="p-8 overflow-y-auto flex-1 custom-scrollbar">
-          <Stepper />
-          {step === 1 && <Step1 />}
-          {step === 2 && <Step2 />}
-          {step === 3 && <Step3 />}
-          {step === 4 && <Step4 />} 
+          <Stepper step={step} setStep={setStep} />
+          {step === 1 && <Step1 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
+          {step === 2 && <Step2 isViewMode={isViewMode} />}
+          {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} showPassword={showPassword} setShowPassword={setShowPassword} />}
+          {step === 4 && <Step4 formData={formData} toggleCategory={toggleCategory} togglePermission={togglePermission} isViewMode={isViewMode} />} 
         </div>
         
         <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 rounded-b-3xl flex justify-between items-center">
@@ -429,8 +406,11 @@ const EmployeeModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
 // --- 4. PAGE PRINCIPALE ---
 
 export default function EmployeesPage() {
-  const [employees, setEmployees] = useState(INITIAL_DATA);
+  const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('All');
+  const [businessFilter, setBusinessFilter] = useState('All');
+  const [loading, setLoading] = useState(true);
   
   // États pour le Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -438,34 +418,79 @@ export default function EmployeesPage() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   
   // État pour le Toast
-  const [toast, setToast] = useState(null); 
+  const [toast, setToast] = useState(null);
+
+  // --- FETCH EMPLOYEES ON MOUNT ---
+  useEffect(() => {
+    loadEmployees();
+  }, []);
+
+  const loadEmployees = async () => {
+    try {
+      setLoading(true);
+      const data = await employeeAPI.getAll();
+      setEmployees(data);
+    } catch (error) {
+      console.error('Error loading employees:', error);
+      showToast('Erreur de chargement des employés', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // --- ACTIONS CRUD ---
 
-  const handleSave = (employeeData) => {
-    if (modalMode === 'add') {
-      const newId = employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 1 : 1;
-      const newEmployee = {
-        ...employeeData,
-        id: newId,
-        active: true,
-        avatar: employeeData.avatar || `https://i.pravatar.cc/150?img=${newId + 10}`
-      };
-      setEmployees([newEmployee, ...employees]);
-      showToast("Employé ajouté avec succès !", "success");
-    } else if (modalMode === 'edit') {
-      setEmployees(prev => prev.map(emp => 
-        emp.id === selectedEmployee.id ? { ...emp, ...employeeData } : emp
-      ));
-      showToast("Modifications enregistrées !", "success");
+  const handleSave = async (employeeData) => {
+    try {
+      if (modalMode === 'add') {
+        const newEmployee = {
+          ...employeeData,
+          active: true,
+          avatar: employeeData.avatar || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`
+        };
+        await employeeAPI.create(newEmployee);
+        showToast("Employé ajouté avec succès !", "success");
+      } else if (modalMode === 'edit') {
+        await employeeAPI.update(selectedEmployee.id, employeeData);
+        showToast("Modifications enregistrées !", "success");
+      }
+      setIsModalOpen(false);
+      loadEmployees(); // Refresh list
+    } catch (error) {
+      console.error('Error saving employee:', error);
+      showToast('Erreur lors de la sauvegarde', 'error');
     }
-    setIsModalOpen(false);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet employé ?")) {
-      setEmployees(prev => prev.filter(emp => emp.id !== id));
-      showToast("Employé supprimé avec succès !", "success");
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: 'Êtes-vous sûr ?',
+      text: "Vous ne pourrez pas revenir en arrière !",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, supprimer !',
+      cancelButtonText: 'Annuler'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await employeeAPI.delete(id);
+        Swal.fire(
+          'Supprimé !',
+          'L\'employé a été supprimé.',
+          'success'
+        );
+        loadEmployees(); // Refresh list
+      } catch (error) {
+        console.error('Error deleting employee:', error);
+        Swal.fire(
+          'Erreur !',
+          'Une erreur est survenue lors de la suppression.',
+          'error'
+        );
+      }
     }
   };
 
@@ -487,26 +512,31 @@ export default function EmployeesPage() {
     setIsModalOpen(true);
   };
 
-  const toggleStatus = (id) => {
-    setEmployees(prev => prev.map(emp => {
-      if (emp.id === id) {
-        const newStatus = !emp.active;
-        showToast(newStatus ? "Employé activé" : "Employé désactivé", newStatus ? "success" : "success");
-        return { ...emp, active: newStatus };
-      }
-      return emp;
-    }));
+  const toggleStatus = async (id) => {
+    try {
+      const employee = employees.find(emp => emp.id === id);
+      const newStatus = !employee.active;
+      await employeeAPI.patch(id, { active: newStatus });
+      showToast(newStatus ? "Employé activé" : "Employé désactivé", "success");
+      loadEmployees(); // Refresh list
+    } catch (error) {
+      console.error('Error toggling status:', error);
+      showToast('Erreur lors du changement de statut', 'error');
+    }
   };
 
   const showToast = (message, type) => {
     setToast({ message, type });
   };
 
-  const filteredEmployees = employees.filter(emp =>
-    (emp.name && emp.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (emp.phone && emp.phone.includes(searchTerm)) ||
-    (emp.cin && emp.cin.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredEmployees = employees.filter(emp => {
+    const matchesSearch = (emp.name && emp.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (emp.phone && emp.phone.includes(searchTerm)) ||
+      (emp.cin && emp.cin.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesRole = roleFilter === 'All' || emp.role === roleFilter;
+    const matchesBusiness = businessFilter === 'All' || emp.business === businessFilter;
+    return matchesSearch && matchesRole && matchesBusiness;
+  });
 
   return (
     <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800 relative">
@@ -528,9 +558,41 @@ export default function EmployeesPage() {
             <Plus size={20} /> Ajouter un membre
           </button>
         </div>
-        <div className="relative mt-6 max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-          <input type="text" placeholder="Rechercher par nom, tél ou CIN..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+        
+        <div className="flex flex-col md:flex-row gap-4 mt-6">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+            <input type="text" placeholder="Rechercher par nom, tél ou CIN..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+          </div>
+          
+          {/* Role Filter */}
+          <div className="relative">
+            <select 
+              value={roleFilter} 
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="All">Tous les rôles</option>
+              <option value="Employé">Employé</option>
+              <option value="Manager">Manager</option>
+              <option value="Admin">Admin</option>
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+          </div>
+
+          {/* Business Filter */}
+          <div className="relative">
+            <select 
+              value={businessFilter} 
+              onChange={(e) => setBusinessFilter(e.target.value)}
+              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="All">Tous les Business</option>
+              <option value="Herboclear">Herboclear</option>
+              <option value="Commit">Commit</option>
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+          </div>
         </div>
       </div>
 
@@ -581,7 +643,7 @@ export default function EmployeesPage() {
                      </button>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-end gap-2">
                       <button onClick={() => handleOpenView(employee)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir"><Eye size={18} /></button>
                       <button onClick={() => handleOpenEdit(employee)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition" title="Modifier"><Edit2 size={18} /></button>
                       <button onClick={() => handleDelete(employee.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer"><Trash2 size={18} /></button>

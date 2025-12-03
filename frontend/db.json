@@ -1,0 +1,504 @@
+{
+  "employees": [
+    {
+      "id": "1",
+      "firstName": "Bernard",
+      "lastName": "Anouith",
+      "name": "Bernard Anouith",
+      "phone": "0662-897654",
+      "cin": "J58569",
+      "cnss": "55667788",
+      "salary": 12000,
+      "bank": "Attijari",
+      "rib": "111122223333444455556666",
+      "project": "Beta",
+      "business": "Commit",
+      "role": "Admin",
+      "active": true,
+      "login": "bernard.a",
+      "password": "password123",
+      "permissions": [
+        "dashboard",
+        "payments",
+        "parcels_view"
+      ],
+      "avatar": "https://i.pravatar.cc/150?img=33"
+    },
+    {
+      "id": "2",
+      "firstName": "Sarah",
+      "lastName": "Idrissi",
+      "name": "Sarah Idrissi",
+      "phone": "0663-445566",
+      "cin": "AA98765",
+      "cnss": "99887766",
+      "salary": 9000,
+      "bank": "BMCE",
+      "rib": "777788889999000011112222",
+      "project": "Alpha",
+      "business": "Herboclear",
+      "role": "Employé",
+      "active": true,
+      "login": "sarah.i",
+      "password": "password123",
+      "permissions": [
+        "dashboard"
+      ],
+      "avatar": "https://i.pravatar.cc/150?img=5"
+    },
+    {
+      "id": "3",
+      "firstName": "fatiha",
+      "lastName": "abassi",
+      "name": "fatiha abassi",
+      "phone": "0663-445566",
+      "cin": "AA98765",
+      "cnss": "99887766",
+      "salary": 9000,
+      "bank": "BMCE",
+      "rib": "777788889999000011112222",
+      "project": "Alpha",
+      "business": "Herboclear",
+      "role": "Employé",
+      "active": true,
+      "login": "sarah.i",
+      "password": "password123",
+      "permissions": [
+        "dashboard"
+      ],
+      "avatar": "https://i.pravatar.cc/150?img=25"
+    }
+  ],
+  "presence": [
+    {
+      "id": "1",
+      "employeeId": 1,
+      "date": "2023-12-02",
+      "daysAdj": 0,
+      "hoursAdj": 2,
+      "note": "Heures supplémentaires projet Alpha"
+    },
+    {
+      "id": "2",
+      "employeeId": 2,
+      "date": "2023-12-01",
+      "daysAdj": -1,
+      "hoursAdj": 0,
+      "note": "Absence injustifiée"
+    },
+    {
+      "id": "3",
+      "employeeId": 3,
+      "date": "2023-12-03",
+      "daysAdj": 0,
+      "hoursAdj": -2,
+      "note": "Retard matin"
+    },
+    {
+      "id": "4",
+      "employeeId": 1,
+      "date": "2023-11-15",
+      "daysAdj": 1,
+      "hoursAdj": 0,
+      "note": "Jour férié travaillé"
+    },
+    {
+      "id": "e182",
+      "employeeId": 1,
+      "date": "2025-12-03",
+      "daysAdj": 0,
+      "hoursAdj": 0,
+      "note": ""
+    },
+    {
+      "id": "8f2f",
+      "employeeId": 1,
+      "date": "2025-12-03",
+      "daysAdj": 2,
+      "hoursAdj": -1,
+      "note": "mrid"
+    },
+    {
+      "id": "831b",
+      "employeeId": 1,
+      "date": "2025-12-03",
+      "daysAdj": 12,
+      "hoursAdj": -122,
+      "note": "azdazd"
+    },
+    {
+      "id": "1092",
+      "employeeId": 1,
+      "date": "2025-12-03",
+      "daysAdj": -12,
+      "hoursAdj": -12,
+      "note": "acaz"
+    },
+    {
+      "id": "4cf1",
+      "employeeId": null,
+      "date": "2025-12-03",
+      "daysAdj": 12,
+      "hoursAdj": -300,
+      "note": "lghiyab"
+    },
+    {
+      "id": "a6c2",
+      "employeeId": 1,
+      "date": "2025-12-03",
+      "daysAdj": 120,
+      "hoursAdj": 120,
+      "note": ""
+    }
+  ],
+  "payments": [
+    {
+      "id": "101",
+      "employeeId": 1,
+      "month": "2023-11",
+      "date": "2023-11-25",
+      "type": "Salaire",
+      "basic": 8000,
+      "commission": 307.69,
+      "deduction": 0,
+      "net": 8307.69,
+      "method": "Virement",
+      "proofUrl": null
+    },
+    {
+      "id": "102",
+      "employeeId": 2,
+      "month": "2023-11",
+      "date": "2023-11-25",
+      "type": "Salaire",
+      "basic": 12000,
+      "commission": 0,
+      "deduction": 461.54,
+      "net": 11538.46,
+      "method": "Virement",
+      "proofUrl": null
+    },
+    {
+      "id": "103",
+      "employeeId": 3,
+      "month": "2023-11",
+      "date": "2023-11-26",
+      "type": "Salaire",
+      "basic": 9000,
+      "commission": 0,
+      "deduction": 86.54,
+      "net": 8913.46,
+      "method": "Virement",
+      "proofUrl": null
+    },
+    {
+      "id": "17db",
+      "employeeId": 1,
+      "month": "2025-12",
+      "type": "Avance",
+      "basic": 8000,
+      "commission": 4307.69,
+      "deduction": 4730.77,
+      "method": "Virement",
+      "proof": null,
+      "net": 7576.919999999998,
+      "date": "2025-12-03",
+      "proofUrl": null
+    },
+    {
+      "id": "2578",
+      "employeeId": 1,
+      "month": "2025-12",
+      "type": "Avance",
+      "basic": 12000,
+      "commission": 74307.69,
+      "deduction": 30634.62,
+      "method": "Espèces",
+      "proof": null,
+      "net": 55673.07000000001,
+      "date": "2025-12-03",
+      "proofUrl": null
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "name": "Serum Vitamine C",
+      "category": "Soins Visage",
+      "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=200&h=200&fit=crop",
+      "stockTotal": 145,
+      "warehouses": {
+        "Magasin Central": 85,
+        "Dépôt A": 40,
+        "Dépôt B": 20
+      }
+    },
+    {
+      "id": "2",
+      "name": "Argan Oil",
+      "category": "Huiles",
+      "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=200&h=200&fit=crop",
+      "stockTotal": 230,
+      "warehouses": {
+        "Magasin Central": 120,
+        "Dépôt A": 70,
+        "Dépôt B": 40
+      }
+    },
+    {
+      "id": "3",
+      "name": "Crème Hydratante",
+      "category": "Soins Visage",
+      "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=200&h=200&fit=crop",
+      "stockTotal": 98,
+      "warehouses": {
+        "Magasin Central": 50,
+        "Dépôt A": 30,
+        "Dépôt B": 18
+      }
+    },
+    {
+      "id": "4",
+      "name": "Masque Argile",
+      "category": "Masques",
+      "image": "https://images.unsplash.com/photo-1571875257727-256c39da42af?w=200&h=200&fit=crop",
+      "stockTotal": 67,
+      "warehouses": {
+        "Magasin Central": 35,
+        "Dépôt A": 20,
+        "Dépôt B": 12
+      }
+    }
+  ],
+  "warehouses": [
+    {
+      "id": "1",
+      "name": "Magasin Central",
+      "location": "Casablanca Centre"
+    },
+    {
+      "id": "2",
+      "name": "Dépôt A",
+      "location": "Ain Sebaa"
+    },
+    {
+      "id": "3",
+      "name": "Dépôt B",
+      "location": "Sidi Moumen"
+    }
+  ],
+  "stockMovements": [
+    {
+      "id": "1",
+      "productId": "1",
+      "productName": "Serum Vitamine C",
+      "type": "Sortie",
+      "reason": "Vente hors-site",
+      "quantity": -5,
+      "warehouse": "Magasin Central",
+      "date": "2025-12-01",
+      "userId": "1",
+      "userName": "Bernard Anouith",
+      "userAvatar": "https://i.pravatar.cc/150?img=33",
+      "note": "Vente directe client VIP"
+    },
+    {
+      "id": "2",
+      "productId": "2",
+      "productName": "Argan Oil",
+      "type": "Entrée",
+      "reason": "Réception Fournisseur",
+      "quantity": 50,
+      "warehouse": "Dépôt A",
+      "date": "2025-12-02",
+      "userId": "2",
+      "userName": "Sarah Idrissi",
+      "userAvatar": "https://i.pravatar.cc/150?img=5",
+      "note": "Commande #1234"
+    },
+    {
+      "id": "3",
+      "productId": "3",
+      "productName": "Crème Hydratante",
+      "type": "Sortie",
+      "reason": "Cassé / Abimé",
+      "quantity": -2,
+      "warehouse": "Magasin Central",
+      "date": "2025-12-03",
+      "userId": "1",
+      "userName": "Bernard Anouith",
+      "userAvatar": "https://i.pravatar.cc/150?img=33",
+      "note": "Emballage endommagé pendant transport"
+    },
+    {
+      "id": "4449",
+      "productId": "3",
+      "productName": "Crème Hydratante",
+      "type": "Sortie",
+      "reason": "Transfert vers Dépôt B",
+      "quantity": -10,
+      "warehouse": "Magasin Central",
+      "date": "2025-12-03",
+      "userId": "1",
+      "userName": "Bernard Anouith",
+      "userAvatar": "https://i.pravatar.cc/150?img=33",
+      "note": "Transfert #438e"
+    },
+    {
+      "id": "8167",
+      "productId": "3",
+      "productName": "Crème Hydratante",
+      "type": "Entrée",
+      "reason": "Transfert depuis Magasin Central",
+      "quantity": 10,
+      "warehouse": "Dépôt B",
+      "date": "2025-12-03",
+      "userId": "1",
+      "userName": "Bernard Anouith",
+      "userAvatar": "https://i.pravatar.cc/150?img=33",
+      "note": "Transfert #438e"
+    },
+    {
+      "id": "4dc3",
+      "productId": "4",
+      "productName": "Masque Argile",
+      "type": "Sortie",
+      "reason": "Transfert vers Dépôt B",
+      "quantity": -100,
+      "warehouse": "Magasin Central",
+      "date": "2025-12-03",
+      "userId": "1",
+      "userName": "Bernard Anouith",
+      "userAvatar": "https://i.pravatar.cc/150?img=33",
+      "note": "Transfert #dcbe"
+    },
+    {
+      "id": "3987",
+      "productId": "4",
+      "productName": "Masque Argile",
+      "type": "Entrée",
+      "reason": "Transfert depuis Magasin Central",
+      "quantity": 100,
+      "warehouse": "Dépôt B",
+      "date": "2025-12-03",
+      "userId": "1",
+      "userName": "Bernard Anouith",
+      "userAvatar": "https://i.pravatar.cc/150?img=33",
+      "note": "Transfert #dcbe"
+    },
+    {
+      "id": "8097",
+      "productId": "1",
+      "productName": "Serum Vitamine C",
+      "type": "Sortie",
+      "reason": "Transfert vers Magasin Central",
+      "quantity": -10,
+      "warehouse": "Dépôt A",
+      "date": "2025-12-03",
+      "userId": "1",
+      "userName": "Bernard Anouith",
+      "userAvatar": "https://i.pravatar.cc/150?img=33",
+      "note": "Transfert #dae7"
+    },
+    {
+      "id": "1808",
+      "productId": "1",
+      "productName": "Serum Vitamine C",
+      "type": "Entrée",
+      "reason": "Transfert depuis Dépôt A",
+      "quantity": 10,
+      "warehouse": "Magasin Central",
+      "date": "2025-12-03",
+      "userId": "1",
+      "userName": "Bernard Anouith",
+      "userAvatar": "https://i.pravatar.cc/150?img=33",
+      "note": "Transfert #dae7"
+    }
+  ],
+  "stockTransfers": [
+    {
+      "id": "1",
+      "productId": "1",
+      "productName": "Serum Vitamine C",
+      "quantity": 10,
+      "sourceWarehouse": "Magasin Central",
+      "destinationWarehouse": "Dépôt A",
+      "date": "2025-11-28",
+      "status": "Complété",
+      "userId": "1",
+      "userName": "Bernard Anouith"
+    },
+    {
+      "id": "2",
+      "productId": "2",
+      "productName": "Argan Oil",
+      "quantity": 25,
+      "sourceWarehouse": "Dépôt A",
+      "destinationWarehouse": "Magasin Central",
+      "date": "2025-11-30",
+      "status": "Complété",
+      "userId": "2",
+      "userName": "Sarah Idrissi"
+    },
+    {
+      "id": "3",
+      "productId": "4",
+      "productName": "Masque Argile",
+      "quantity": 15,
+      "sourceWarehouse": "Magasin Central",
+      "destinationWarehouse": "Dépôt B",
+      "date": "2025-12-03",
+      "status": "Complété",
+      "userId": "1",
+      "userName": "Bernard Anouith"
+    },
+    {
+      "id": "b566",
+      "date": "2025-12-03",
+      "productId": "1",
+      "quantity": 122,
+      "sourceWarehouse": "Dépôt A",
+      "destinationWarehouse": "Magasin Central",
+      "productName": "Serum Vitamine C",
+      "status": "Complété",
+      "userId": "1",
+      "userName": "Bernard Anouith"
+    },
+    {
+      "id": "438e",
+      "date": "2025-12-03",
+      "productId": "3",
+      "quantity": 10,
+      "sourceWarehouse": "Magasin Central",
+      "destinationWarehouse": "Dépôt B",
+      "productName": "Crème Hydratante",
+      "status": "Complété",
+      "userId": "1",
+      "userName": "Bernard Anouith"
+    },
+    {
+      "id": "dcbe",
+      "date": "2025-12-03",
+      "productId": "4",
+      "quantity": 100,
+      "sourceWarehouse": "Magasin Central",
+      "destinationWarehouse": "Dépôt B",
+      "productName": "Masque Argile",
+      "status": "Complété",
+      "userId": "1",
+      "userName": "Bernard Anouith"
+    },
+    {
+      "id": "dae7",
+      "date": "2025-12-03",
+      "productId": "1",
+      "quantity": 10,
+      "sourceWarehouse": "Dépôt A",
+      "destinationWarehouse": "Magasin Central",
+      "productName": "Serum Vitamine C",
+      "status": "Complété",
+      "userId": "1",
+      "userName": "Bernard Anouith"
+    }
+  ]
+}

@@ -1,25 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Search, Plus, Printer, X, Check, User, ChevronDown, 
-  FileText, DollarSign, Trash2, Download, Paperclip, Eye 
+  Search, Plus, Printer, X, Check, ChevronDown, 
+  FileText, DollarSign, Trash2, Download, Paperclip, TrendingUp, TrendingDown 
 } from 'lucide-react';
-
-// --- DONNÉES DE DÉPART ---
-const EMPLOYEES = [
-  { id: 1, name: 'Ahmed Benali', role: 'Admin', avatar: 'https://i.pravatar.cc/150?img=11' },
-  { id: 2, name: 'Sarah Idrissi', role: 'Manager', avatar: 'https://i.pravatar.cc/150?img=5' },
-  { id: 3, name: 'Karim Tazi', role: 'Employé', avatar: 'https://i.pravatar.cc/150?img=3' },
-];
-
-const INITIAL_PAYMENTS = [
-  { id: 101, employeeId: 1, month: '2023-11', date: '2023-11-25', type: 'Salaire', basic: 14000, commission: 1000, deduction: 0, net: 15000, method: 'Virement', proofUrl: '#' },
-  { id: 102, employeeId: 2, month: '2023-11', date: '2023-11-25', type: 'Avance', basic: 2000, commission: 0, deduction: 0, net: 2000, method: 'Espèces', proofUrl: '#' },
-  { id: 103, employeeId: 3, month: '2023-11', date: '2023-11-26', type: 'Salaire', basic: 8000, commission: 300, deduction: 100, net: 8200, method: 'Virement', proofUrl: '#' },
-];
+import { employeeAPI, paymentAPI, presenceAPI, calculateSalaryAdjustments } from '../../services/api';
+import Swal from 'sweetalert2';
 
 // --- UTILITAIRES ---
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(amount);
+  return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 2 }).format(amount);
 };
 
 const formatDate = (dateString) => {
@@ -92,7 +81,7 @@ const ReceiptModal = ({ isOpen, onClose, payment, employee }) => {
               </div>
             </div>
 
-            {/* DÉTAILS DU CALCUL (MODIFICATION ICI) */}
+            {/* DÉTAILS DU CALCUL */}
             <div className="space-y-3 text-sm mb-6">
               <div className="flex justify-between text-slate-600 items-center">
                 <span>Salaire de base</span>
@@ -137,18 +126,55 @@ const ReceiptModal = ({ isOpen, onClose, payment, employee }) => {
   );
 };
 
-// --- MODAL AJOUT PAIEMENT (AVEC TYPE) ---
-const AddPaymentModal = ({ isOpen, onClose, onSave }) => {
+// --- MODAL AJOUT PAIEMENT (AVEC AUTO-CALCUL) ---
+const AddPaymentModal = ({ isOpen, onClose, onSave, employees }) => {
   const [formData, setFormData] = useState({
     employeeId: '',
     month: new Date().toISOString().slice(0, 7),
-    type: 'Salaire', // Nouveau Champ
+    type: 'Salaire',
     basic: '',
     commission: 0,
     deduction: 0,
     method: 'Virement',
     proof: null
   });
+
+  const [calculatedData, setCalculatedData] = useState(null);
+  const [presenceRecords, setPresenceRecords] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Stable onChange handler to prevent input focus loss
+  const handleFieldChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Auto-calculate when employee or month changes
+  useEffect(() => {
+    if (formData.employeeId && formData.month) {
+      calculateFromPresence();
+    }
+  }, [formData.employeeId, formData.month]);
+
+  const calculateFromPresence = async () => {
+    try {
+      setLoading(true);
+      const result = await paymentAPI.calculatePayment(formData.employeeId, formData.month);
+      const records = await presenceAPI.getAll({ employeeId: formData.employeeId, month: formData.month });
+      
+      setCalculatedData(result);
+      setPresenceRecords(records);
+      setFormData(prev => ({
+        ...prev,
+        basic: result.basic,
+        commission: result.commission,
+        deduction: result.deduction
+      }));
+    } catch (error) {
+      console.error('Error calculating payment:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const netSalary = (parseFloat(formData.basic || 0) + parseFloat(formData.commission || 0)) - parseFloat(formData.deduction || 0);
 
@@ -165,14 +191,16 @@ const AddPaymentModal = ({ isOpen, onClose, onSave }) => {
       basic: parseFloat(formData.basic),
       commission: parseFloat(formData.commission),
       deduction: parseFloat(formData.deduction),
-      proofUrl: formData.proof ? URL.createObjectURL(formData.proof) : null // Simulation URL
+      proofUrl: formData.proof ? URL.createObjectURL(formData.proof) : null
     });
     onClose();
   };
 
+  const selectedEmployee = employees?.find(e => String(e.id) === String(formData.employeeId));
+
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl flex flex-col animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
           <h2 className="text-xl font-bold text-slate-800">Ajouter un paiement</h2>
           <button onClick={onClose} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition"><X size={20}/></button>
@@ -187,11 +215,11 @@ const AddPaymentModal = ({ isOpen, onClose, onSave }) => {
                 <select 
                   className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none appearance-none font-semibold text-slate-700"
                   value={formData.employeeId}
-                  onChange={e => setFormData({...formData, employeeId: parseInt(e.target.value)})}
+                  onChange={e => handleFieldChange('employeeId', e.target.value)}
                   required
                 >
                   <option value="">Sélectionner...</option>
-                  {EMPLOYEES.map(emp => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
+                  {employees?.map(emp => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
               </div>
@@ -203,7 +231,7 @@ const AddPaymentModal = ({ isOpen, onClose, onSave }) => {
                 <select 
                   className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none appearance-none"
                   value={formData.type}
-                  onChange={e => setFormData({...formData, type: e.target.value})}
+                  onChange={e => handleFieldChange('type', e.target.value)}
                 >
                   <option>Salaire</option>
                   <option>Avance</option>
@@ -215,30 +243,75 @@ const AddPaymentModal = ({ isOpen, onClose, onSave }) => {
             </div>
           </div>
 
-          {/* Ligne 2 : Mois & Salaire Base */}
+          {/* Ligne 2 : Mois */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase ml-1">Mois concerné</label>
               <input type="month" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none"
-                value={formData.month} onChange={e => setFormData({...formData, month: e.target.value})} />
+                value={formData.month} onChange={e => handleFieldChange('month', e.target.value)} />
             </div>
           </div>
 
-          {/* Ligne 3 : Extras */}
-          <div className="grid grid-cols-2 gap-4">
-             <div className="space-y-2">
-               <label className="text-xs font-bold text-emerald-600 uppercase ml-1">Commissions (+)</label>
-               <input type="number" placeholder="0" className="w-full px-4 py-3 rounded-xl bg-emerald-50/50 border border-emerald-100 text-sm focus:border-emerald-500 outline-none text-emerald-700 font-semibold"
-                 value={formData.commission} onChange={e => setFormData({...formData, commission: e.target.value})} />
-             </div>
-             <div className="space-y-2">
-               <label className="text-xs font-bold text-red-500 uppercase ml-1">Déductions (-)</label>
-               <input type="number" placeholder="0" className="w-full px-4 py-3 rounded-xl bg-red-50/50 border border-red-100 text-sm focus:border-red-500 outline-none text-red-700 font-semibold"
-                 value={formData.deduction} onChange={e => setFormData({...formData, deduction: e.target.value})} />
-             </div>
-          </div>
+          {/* Auto-Calculated Breakdown */}
+          {calculatedData && selectedEmployee && (
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-100">
+              <div className="flex items-center gap-2 mb-4">
+                <DollarSign size={20} className="text-blue-600"/>
+                <h3 className="font-bold text-blue-900">Calcul Automatique du Salaire</h3>
+              </div>
 
-          {/* Ligne 4 : Total & Méthode */}
+              <div className="bg-white rounded-xl p-4 space-y-3 mb-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">Salaire mensuel de base</span>
+                  <span className="font-bold text-slate-800">{formatCurrency(calculatedData.basic)}</span>
+                </div>
+                <div className="text-xs text-slate-500 pl-4">
+                  <p>📅 Taux journalier: {formatCurrency(calculatedData.dailyRate)} (Salaire ÷ 26)</p>
+                  <p>⏰ Taux horaire: {formatCurrency(calculatedData.hourlyRate)} (Journalier ÷ 8)</p>
+                </div>
+              </div>
+
+              {presenceRecords.length > 0 && (
+                <div className="bg-white rounded-xl p-4 mb-4">
+                  <p className="text-xs font-bold text-slate-500 uppercase mb-3">Ajustements de Présence ({presenceRecords.length})</p>
+                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                    {presenceRecords.map(record => (
+                      <div key={record.id} className="flex justify-between text-xs">
+                        <span className="text-slate-600">{formatDate(record.date)}</span>
+                        <span className={record.daysAdj > 0 || record.hoursAdj > 0 ? 'text-emerald-600 font-semibold' : 'text-red-600 font-semibold'}>
+                          {record.daysAdj !== 0 && `${record.daysAdj > 0 ? '+' : ''}${record.daysAdj}j `}
+                          {record.hoursAdj !== 0 && `${record.hoursAdj > 0 ? '+' : ''}${record.hoursAdj}h`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                {calculatedData.commission > 0 && (
+                  <div className="bg-emerald-100 p-3 rounded-lg">
+                    <div className="flex items-center gap-1 mb-1">
+                      <TrendingUp size={14} className="text-emerald-700"/>
+                      <span className="text-[10px] font-bold text-emerald-700 uppercase">Commission</span>
+                    </div>
+                    <span className="text-lg font-black text-emerald-700">+{formatCurrency(calculatedData.commission)}</span>
+                  </div>
+                )}
+                {calculatedData.deduction > 0 && (
+                  <div className="bg-red-100 p-3 rounded-lg">
+                    <div className="flex items-center gap-1 mb-1">
+                      <TrendingDown size={14} className="text-red-700"/>
+                      <span className="text-[10px] font-bold text-red-700 uppercase">Déduction</span>
+                    </div>
+                    <span className="text-lg font-black text-red-700">-{formatCurrency(calculatedData.deduction)}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Net Salary & Method */}
           <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
              <div className="space-y-2">
                 <label className="text-xs font-bold text-blue-800 uppercase ml-1">Net à Payer</label>
@@ -250,7 +323,7 @@ const AddPaymentModal = ({ isOpen, onClose, onSave }) => {
                   <select 
                     className="w-full pl-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-sm outline-none appearance-none"
                     value={formData.method}
-                    onChange={e => setFormData({...formData, method: e.target.value})}
+                    onChange={e => handleFieldChange('method', e.target.value)}
                   >
                     <option>Virement</option>
                     <option>Espèces</option>
@@ -283,42 +356,96 @@ const AddPaymentModal = ({ isOpen, onClose, onSave }) => {
 
 // --- PAGE PRINCIPALE ---
 export default function PaymentsPage() {
-  const [payments, setPayments] = useState(INITIAL_PAYMENTS);
+  const [payments, setPayments] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('All'); // Added role filter state
+  const [loading, setLoading] = useState(true);
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [receiptData, setReceiptData] = useState(null); 
   const [expandedEmployeeId, setExpandedEmployeeId] = useState(null);
 
+  // Load data on mount
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [empData, paymentData] = await Promise.all([
+        employeeAPI.getAll(),
+        paymentAPI.getAll()
+      ]);
+      setEmployees(empData);
+      setPayments(paymentData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const toggleEmployee = (id) => {
     setExpandedEmployeeId(expandedEmployeeId === id ? null : id);
   };
 
-  const handleAddPayment = (newPayment) => {
-    const paymentWithId = { ...newPayment, id: Math.floor(Math.random() * 10000) };
-    setPayments([paymentWithId, ...payments]);
-    setExpandedEmployeeId(newPayment.employeeId);
+  const handleAddPayment = async (newPayment) => {
+    try {
+      await paymentAPI.create(newPayment);
+      loadData();
+      setExpandedEmployeeId(newPayment.employeeId);
+    } catch (error) {
+      console.error('Error adding payment:', error);
+    }
   };
 
-  const handleDeletePayment = (id) => {
-    if(window.confirm("Supprimer ce paiement ?")) {
-        setPayments(prev => prev.filter(p => p.id !== id));
-    }
-  }
+  const handleDeletePayment = async (id) => {
+    const result = await Swal.fire({
+      title: 'Êtes-vous sûr ?',
+      text: "Vous ne pourrez pas revenir en arrière !",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, supprimer !',
+      cancelButtonText: 'Annuler'
+    });
 
-  // Simulation : Voir la preuve (Ouvrirait l'image dans la vraie vie)
+    if (result.isConfirmed) {
+      try {
+        await paymentAPI.delete(id);
+        Swal.fire(
+          'Supprimé !',
+          'Le paiement a été supprimé.',
+          'success'
+        );
+        loadData();
+      } catch (error) {
+        console.error('Error deleting payment:', error);
+        Swal.fire(
+          'Erreur !',
+          'Une erreur est survenue lors de la suppression.',
+          'error'
+        );
+      }
+    }
+  };
+
   const handleViewProof = (url) => {
       if(url) {
           alert("Dans une vraie application, ceci ouvrirait le fichier : " + url);
-          // window.open(url, '_blank');
       } else {
           alert("Aucune preuve jointe pour ce paiement.");
       }
   };
 
-  const filteredEmployees = EMPLOYEES.filter(emp => 
-    emp.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredEmployees = employees.filter(emp => {
+    const matchesSearch = emp.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === 'All' || emp.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
 
   return (
     <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800">
@@ -334,16 +461,35 @@ export default function PaymentsPage() {
             <Plus size={20} /> Nouveau Paiement
           </button>
         </div>
-        <div className="relative mt-6 max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-          <input type="text" placeholder="Chercher un employé..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+        
+        {/* FILTERS SECTION */}
+        <div className="flex flex-col md:flex-row gap-4 mt-6">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+            <input type="text" placeholder="Chercher un employé..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+          </div>
+
+          {/* Role Filter */}
+          <div className="relative">
+            <select 
+              value={roleFilter} 
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="All">Tous les rôles</option>
+              <option value="Employé">Employé</option>
+              <option value="Manager">Manager</option>
+              <option value="Admin">Admin</option>
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+          </div>
         </div>
       </div>
 
       {/* LISTE */}
       <div className="space-y-4">
         {filteredEmployees.map(employee => {
-          const employeePayments = payments.filter(p => p.employeeId === employee.id).sort((a,b) => new Date(b.date) - new Date(a.date));
+          const employeePayments = payments.filter(p => String(p.employeeId) === String(employee.id)).sort((a,b) => new Date(b.date) - new Date(a.date));
           const totalPaid = employeePayments.reduce((sum, p) => sum + p.net, 0);
           const isExpanded = expandedEmployeeId === employee.id;
 
@@ -411,16 +557,16 @@ export default function PaymentsPage() {
                               </td>
                               <td className="px-5 py-4 text-right">
                                 <div className="flex justify-end gap-2">
-                                  {/* BOUTON PREUVE (PAPERCLIP) */}
+                                  {/* BOUTON PREUVE */}
                                   <button 
                                     onClick={() => handleViewProof(payment.proofUrl)}
                                     className="p-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-slate-200 transition-colors"
-                                    title="Voir la preuve (Facture/Virement)"
+                                    title="Voir la preuve"
                                   >
                                     <Paperclip size={16}/>
                                   </button>
                                   
-                                  {/* BOUTON REÇU (PRINTER) */}
+                                  {/* BOUTON REÇU */}
                                   <button 
                                     onClick={() => setReceiptData({ payment, employee })}
                                     className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-semibold transition-colors text-xs"
@@ -458,7 +604,8 @@ export default function PaymentsPage() {
       <AddPaymentModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
-        onSave={handleAddPayment} 
+        onSave={handleAddPayment}
+        employees={employees}
       />
 
       <ReceiptModal 
