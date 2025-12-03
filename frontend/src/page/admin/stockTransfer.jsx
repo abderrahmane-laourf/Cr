@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Calendar, Package, Truck, ArrowRight, Check, ChevronDown, AlertCircle, Plus, X, Search
+  Calendar, Package, Truck, ArrowRight, ChevronDown, AlertCircle, Plus, X, Search
 } from 'lucide-react';
 
-// Mock APIs
+// ----------------------------------------------------------------------
+// 1. API MOCKS
+// ----------------------------------------------------------------------
 const transfersAPI = {
   getAll: async () => {
     const response = await fetch('http://localhost:3000/stockTransfers');
@@ -14,14 +16,6 @@ const transfersAPI = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(transfer)
-    });
-    return response.json();
-  },
-  update: async (id, data) => {
-    const response = await fetch(`http://localhost:3000/stockTransfers/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
     });
     return response.json();
   }
@@ -52,15 +46,17 @@ const warehousesAPI = {
   }
 };
 
-// Format date helper
+// Helper: Format Date
 const formatDate = (dateString) => {
   if (!dateString) return '-';
   const date = new Date(dateString);
   return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
-// Transfer Modal Component
-const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
+// ----------------------------------------------------------------------
+// 2. MODAL FORMULAIRE
+// ----------------------------------------------------------------------
+const TransferModal = ({ isOpen, onClose, onSave, products, warehouses, isSaving }) => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().slice(0, 10),
     productId: '',
@@ -81,12 +77,11 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
     
     // Validation
     if (formData.sourceWarehouse === formData.destinationWarehouse) {
-      setError('L\'entrepôt source et destination ne peuvent pas être identiques.');
+      setError('Impossible de transférer vers le même entrepôt.');
       return;
     }
-
     if (!formData.productId || !formData.quantity || !formData.sourceWarehouse || !formData.destinationWarehouse) {
-      setError('Veuillez remplir tous les champs obligatoires.');
+      setError('Veuillez remplir tous les champs.');
       return;
     }
 
@@ -96,12 +91,11 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
       ...formData,
       productName: selectedProduct?.name,
       quantity: parseInt(formData.quantity),
-      status: 'En cours',
+      status: 'Complété',
       userId: '1',
-      userName: 'Bernard Anouith'
+      userName: 'Admin'
     });
 
-    // Reset form
     setFormData({
       date: new Date().toISOString().slice(0, 10),
       productId: '',
@@ -110,16 +104,16 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
       destinationWarehouse: ''
     });
     setError('');
-    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col animate-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
+        
+          {/* Header */}
+         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
               <Truck className="text-blue-600" size={20} />
@@ -135,7 +129,11 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
         </div>
 
         {/* Form */}
+        {/* ------------------------------------- */}
+
+        {/* Formulaire */}
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Date */}
             <div className="space-y-2">
@@ -184,7 +182,6 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
               <input 
                 type="number" 
                 min="1"
-                step="1"
                 placeholder="Ex: 10" 
                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 value={formData.quantity}
@@ -193,7 +190,7 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
               />
             </div>
 
-            {/* Source Warehouse */}
+            {/* Source */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase ml-1">
                 De l'entrepôt <span className="text-red-400">*</span>
@@ -206,15 +203,13 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
                   required
                 >
                   <option value="">-- Choisir --</option>
-                  {warehouses.map(warehouse => (
-                    <option key={warehouse.id} value={warehouse.name}>{warehouse.name}</option>
-                  ))}
+                  {warehouses.map(w => <option key={w.id} value={w.name}>{w.name}</option>)}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
               </div>
             </div>
 
-            {/* Destination Warehouse */}
+            {/* Destination */}
             <div className="space-y-2 md:col-span-2">
               <label className="text-xs font-bold text-slate-500 uppercase ml-1">
                 Vers l'entrepôt <span className="text-red-400">*</span>
@@ -227,16 +222,13 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
                   required
                 >
                   <option value="">-- Choisir --</option>
-                  {warehouses.map(warehouse => (
-                    <option key={warehouse.id} value={warehouse.name}>{warehouse.name}</option>
-                  ))}
+                  {warehouses.map(w => <option key={w.id} value={w.name}>{w.name}</option>)}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
               </div>
             </div>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
               <AlertCircle className="text-red-600 shrink-0 mt-0.5" size={20} />
@@ -244,21 +236,16 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
             </div>
           )}
 
-          {/* Footer Buttons */}
-          <div className="flex gap-3 pt-4">
-            <button 
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-all"
-            >
+          <div className="pt-2 flex gap-3">
+            <button type="button" onClick={onClose} className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium transition-colors">
               Annuler
             </button>
             <button 
-              type="submit"
-              className="flex-1 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2"
+              type="submit" 
+              disabled={isSaving}
+              className="flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 font-bold shadow-lg shadow-blue-500/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
             >
-              <Check size={20} />
-              Confirmer le transfert
+              {isSaving ? 'Traitement...' : 'Confirmer le transfert'}
             </button>
           </div>
         </form>
@@ -267,7 +254,9 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses }) => {
   );
 };
 
-// Main Page Component
+// ----------------------------------------------------------------------
+// 3. PAGE PRINCIPALE
+// ----------------------------------------------------------------------
 export default function StockTransferPage() {
   const [transfers, setTransfers] = useState([]);
   const [products, setProducts] = useState([]);
@@ -275,6 +264,7 @@ export default function StockTransferPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -292,71 +282,57 @@ export default function StockTransferPage() {
       setProducts(productsData);
       setWarehouses(warehousesData);
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error('Erreur chargement:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAddTransfer = async (transfer) => {
+  // LOGIQUE COMPLETE : TRANSFERT + MOUVEMENTS AUTOMATIQUES
+  const handleProcessTransfer = async (transferData) => {
+    setIsSaving(true);
     try {
-      await transfersAPI.create(transfer);
-      loadData();
-    } catch (error) {
-      console.error('Error creating transfer:', error);
-    }
-  };
+      // 1. Créer l'enregistrement
+      const newTransfer = await transfersAPI.create(transferData);
 
-  const handleCompleteTransfer = async (id) => {
-    try {
-      // Find the transfer
-      const transfer = transfers.find(t => String(t.id) === String(id));
-      if (!transfer) return;
+      // 2. Créer les Mouvements (Sortie / Entrée)
+      const currentUser = { id: '1', name: 'Admin', avatar: '' };
 
-      // Update transfer status to Complété
-      await transfersAPI.update(id, { status: 'Complété' });
-
-      // Create two stock movements: Exit from source, Entry to destination
-      const currentDate = new Date().toISOString().slice(0, 10);
-      const currentUser = {
-        id: '1',
-        name: 'Bernard Anouith',
-        avatar: 'https://i.pravatar.cc/150?img=33'
-      };
-
-      // Exit movement from source warehouse
+      // A. Sortie (-)
       await movementsAPI.create({
-        productId: transfer.productId,
-        productName: transfer.productName,
+        productId: transferData.productId,
+        productName: transferData.productName,
         type: 'Sortie',
-        reason: `Transfert vers ${transfer.destinationWarehouse}`,
-        quantity: -Math.abs(transfer.quantity),
-        warehouse: transfer.sourceWarehouse,
-        date: currentDate,
+        reason: `Transfert vers ${transferData.destinationWarehouse}`,
+        quantity: -Math.abs(transferData.quantity),
+        warehouse: transferData.sourceWarehouse,
+        date: transferData.date,
         userId: currentUser.id,
         userName: currentUser.name,
-        userAvatar: currentUser.avatar,
-        note: `Transfert #${transfer.id}`
+        note: `Ref Transfert #${newTransfer.id}`
       });
 
-      // Entry movement to destination warehouse
+      // B. Entrée (+)
       await movementsAPI.create({
-        productId: transfer.productId,
-        productName: transfer.productName,
+        productId: transferData.productId,
+        productName: transferData.productName,
         type: 'Entrée',
-        reason: `Transfert depuis ${transfer.sourceWarehouse}`,
-        quantity: Math.abs(transfer.quantity),
-        warehouse: transfer.destinationWarehouse,
-        date: currentDate,
+        reason: `Transfert depuis ${transferData.sourceWarehouse}`,
+        quantity: Math.abs(transferData.quantity),
+        warehouse: transferData.destinationWarehouse,
+        date: transferData.date,
         userId: currentUser.id,
         userName: currentUser.name,
-        userAvatar: currentUser.avatar,
-        note: `Transfert #${transfer.id}`
+        note: `Ref Transfert #${newTransfer.id}`
       });
 
-      loadData();
+      await loadData();
+      setIsModalOpen(false);
+
     } catch (error) {
-      console.error('Error completing transfer:', error);
+      console.error('Erreur lors du transfert:', error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -367,129 +343,96 @@ export default function StockTransferPage() {
   ).sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800">
+    <div className="w-full min-h-screen bg-[#F8FAFC] p-6 font-sans text-slate-800">
       
-      {/* HEADER */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Transfert de Stock</h1>
-            <p className="text-slate-500 mt-1 font-medium">Déplacez des produits entre vos entrepôts.</p>
-          </div>
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
-          >
-            <Plus size={20} /> Nouveau Transfert
-          </button>
+      {/* Header Page */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Transferts de Stock</h1>
+          <p className="text-slate-500 text-sm mt-1">Gérez les déplacements de produits entre vos dépôts.</p>
         </div>
-
-        {/* Search */}
-        <div className="relative mt-6 max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-          <input 
-            type="text" 
-            placeholder="Rechercher un transfert..." 
-            value={searchTerm} 
-            onChange={(e) => setSearchTerm(e.target.value)} 
-            className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" 
-          />
-        </div>
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-95"
+        >
+          <Plus size={18} /> Nouveau Transfert
+        </button>
       </div>
 
-      {/* TRANSFERS TABLE */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-100">
-          <h2 className="text-xl font-bold text-slate-800">Historique des Transferts</h2>
-        </div>
+      {/* Barre de Recherche */}
+      <div className="mb-6 relative max-w-sm">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+        <input 
+          type="text" 
+          placeholder="Rechercher (produit, dépôt...)" 
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)} 
+          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all shadow-sm" 
+        />
+      </div>
 
+      {/* TABLEAU (Sans Action ni Status) */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-100">
-              <tr>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Produit</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Quantité</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">De</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Vers</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Statut</th>
-                <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50/50 border-b border-slate-100 text-xs uppercase tracking-wider text-slate-500">
+                <th className="px-6 py-4 font-semibold">Date</th>
+                <th className="px-6 py-4 font-semibold">Produit</th>
+                <th className="px-6 py-4 font-semibold text-center">Quantité</th>
+                <th className="px-6 py-4 font-semibold">Source</th>
+                <th className="px-6 py-4 font-semibold"></th>
+                <th className="px-6 py-4 font-semibold">Destination</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-50 text-sm">
               {filteredTransfers.map((transfer) => (
-                <tr key={transfer.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="px-6 py-4 text-sm text-slate-600 font-medium">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={14} className="text-slate-400" />
-                      {formatDate(transfer.date)}
-                    </div>
+                <tr key={transfer.id} className="hover:bg-slate-50/80 transition-colors group">
+                  <td className="px-6 py-4 text-slate-500 font-medium">
+                    {formatDate(transfer.date)}
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="font-semibold text-slate-800">{transfer.productName}</span>
+                  <td className="px-6 py-4 font-semibold text-slate-700">
+                    {transfer.productName}
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="text-lg font-black text-blue-600">{transfer.quantity}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-slate-600 bg-slate-100 px-3 py-1 rounded-lg font-medium">
-                      {transfer.sourceWarehouse}
+                  <td className="px-6 py-4 text-center">
+                    <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg font-bold text-xs border border-blue-100">
+                      {transfer.quantity}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <ArrowRight size={16} className="text-slate-400" />
-                      <span className="text-sm text-slate-600 bg-slate-100 px-3 py-1 rounded-lg font-medium">
-                        {transfer.destinationWarehouse}
-                      </span>
-                    </div>
+                  <td className="px-6 py-4 text-slate-600">
+                    {transfer.sourceWarehouse}
                   </td>
-                  <td className="px-6 py-4">
-                    {transfer.status === 'Complété' ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
-                        <Check size={14} />
-                        Complété
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-yellow-50 text-yellow-700 border border-yellow-100">
-                        <Truck size={14} />
-                        En cours
-                      </span>
-                    )}
+                  <td className="px-6 py-4 text-center text-slate-300">
+                    <ArrowRight size={16} className="mx-auto group-hover:text-blue-400 transition-colors" />
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    {transfer.status === 'En cours' && (
-                      <button
-                        onClick={() => handleCompleteTransfer(transfer.id)}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-sm"
-                        title="Marquer comme complété"
-                      >
-                        <Check size={14} />
-                        Marquer Complété
-                      </button>
-                    )}
+                  <td className="px-6 py-4 text-slate-600 font-medium">
+                    {transfer.destinationWarehouse}
                   </td>
                 </tr>
               ))}
+              
+              {filteredTransfers.length === 0 && !loading && (
+                <tr>
+                  <td colSpan="6" className="px-6 py-12 text-center text-slate-400">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <Truck size={32} className="opacity-20" />
+                      <p>Aucun transfert trouvé</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
-          
-          {filteredTransfers.length === 0 && (
-            <div className="p-10 text-center text-slate-400 flex flex-col items-center">
-              <Truck size={40} className="mb-2 opacity-20" />
-              <p>Aucun transfert trouvé</p>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Transfer Modal */}
       <TransferModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSave={handleAddTransfer}
+        onSave={handleProcessTransfer}
         products={products}
         warehouses={warehouses}
+        isSaving={isSaving}
       />
     </div>
   );

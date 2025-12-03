@@ -424,7 +424,6 @@
       "sourceWarehouse": "Magasin Central",
       "destinationWarehouse": "Dépôt A",
       "date": "2025-11-28",
-      "status": "Complété",
       "userId": "1",
       "userName": "Bernard Anouith"
     },
@@ -436,7 +435,6 @@
       "sourceWarehouse": "Dépôt A",
       "destinationWarehouse": "Magasin Central",
       "date": "2025-11-30",
-      "status": "Complété",
       "userId": "2",
       "userName": "Sarah Idrissi"
     },
@@ -448,7 +446,6 @@
       "sourceWarehouse": "Magasin Central",
       "destinationWarehouse": "Dépôt B",
       "date": "2025-12-03",
-      "status": "Complété",
       "userId": "1",
       "userName": "Bernard Anouith"
     },
@@ -460,7 +457,6 @@
       "sourceWarehouse": "Dépôt A",
       "destinationWarehouse": "Magasin Central",
       "productName": "Serum Vitamine C",
-      "status": "Complété",
       "userId": "1",
       "userName": "Bernard Anouith"
     },
@@ -472,7 +468,6 @@
       "sourceWarehouse": "Magasin Central",
       "destinationWarehouse": "Dépôt B",
       "productName": "Crème Hydratante",
-      "status": "Complété",
       "userId": "1",
       "userName": "Bernard Anouith"
     },
@@ -484,7 +479,6 @@
       "sourceWarehouse": "Magasin Central",
       "destinationWarehouse": "Dépôt B",
       "productName": "Masque Argile",
-      "status": "Complété",
       "userId": "1",
       "userName": "Bernard Anouith"
     },
@@ -496,7 +490,6 @@
       "sourceWarehouse": "Dépôt A",
       "destinationWarehouse": "Magasin Central",
       "productName": "Serum Vitamine C",
-      "status": "Complété",
       "userId": "1",
       "userName": "Bernard Anouith"
     }

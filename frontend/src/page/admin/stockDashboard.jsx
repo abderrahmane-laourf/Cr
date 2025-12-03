@@ -33,7 +33,7 @@ export default function StockDashboard() {
 
       const totalStock = products.reduce((sum, p) => sum + p.stockTotal, 0);
       const lowStock = products.filter(p => p.stockTotal < 50).length;
-      const pending = transfers.filter(t => t.status === 'En cours').length;
+  
 
       setStats({
         totalProducts: products.length,
@@ -41,7 +41,6 @@ export default function StockDashboard() {
         lowStockProducts: lowStock,
         totalMovements: movements.length,
         totalTransfers: transfers.length,
-        pendingTransfers: pending
       });
     } catch (error) {
       console.error('Error loading stats:', error);
@@ -94,15 +93,6 @@ export default function StockDashboard() {
       iconColor: 'text-indigo-600',
       path: '/admin/stock/transfer'
     },
-    {
-      title: 'Transferts En Cours',
-      value: stats.pendingTransfers,
-      icon: ArrowLeftRight,
-      color: 'orange',
-      bgColor: 'bg-orange-50',
-      iconColor: 'text-orange-600',
-      path: '/admin/stock/transfer'
-    }
   ];
 
   return (

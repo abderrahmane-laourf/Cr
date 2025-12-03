@@ -16,6 +16,7 @@ import StockTransferPage from './page/admin/stockTransfer';
 import StockDashboard from './page/admin/stockDashboard';
 
 
+
 export default function App() {
   return (
     <Routes>
