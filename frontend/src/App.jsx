@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/login/Login';
 import ForgotPassword from './components/login/forgotpassword';
 import VerifyIdentity from './components/login/verifytocken';
@@ -27,6 +27,9 @@ export default function App() {
       <Route path="/forgot_password" element={<ForgotPassword />} />
       <Route path="/verify_tocken" element={<VerifyIdentity />} />
       <Route path="/NewPassword" element={<NewPassword />} />
+      
+      {/* Admin Redirect - automatically go to employees page */}
+      <Route path="/admin" element={<Navigate to="/admin/employees" replace />} />
       
       {/* Admin Routes with Layout */}
       {/* Employee Management Routes */}
