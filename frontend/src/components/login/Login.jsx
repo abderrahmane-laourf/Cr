@@ -82,7 +82,7 @@ export default function Login() {
       
       // Navigate after toast
       setTimeout(() => {
-        if (user.role === 'admin') navigate('/admin')
+        if (user.role === 'admin') navigate('/admin/employee')
         else if (user.role === 'manager') navigate('/manager')
         else navigate('/employee')
       }, 1000)
