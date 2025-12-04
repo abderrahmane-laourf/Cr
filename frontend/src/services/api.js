@@ -269,11 +269,122 @@ export const paymentAPI = {
   }
 };
 
+// ============================================
+// PRODUCT API
+// ============================================
+
+export const productAPI = {
+  /**
+   * Get all products (optionally filtered)
+   */
+  async getAll(filters = {}) {
+    let url = `${API_BASE}/products`;
+    const params = new URLSearchParams();
+
+    if (filters.type) {
+      params.append('type', filters.type);
+    }
+    if (filters.categorie) {
+      params.append('categorie', filters.categorie);
+    }
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch products');
+    return response.json();
+  },
+
+  /**
+   * Get product by ID
+   */
+  async getById(id) {
+    const response = await fetch(`${API_BASE}/products/${id}`);
+    if (!response.ok) throw new Error('Failed to fetch product');
+    return response.json();
+  },
+
+  /**
+   * Create new product
+   */
+  async create(productData) {
+    const response = await fetch(`${API_BASE}/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
+    if (!response.ok) throw new Error('Failed to create product');
+    return response.json();
+  },
+
+  /**
+   * Update product
+   */
+  async update(id, productData) {
+    const response = await fetch(`${API_BASE}/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
+    if (!response.ok) throw new Error('Failed to update product');
+    return response.json();
+  },
+
+  /**
+   * Partial update product
+   */
+  async patch(id, updates) {
+    const response = await fetch(`${API_BASE}/products/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    });
+    if (!response.ok) throw new Error('Failed to patch product');
+    return response.json();
+  },
+
+  /**
+   * Delete product
+   */
+  async delete(id) {
+    const response = await fetch(`${API_BASE}/products/${id}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error('Failed to delete product');
+    return response.json();
+  },
+
+  /**
+   * Get products with low stock
+   */
+  async getLowStock() {
+    const products = await this.getAll();
+    return products.filter(p => p.stock <= p.alerteStock);
+  },
+
+  /**
+   * Get products by category
+   */
+  async getByCategory(categorie) {
+    return this.getAll({ categorie });
+  },
+
+  /**
+   * Get products by type
+   */
+  async getByType(type) {
+    return this.getAll({ type });
+  }
+};
+
 // Export all APIs as a single object
 export default {
   employee: employeeAPI,
   presence: presenceAPI,
   payment: paymentAPI,
+  product: productAPI,
   calculateDailyRate,
   calculateHourlyRate,
   calculateSalaryAdjustments

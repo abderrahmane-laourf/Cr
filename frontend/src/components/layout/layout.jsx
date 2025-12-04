@@ -48,8 +48,8 @@ const MODULES = [
     icon: Package,
     description: 'Produits et Services',
     subItems: [
+      { id: 'prod-dash', label: 'Dashboard', path: '/admin/products/dashboard', icon: LayoutDashboard },
       { id: 'prod-list', label: 'Tous les Produits', path: '/admin/products', icon: Package },
-      { id: 'prod-cat', label: 'Catégories', path: '/admin/products/categories', icon: Briefcase },
     ]
   },
   {

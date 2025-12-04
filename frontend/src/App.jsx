@@ -14,6 +14,8 @@ import StockListPage from './page/admin/stock';
 import StockMovementsPage from './page/admin/stockMovements';
 import StockTransferPage from './page/admin/stockTransfer';
 import StockDashboard from './page/admin/stockDashboard';
+import ProductsPage from './page/admin/products';
+import ProductDashboard from './page/admin/productDashboard';
 
 
 
@@ -38,6 +40,10 @@ export default function App() {
       <Route path="/admin/stock" element={<AdminLayout><StockListPage /></AdminLayout>} />
       <Route path="/admin/stock/movements" element={<AdminLayout><StockMovementsPage /></AdminLayout>} />
       <Route path="/admin/stock/transfer" element={<AdminLayout><StockTransferPage /></AdminLayout>} />
+      
+      {/* Product Management Routes */}
+      <Route path="/admin/products/dashboard" element={<AdminLayout><ProductDashboard /></AdminLayout>} />
+      <Route path="/admin/products" element={<AdminLayout><ProductsPage /></AdminLayout>} />
     </Routes>
   );
 }

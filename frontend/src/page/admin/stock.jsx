@@ -31,13 +31,14 @@ export default function StockListPage() {
   };
 
   const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+    product.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.categorie?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.type?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getStockStatus = (total) => {
-    if (total < 50) return { color: 'red', label: 'Stock Faible', icon: AlertCircle };
-    if (total < 100) return { color: 'orange', label: 'Stock Moyen', icon: TrendingDown };
+  const getStockStatus = (stock, alerteStock) => {
+    if (stock <= alerteStock) return { color: 'red', label: 'Stock Faible', icon: AlertCircle };
+    if (stock <= alerteStock * 2) return { color: 'orange', label: 'Stock Moyen', icon: TrendingDown };
     return { color: 'green', label: 'Stock Bon', icon: TrendingUp };
   };
 
@@ -49,7 +50,7 @@ export default function StockListPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">État du Stock</h1>
-            <p className="text-slate-500 mt-1 font-medium">Consultez les quantités disponibles par produit et entrepôt.</p>
+            <p className="text-slate-500 mt-1 font-medium">Consultez les quantités disponibles par produit.</p>
           </div>
         </div>
         
@@ -68,7 +69,7 @@ export default function StockListPage() {
       {/* PRODUCTS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredProducts.map(product => {
-          const status = getStockStatus(product.stockTotal);
+          const status = getStockStatus(product.stock || 0, product.alerteStock || 10);
           const StatusIcon = status.icon;
           
           return (
@@ -77,7 +78,7 @@ export default function StockListPage() {
               <div className="h-48 bg-slate-100 overflow-hidden relative">
                 <img 
                   src={product.image} 
-                  alt={product.name} 
+                  alt={product.nom} 
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-3 right-3">
@@ -95,16 +96,16 @@ export default function StockListPage() {
               <div className="p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
-                    <h3 className="font-bold text-slate-800 text-lg mb-1">{product.name}</h3>
-                    <p className="text-xs text-slate-500 font-semibold uppercase">{product.category}</p>
+                    <h3 className="font-bold text-slate-800 text-lg mb-1">{product.nom}</h3>
+                    <p className="text-xs text-slate-500 font-semibold uppercase">{product.categorie}</p>
                   </div>
                   <Package className="text-slate-300" size={24} />
                 </div>
 
-                {/* Total Stock */}
-                <div className="bg-slate-50 rounded-xl p-3 mb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500 uppercase">Stock Total</span>
+                {/* Stock Info */}
+                <div className="bg-slate-50 rounded-xl p-4 mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold text-slate-500 uppercase">Stock Actuel</span>
                     <div className="flex items-center gap-2">
                       <StatusIcon size={16} className={
                         status.color === 'green' ? 'text-emerald-600' :
@@ -116,21 +117,34 @@ export default function StockListPage() {
                         status.color === 'orange' ? 'text-orange-600' :
                         'text-red-600'
                       }`}>
-                        {product.stockTotal}
+                        {product.stock || 0}
                       </span>
+                      <span className="text-sm text-slate-500 font-medium">{product.uniteCalcul}</span>
                     </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+                    <span className="text-xs text-slate-500">Alerte Stock</span>
+                    <span className="text-sm font-bold text-orange-600">{product.alerteStock || 10} {product.uniteCalcul}</span>
                   </div>
                 </div>
 
-                {/* Warehouse Breakdown */}
+                {/* Additional Info */}
                 <div className="space-y-2">
-                  <p className="text-xs font-bold text-slate-400 uppercase mb-2">Par Entrepôt</p>
-                  {Object.entries(product.warehouses).map(([warehouse, quantity]) => (
-                    <div key={warehouse} className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">{warehouse}</span>
-                      <span className="font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">{quantity}</span>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-500">Type</span>
+                    <span className="font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-xs">{product.type}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-500">Business</span>
+                    <span className="font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded text-xs">{product.business || 'N/A'}</span>
+                  </div>
+                  {product.fragile && (
+                    <div className="flex items-center gap-2 text-xs bg-red-50 text-red-700 px-2 py-1 rounded">
+                      <AlertCircle size={14} />
+                      <span className="font-bold">Produit Fragile</span>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>

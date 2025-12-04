@@ -89,7 +89,7 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses, isSaving
     
     onSave({
       ...formData,
-      productName: selectedProduct?.name,
+      productName: selectedProduct?.nom,
       quantity: parseInt(formData.quantity),
       status: 'Complété',
       userId: '1',
@@ -167,7 +167,7 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses, isSaving
                 >
                   <option value="">-- Choisir un produit --</option>
                   {products.map(product => (
-                    <option key={product.id} value={product.id}>{product.name}</option>
+                    <option key={product.id} value={product.id}>{product.nom}</option>
                   ))}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />

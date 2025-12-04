@@ -223,51 +223,87 @@
   "products": [
     {
       "id": "1",
-      "name": "Serum Vitamine C",
-      "category": "Soins Visage",
+      "nom": "Serum Vitamine C",
       "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=200&h=200&fit=crop",
-      "stockTotal": 145,
-      "warehouses": {
-        "Magasin Central": 85,
-        "Dépôt A": 40,
-        "Dépôt B": 20
-      }
+      "type": "Fabriqué",
+      "categorie": "Cosmétique",
+      "uniteCalcul": "ml",
+      "prixAchat": 45,
+      "prix1": 89,
+      "prix2": 85,
+      "prix3": 80,
+      "fragile": true,
+      "stock": 145,
+      "alerteStock": 20,
+      "description": "Sérum anti-âge enrichi en vitamine C pure pour illuminer et raffermir la peau",
+      "ingredients": "Aqua, Ascorbic Acid (Vitamin C), Hyaluronic Acid, Glycerin, Ferulic Acid, Vitamin E",
+      "modeEmploi": "Appliquer 3-4 gouttes sur le visage propre matin et soir. Masser délicatement jusqu'à absorption complète. Suivre avec une crème hydratante.",
+      "utilisationsInterdites": "Ne pas utiliser sur peau irritée ou lésée. Éviter le contour des yeux. Déconseillé aux femmes enceintes sans avis médical.",
+      "faq": "Q: Peut-on l'utiliser tous les jours? R: Oui, matin et soir.\nQ: Convient-il aux peaux sensibles? R: Oui, mais faire un test cutané d'abord.",
+      "scriptVente": "Ce sérum révolutionnaire à la vitamine C pure transforme votre peau en seulement 2 semaines! Résultats visibles: teint éclatant, rides réduites, texture affinée."
     },
     {
       "id": "2",
-      "name": "Argan Oil",
-      "category": "Huiles",
+      "nom": "Huile d'Argan Bio",
       "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=200&h=200&fit=crop",
-      "stockTotal": 230,
-      "warehouses": {
-        "Magasin Central": 120,
-        "Dépôt A": 70,
-        "Dépôt B": 40
-      }
+      "type": "Matière Première",
+      "categorie": "Cosmétique",
+      "uniteCalcul": "ml",
+      "prixAchat": 35,
+      "prix1": 75,
+      "prix2": 70,
+      "prix3": 65,
+      "fragile": false,
+      "stock": 230,
+      "alerteStock": 30,
+      "description": "Huile d'argan 100% pure et biologique du Maroc, pressée à froid",
+      "ingredients": "100% Huile d'Argania Spinosa (Argan) pressée à froid, certifiée biologique",
+      "modeEmploi": "Pour le visage: 2-3 gouttes sur peau humide. Pour les cheveux: appliquer sur longueurs et pointes, laisser poser 30 min. Pour le corps: masser sur peau humide après la douche.",
+      "utilisationsInterdites": "Usage externe uniquement. Ne pas ingérer. Éviter en cas d'allergie aux fruits à coque.",
+      "faq": "Q: Convient-elle aux peaux grasses? R: Oui, elle régule le sébum.\nQ: Peut-on l'utiliser pure? R: Oui, elle est 100% pure.",
+      "scriptVente": "L'or liquide du Maroc! Cette huile précieuse nourrit intensément peau et cheveux. Riche en vitamine E et acides gras essentiels, elle répare et protège naturellement."
     },
     {
       "id": "3",
-      "name": "Crème Hydratante",
-      "category": "Soins Visage",
+      "nom": "Crème Hydratante Aloe Vera",
       "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=200&h=200&fit=crop",
-      "stockTotal": 98,
-      "warehouses": {
-        "Magasin Central": 50,
-        "Dépôt A": 30,
-        "Dépôt B": 18
-      }
+      "type": "Fabriqué",
+      "categorie": "Cosmétique",
+      "uniteCalcul": "ml",
+      "prixAchat": 28,
+      "prix1": 65,
+      "prix2": 60,
+      "prix3": 55,
+      "fragile": true,
+      "stock": 98,
+      "alerteStock": 15,
+      "description": "Crème hydratante légère à l'aloe vera pour tous types de peaux",
+      "ingredients": "Aloe Barbadensis Leaf Juice, Aqua, Glycerin, Shea Butter, Jojoba Oil, Vitamin E, Panthenol",
+      "modeEmploi": "Appliquer matin et soir sur visage et cou propres. Masser en mouvements circulaires jusqu'à absorption.",
+      "utilisationsInterdites": "Ne pas utiliser en cas d'allergie à l'aloe vera. Éviter le contact avec les yeux.",
+      "faq": "Q: Convient-elle aux peaux mixtes? R: Parfaitement, texture légère non grasse.\nQ: Peut-on l'utiliser sous le maquillage? R: Oui, excellente base.",
+      "scriptVente": "Hydratation 24h garantie! Cette crème onctueuse pénètre instantanément sans effet gras. Votre peau reste douce, souple et éclatante toute la journée."
     },
     {
       "id": "4",
-      "name": "Masque Argile",
-      "category": "Masques",
+      "nom": "Masque Argile Verte",
       "image": "https://images.unsplash.com/photo-1571875257727-256c39da42af?w=200&h=200&fit=crop",
-      "stockTotal": 67,
-      "warehouses": {
-        "Magasin Central": 35,
-        "Dépôt A": 20,
-        "Dépôt B": 12
-      }
+      "type": "Produit Pré",
+      "categorie": "Cosmétique",
+      "uniteCalcul": "g",
+      "prixAchat": 15,
+      "prix1": 45,
+      "prix2": 42,
+      "prix3": 38,
+      "fragile": false,
+      "stock": 67,
+      "alerteStock": 10,
+      "description": "Masque purifiant à l'argile verte pour peaux grasses et mixtes",
+      "ingredients": "Argile Verte (Montmorillonite), Kaolin, Huile de Tea Tree, Extrait de Menthe, Charbon Actif",
+      "modeEmploi": "Appliquer une couche épaisse sur visage propre en évitant le contour des yeux. Laisser poser 10-15 min. Rincer à l'eau tiède. Utiliser 1-2 fois par semaine.",
+      "utilisationsInterdites": "Ne pas laisser sécher complètement sur la peau. Ne pas utiliser sur peau très sèche ou irritée. Éviter en cas d'eczéma actif.",
+      "faq": "Q: Combien de fois par semaine? R: 1-2 fois maximum.\nQ: Peut-on l'utiliser sur le corps? R: Oui, idéal pour le dos.",
+      "scriptVente": "Le détox ultime pour votre peau! Ce masque absorbe l'excès de sébum, resserre les pores et élimine les impuretés. Résultat: peau nette et matifiée dès la première utilisation!"
     }
   ],
   "warehouses": [
