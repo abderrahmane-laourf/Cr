@@ -57,6 +57,7 @@ export default function App() {
       {/* Employee Management Routes */}
       <Route path="/admin/dashboard" element={<AdminLayout><GeneralDashboard /></AdminLayout>} />
       <Route path="/admin/employees" element={<AdminLayout><EmployeesPage /></AdminLayout>} />
+      <Route path="/admin/employees/dashboard" element={<AdminLayout><EmployeeDashboard /></AdminLayout>} />
       <Route path="/admin/business" element={<AdminLayout><BusinessPage /></AdminLayout>} />
       <Route path="/admin/settings" element={<Navigate to="/admin/business" replace />} />
       <Route path="/admin/paiement" element={<AdminLayout><Paiement /></AdminLayout>} />

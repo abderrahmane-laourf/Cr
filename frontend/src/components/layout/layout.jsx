@@ -60,7 +60,7 @@ const MODULES = [
     icon: Users,
     description: 'Gestion du personnel',
     subItems: [
-      { id: 'dashboard', label: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+      { id: 'dashboard', label: 'Dashboard', path: '/admin/employees/dashboard', icon: LayoutDashboard },
       { id: 'emp-list', label: 'Liste des Employés', path: '/admin/employees', icon: Users },
       { id: 'emp-pay', label: 'Paiement & Salaires', path: '/admin/paiement', icon: CreditCard },
       { id: 'emp-presence', label: 'Suivi de Présence', path: '/admin/presence', icon: UserCheck }
@@ -245,6 +245,26 @@ const PrimaryRail = ({ activeModule, setActiveModule, isMobile }) => {
             </button>
           );
         })}
+      </div>
+
+      {/* Profile Button at Bottom */}
+      <div className="mt-auto pb-4 flex flex-col items-center gap-2 z-50">
+        <button
+          className="relative w-10 h-10 rounded-full border-2 border-slate-200 hover:border-blue-500 transition-all overflow-hidden"
+          onMouseEnter={(e) => {
+             const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+             const label = user.name ? `${user.role || 'User'} ${user.name}` : 'Mon Profil';
+             const rect = e.currentTarget.getBoundingClientRect();
+             setTooltip({ label: label, top: rect.top, left: rect.right });
+          }}
+          onMouseLeave={() => setTooltip(null)}
+        >
+           <img 
+             src={JSON.parse(localStorage.getItem('currentUser') || '{}').avatar || "https://i.pravatar.cc/150?img=12"} 
+             alt="Profile" 
+             className="w-full h-full object-cover"
+           />
+        </button>
       </div>
 
       {/* Floating Tooltip Portal-like */}
