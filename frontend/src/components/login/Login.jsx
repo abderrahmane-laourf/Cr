@@ -11,9 +11,10 @@ export default function Login() {
 
   const users = [
     { id: 1, name: "abdelkrim", password: "ab1234$", role: "admin" },
-    { id: 2, name: "hakima", password: "ha1234$", role: "manager" },
-    { id: 3, name: "khadija", password: "kh1234$", role: "confirmation", business: "herboclear" },
-    { id: 4, name: "hassan", password: "ha1234$", role: "packaging"},
+    {id:2, name: "asim", password: "as1234$", role: "admin"},
+    { id: 3, name: "hakima", password: "ha1234$", role: "manager" },
+    { id: 4, name: "khadija", password: "kh1234$", role: "confirmation", business: "herboclear" },
+    { id: 5, name: "hassan", password: "ha1234$", role: "packaging"},
   ]
 
   // Toast function
