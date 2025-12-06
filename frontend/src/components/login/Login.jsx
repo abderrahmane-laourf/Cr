@@ -13,7 +13,6 @@ export default function Login() {
     { id: 1, name: "abdelkrim", password: "ab1234$", role: "admin" },
     {id:2, name: "asim", password: "as1234$", role: "admin"},
     { id: 3, name: "hakima", password: "ha1234$", role: "manager" },
-    { id: 4, name: "khadija", password: "kh1234$", role: "confirmation", business: "herboclear" },
     { id: 5, name: "hassan", password: "ha1234$", role: "packaging"},
   ]
 

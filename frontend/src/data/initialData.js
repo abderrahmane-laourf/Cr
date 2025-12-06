@@ -69,70 +69,27 @@ export const initialData = {
       "avatar": "https://i.pravatar.cc/150?img=25"
     },
     {
-      "id": "4",
-      "firstName": "Khadija",
-      "lastName": "El Amrani",
-      "name": "Khadija El Amrani",
-      "phone": "0661-223344",
-      "cin": "BB12345",
-      "cnss": "11223344",
-      "salary": 7000,
+      "id": "manager-hakima",
+      "firstName": "Hakima",
+      "lastName": "Manager",
+      "name": "Hakima",
+      "phone": "0661-000000",
+      "cin": "M12345",
+      "cnss": "12345678",
+      "salary": 14000,
       "bank": "CIH",
-      "rib": "222233334444555566667777",
-      "project": "Gamma",
-      "business": "Commit",
-      "role": "confirmation",
-      "active": true,
-      "login": "khadija.e",
-      "password": "password123",
-      "permissions": [
-        "confirmation"
-      ],
-      "avatar": "https://i.pravatar.cc/150?img=10"
-    },
-    {
-      "id": "5",
-      "firstName": "Mina",
-      "lastName": "Benali",
-      "name": "Mina Benali",
-      "phone": "0662-334455",
-      "cin": "CC67890",
-      "cnss": "55443322",
-      "salary": 7500,
-      "bank": "Attijariwafa",
-      "rib": "333344445555666677778888",
-      "project": "Delta",
+      "rib": "000000000000000000000001",
+      "project": "Alpha",
       "business": "Herboclear",
-      "role": "confirmation",
+      "role": "Manager",
       "active": true,
-      "login": "mina.b",
-      "password": "password123",
+      "login": "hakima",
+      "password": "ha1234$",
       "permissions": [
-        "confirmation"
+        "dashboard",
+        "employees"
       ],
-      "avatar": "https://i.pravatar.cc/150?img=9"
-    },
-    {
-      "id": "6",
-      "firstName": "Fatima",
-      "lastName": "Zahra",
-      "name": "Fatima Zahra",
-      "phone": "0663-556677",
-      "cin": "DD11223",
-      "cnss": "66778899",
-      "salary": 6500,
-      "bank": "BMCI",
-      "rib": "444455556666777788889999",
-      "project": "Epsilon",
-      "business": "Commit",
-      "role": "packaging",
-      "active": true,
-      "login": "fatima.z",
-      "password": "password123",
-      "permissions": [
-        "packaging"
-      ],
-      "avatar": "https://i.pravatar.cc/150?img=20"
+      "avatar": "https://i.pravatar.cc/150?img=44"
     },
     {
       "id": "admin-asim",
