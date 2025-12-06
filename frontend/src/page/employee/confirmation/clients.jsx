@@ -8,9 +8,9 @@ import {
   AlertTriangle, 
   Eye, 
   Calendar, 
-  CheckCircle // Added CheckCircle for the toast
+  CheckCircle 
 } from 'lucide-react';
-import { productAPI, villeAPI, quartierAPI } from '../../services/api';
+import { productAPI, villeAPI, quartierAPI } from '../../../services/api';
 
 const EMPLOYEES = ['Mohamed', 'Fatima', 'Youssef', 'Amina', 'Hassan', 'Khadija'];
 const BUSINESSES = ['Commit', 'Herboclear', 'Other'];
@@ -34,7 +34,22 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-export default function ColisManagement() {
+// Default Pipeline matching Management Settings
+const DEFAULT_PIPELINE = {
+  id: 1, // Must match Management Pipeline ID
+  name: 'Pipeline Principal', // Must match Management Pipeline Name
+  color: 'bg-blue-600',
+  stages: [
+    { id: 1, name: 'Reporter', color: 'bg-slate-500', active: true, status: 'pending', locked: true },
+    { id: 2, name: 'Confirmé', color: 'bg-purple-500', active: true, status: 'confirmed', locked: true },
+    { id: 3, name: 'Packaging', color: 'bg-orange-500', active: true, status: 'packaging' },
+    { id: 4, name: 'Out for Delivery', color: 'bg-blue-500', active: true, status: 'out_for_delivery' },
+    { id: 5, name: 'Livré', color: 'bg-green-500', active: true, status: 'delivered' },
+    { id: 6, name: 'Annulé', color: 'bg-red-500', active: true, status: 'cancelled' }
+  ]
+};
+
+export default function ConfirmationClients() {
   const [colis, setColis] = useState(() => {
     const saved = localStorage.getItem('colis');
     return saved ? JSON.parse(saved) : [];
@@ -43,11 +58,36 @@ export default function ColisManagement() {
   const [products, setProducts] = useState([]);
   const [villes, setVilles] = useState([]);
   const [quartiers, setQuartiers] = useState([]);
-  const [stages, setStages] = useState([]);
-  const [pipelines, setPipelines] = useState([]);
-  const [selectedPipeline, setSelectedPipeline] = useState(null);
+  
+  // Initialize Pipelines from LocalStorage
+  const [pipelines, setPipelines] = useState(() => {
+    const saved = localStorage.getItem('pipelines');
+    const parsed = saved ? JSON.parse(saved) : [];
+    return parsed.length > 0 ? parsed : [DEFAULT_PIPELINE];
+  });
+
+  const [selectedPipeline, setSelectedPipeline] = useState(() => {
+     // Default to first pipeline
+     return pipelines.length > 0 ? pipelines[0] : DEFAULT_PIPELINE;
+  });
+
+  // Initialize Stages based on initial pipeline
+  const [stages, setStages] = useState(() => {
+    const initialPipeline = pipelines.length > 0 ? pipelines[0] : DEFAULT_PIPELINE;
+    return initialPipeline.stages
+      .filter(s => s.active)
+      .map(s => ({
+        id: s.name,
+        title: s.name,
+        color: s.color.replace('bg-', 'border-'),
+        bgColor: s.color.replace('bg-', 'bg-').replace('-500', '-50')
+      }));
+  });
+
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState('all');
+  
+  // Get Current User
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   
   // Toast State
   const [showToast, setShowToast] = useState(false);
@@ -60,16 +100,39 @@ export default function ColisManagement() {
   const [searchText, setSearchText] = useState('');
   const [searchDate, setSearchDate] = useState('');
 
-  // Load data on mount
+  // Load data on mount (products, villes, etc) - Pipelines already loaded
   useEffect(() => {
     loadData();
-    loadPipelineStages();
+    // We can still call this to ensure we have the very latest if something changed immediately
+    loadPipelineStages(); 
   }, []);
 
   // Save colis to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('colis', JSON.stringify(colis));
   }, [colis]);
+
+  // Listen for changes in localStorage (e.g. from Admin tab) and auto-sync
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'pipelines') {
+        loadPipelineStages();
+      }
+      if (e.key === 'colis') {
+        const saved = localStorage.getItem('colis');
+        if (saved) setColis(JSON.parse(saved));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    // Custom event for same-tab updates (optional but good practice)
+    window.addEventListener('pipelines-updated', loadPipelineStages);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('pipelines-updated', loadPipelineStages);
+    };
+  }, []);
 
   // Auto-transition colis from Reporter to Confirmé when date arrives
   useEffect(() => {
@@ -107,20 +170,6 @@ export default function ColisManagement() {
     }
   };
 
-  // Default Pipeline matching Management Settings
-  const DEFAULT_PIPELINE = {
-    id: 1,
-    name: 'Pipeline Principal',
-    stages: [
-      { id: 1, name: 'Reporter', color: 'bg-slate-500', active: true },
-      { id: 2, name: 'Confirmé', color: 'bg-purple-500', active: true },
-      { id: 3, name: 'Packaging', color: 'bg-orange-500', active: true },
-      { id: 4, name: 'Out for Delivery', color: 'bg-blue-500', active: true },
-      { id: 5, name: 'Livré', color: 'bg-green-500', active: true },
-      { id: 6, name: 'Annulé', color: 'bg-red-500', active: true }
-    ]
-  };
-
   const loadPipelineStages = () => {
     const saved = localStorage.getItem('pipelines');
     let allPipelines = [];
@@ -129,14 +178,20 @@ export default function ColisManagement() {
       allPipelines = JSON.parse(saved);
     }
     
-    // Fallback to default if empty
+    // Check if we have pipelines, otherwise use default
     if (allPipelines.length === 0) {
       allPipelines = [DEFAULT_PIPELINE];
     }
-
+    
     setPipelines(allPipelines);
-      
-    const pipelineToUse = selectedPipeline || allPipelines[0];
+    
+    // Find the currently selected pipeline in the new data, or default to the first one
+    let pipelineToUse = allPipelines[0];
+    if (selectedPipeline) {
+      const found = allPipelines.find(p => p.id === selectedPipeline.id);
+      if (found) pipelineToUse = found;
+    }
+    
     setSelectedPipeline(pipelineToUse);
     
     const activeStages = pipelineToUse.stages
@@ -184,24 +239,33 @@ export default function ColisManagement() {
   // --- DRAG AND DROP HANDLERS ---
   const handleDragStart = (e, colisItem) => {
     e.dataTransfer.setData('colisId', colisItem.id);
-    // Optional: Add a class to body to indicate dragging
     document.body.classList.add('dragging-active');
   };
 
   const handleDrop = async (e, targetStage) => {
     e.preventDefault();
     document.body.classList.remove('dragging-active');
+    
+    // RESTRICTION: Employees can only move to Reporter or Confirmé
+    if (!['Reporter', 'Confirmé'].includes(targetStage)) {
+       setToastMessage({
+         title: 'Action non autorisée',
+         description: 'Vous ne pouvez déplacer des clients que vers "Reporter" ou "Confirmé".',
+         type: 'warning'
+       });
+       setShowToast(true);
+       setTimeout(() => setShowToast(false), 3000);
+       return;
+    }
+
     const colisId = e.dataTransfer.getData('colisId');
     
-    // Find the colis BEFORE updating state to get its name for the Toast
     const colisToUpdate = colis.find(c => c.id === colisId);
 
-    // If dropping in same stage, do nothing
     if (!colisToUpdate || colisToUpdate.stage === targetStage) return;
 
     let updatedColisData = null;
 
-    // 1. Optimistic UI Update (Update State Immediately)
     setColis(prevColis => 
       prevColis.map(c => {
         if (c.id === colisId) {
@@ -223,21 +287,17 @@ export default function ColisManagement() {
       })
     );
 
-    // 2. Trigger Success Toast Immediately
     setToastMessage({
-      title: 'Mise à jour réussie',
-      description: `Le colis de ${colisToUpdate.clientName} est passé à ${targetStage}`,
-      type: 'success'
+       title: 'Mise à jour réussie',
+       description: `Le colis de ${colisToUpdate.clientName} est passé à ${targetStage}`,
+       type: 'success'
     });
     setShowToast(true);
-    
-    // Hide toast after 3 seconds
     setTimeout(() => setShowToast(false), 3000);
     
-    // 3. Backend Update (Background)
     if (updatedColisData) {
       try {
-        const response = await fetch(`http://localhost:3000/colis/${colisId}`, {
+        await fetch(`http://localhost:3000/colis/${colisId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
@@ -246,19 +306,8 @@ export default function ColisManagement() {
             status: updatedColisData.status
           }),
         });
-        
-        if (!response.ok) {
-          throw new Error('Failed to update');
-        }
       } catch (error) {
         console.error('Error updating colis:', error);
-        // Optional: Revert state or show error toast here if backend fails
-        setToastMessage({
-          title: 'Attention',
-          description: 'Sauvegarde locale uniquement (Erreur serveur)',
-          type: 'warning'
-        });
-        setShowToast(true);
       }
     }
   };
@@ -293,8 +342,19 @@ export default function ColisManagement() {
 
   const handleMoveColis = async (targetStage) => {
     if (!colisToMove) return;
+
+    // RESTRICTION: Employees can only move to Reporter or Confirmé
+    if (!['Reporter', 'Confirmé'].includes(targetStage)) {
+      setToastMessage({
+        title: 'Action non autorisée',
+        description: 'Vous ne pouvez déplacer des clients que vers "Reporter" ou "Confirmé".',
+        type: 'warning'
+      });
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+   }
     
-    // Optimistic Update
     setColis(prevColis => 
       prevColis.map(c => {
         if (c.id === colisToMove.id) {
@@ -309,7 +369,6 @@ export default function ColisManagement() {
       })
     );
     
-    // Show Toast
     setToastMessage({
       title: 'Client déplacé avec succès!',
       description: `${colisToMove.clientName} → ${targetStage}`,
@@ -320,7 +379,6 @@ export default function ColisManagement() {
     
     setShowMoveModal(false);
 
-    // Backend Update
     try {
       const updateData = { stage: targetStage };
       if (targetStage === 'Confirmé') updateData.prix = '';
@@ -340,7 +398,9 @@ export default function ColisManagement() {
   };
 
   const filteredColis = colis.filter(c => {
-    if (selectedEmployee !== 'all' && c.employee !== selectedEmployee) return false;
+    // Filter by Current Employee (ONLY if logged in)
+    if (currentUser.name && c.employee !== currentUser.name) return false;
+    
     if (searchText) {
       const searchLower = searchText.toLowerCase();
       const matchesName = c.clientName?.toLowerCase().includes(searchLower);
@@ -378,8 +438,8 @@ export default function ColisManagement() {
                 <Package className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Liste des Colis</h1>
-                <p className="text-slate-500 mt-1 font-medium text-sm md:text-base">Gérez vos commandes par étape</p>
+                <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Liste des Clients</h1>
+                <p className="text-slate-500 mt-1 font-medium text-sm md:text-base">Gestion des clients et commandes</p>
               </div>
             </div>
             
@@ -397,17 +457,6 @@ export default function ColisManagement() {
                   ))}
                 </select>
               )}
-
-              <select
-                value={selectedEmployee}
-                onChange={(e) => setSelectedEmployee(e.target.value)}
-                className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-full md:w-auto"
-              >
-                <option value="all">Tous les employés</option>
-                {EMPLOYEES.map(emp => (
-                  <option key={emp} value={emp}>{emp}</option>
-                ))}
-              </select>
 
               <div className="flex gap-2">
                 <button
@@ -485,7 +534,7 @@ export default function ColisManagement() {
                 <div className={`bg-white rounded-t-xl border-t-4 ${stage.color} p-3 shadow-sm`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-slate-800 text-sm">{stage.title}</span>
+                      <span className="font-semibold text-slate-800 text-sm whitespace-nowrap">{stage.title}</span>
                       <span className="bg-slate-100 text-xs px-2 py-0.5 rounded-full font-medium text-slate-600">
                         {stageColis.length}
                       </span>
@@ -622,6 +671,7 @@ export default function ColisManagement() {
           onClose={() => setShowAddModal(false)}
           onAdd={handleAddColis}
           employees={EMPLOYEES}
+          currentUser={currentUser}
           products={products}
           villes={villes}
           quartiers={quartiers}
@@ -704,8 +754,7 @@ export default function ColisManagement() {
   );
 }
 
-// AddClientModal and TrackingModal components remain the same as your previous code...
-// Just including simple SearchIcon for the search input
+// AddClientModal and TrackingModal components
 function SearchIcon(props) {
   return (
     <svg 
@@ -719,7 +768,7 @@ function SearchIcon(props) {
   );
 }
 
-function AddClientModal({ onClose, onAdd, employees, products, villes, quartiers }) {
+function AddClientModal({ onClose, onAdd, employees, currentUser, products, villes, quartiers }) {
   const [formData, setFormData] = useState({
     productId: '',
     productName: '',
@@ -728,7 +777,7 @@ function AddClientModal({ onClose, onAdd, employees, products, villes, quartiers
     quartier: '',
     tel: '',
     prix: '',
-    employee: employees[0] || '',
+    employee: currentUser.name || employees[0],
     business: 'Commit',
     stage: 'Reporter',
     commentaire: '',
@@ -859,14 +908,7 @@ function AddClientModal({ onClose, onAdd, employees, products, villes, quartiers
               </select>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Employé *</label>
-              <select value={formData.employee} onChange={(e) => setFormData({...formData, employee: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all">
-                {employees.map(emp => (
-                  <option key={emp} value={emp}>{emp}</option>
-                ))}
-              </select>
-            </div>
+            {/* Employee Selection Removed - Auto assigned to currentUser */}
 
             <div>
               <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Nom Client *</label>
@@ -910,8 +952,6 @@ function AddClientModal({ onClose, onAdd, employees, products, villes, quartiers
               <input type="number" value={formData.nbPiece} onChange={(e) => setFormData({...formData, nbPiece: e.target.value})} min="1" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
             </div>
 
-
-
             <div className="col-span-2">
               <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Commentaire</label>
               <textarea value={formData.commentaire} onChange={(e) => setFormData({...formData, commentaire: e.target.value})} placeholder="Notes..." rows="3" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
@@ -932,7 +972,6 @@ function AddClientModal({ onClose, onAdd, employees, products, villes, quartiers
   );
 }
 
-// Tracking Modal Component
 function TrackingModal({ colis, onClose, products, villes, quartiers }) {
   const [activeTab, setActiveTab] = useState('suivi');
   

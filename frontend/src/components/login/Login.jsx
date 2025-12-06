@@ -13,7 +13,6 @@ export default function Login() {
     { id: 1, name: "abdelkrim", password: "ab1234$", role: "admin" },
     {id:2, name: "asim", password: "as1234$", role: "admin"},
     { id: 3, name: "hakima", password: "ha1234$", role: "manager" },
-    { id: 5, name: "hassan", password: "ha1234$", role: "packaging"},
   ]
 
   // Toast function
@@ -87,7 +86,7 @@ export default function Login() {
       // Navigate after toast based on role
       setTimeout(() => {
         if (user.role === 'admin') {
-          navigate('/admin/employees')
+          navigate('/admin/dashboard')
         } else if (user.role === 'manager') {
           navigate('/manager')
         } else if (user.role === 'confirmation') {

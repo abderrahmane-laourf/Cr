@@ -219,8 +219,14 @@ const PrimaryRail = ({ activeModule, setActiveModule, isMobile }) => {
 
   return (
     <div className={railClasses}>
-      <div className="mb-4 w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 flex-shrink-0 z-50">
-        <span className="font-bold text-lg text-white">C</span>
+      <div className="mb-4 w-10 h-10 flex items-center justify-center flex-shrink-0 z-50 mt-1">
+        <svg viewBox="0 0 24 24" fill="currentColor" className="text-[#1325ec] w-10 h-10">
+          <circle cx="12" cy="12" r="3" />
+          <circle cx="12" cy="5" r="2" opacity="0.2" />
+          <circle cx="12" cy="19" r="2" opacity="0.2" />
+          <circle cx="5" cy="12" r="2" opacity="0.2" />
+          <circle cx="19" cy="12" r="2" opacity="0.2" />
+        </svg>
       </div>
 
       <div className="flex-1 w-full space-y-1 px-2 flex flex-col items-center overflow-y-auto [&::-webkit-scrollbar]:hidden -ms-overflow-style:none [scrollbar-width:none]">

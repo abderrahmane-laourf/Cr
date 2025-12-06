@@ -40,24 +40,16 @@ export default function GeneralDashboard() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // Load Colis (LocalStorage primarily)
-      const savedColis = localStorage.getItem('colis');
-      let colisData = [];
-      if (savedColis) {
-        colisData = JSON.parse(savedColis);
-      } else {
-        colisData = await clientAPI.getAll().catch(() => []);
-      }
-      setColis(colisData);
-
       // Load all data from API
-      const [adsData, productsData, employeesData, paymentsData] = await Promise.all([
+      const [colisData, adsData, productsData, employeesData, paymentsData] = await Promise.all([
+        clientAPI.getAll().catch(() => []),
         adsAPI.getAll().catch(() => []),
         productAPI.getAll().catch(() => []),
         employeeAPI.getAll().catch(() => []),
         paymentAPI.getAll().catch(() => [])
       ]);
       
+      setColis(colisData);
       setAds(adsData);
       setProducts(productsData);
       setEmployees(employeesData);
@@ -515,7 +507,6 @@ export default function GeneralDashboard() {
                         <DollarSign size={20} className="text-orange-500"/>
                         Historique Achat Solde (USD)
                     </h3>
-                    <p className="text-slate-400 text-sm">Gestion des recharges pour ADS</p>
                 </div>
                 
                 {/* Add Form */}

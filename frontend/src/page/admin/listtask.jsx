@@ -278,7 +278,6 @@ const TaskManager = () => {
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Employé</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tâche</th>
                 <th className="text-center px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Statut Employé</th>
-                <th className="text-center px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Statut Validation</th>
                 <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -309,17 +308,20 @@ const TaskManager = () => {
                             {task.description}
                         </p>
                         <div className="flex items-center gap-2 mt-1 text-xs text-slate-400">
-                            <Calendar size={12} /> {task.startDate} • {task.days} jours
+                            <Calendar size={12} /> 
+                            {new Date(task.startDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} 
+                            • {task.days} jours
                         </div>
                     </td>
                     <td className="px-6 py-4 text-center">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                          task.status === 'Terminé' 
+                            ? 'bg-emerald-100 text-emerald-800 border-emerald-200' 
+                            : task.status === 'En cours'
+                            ? 'bg-blue-100 text-blue-800 border-blue-200'
+                            : 'bg-amber-100 text-amber-800 border-amber-200'
+                        }`}>
                            {task.status}
-                        </span>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
-                           {task.confirmStatus}
                         </span>
                     </td>
                     <td className="px-6 py-4 text-right">

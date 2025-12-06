@@ -36,10 +36,12 @@ import TaskManager from './page/admin/listtask';
 import ComingSoon from './components/comingSoon';
 
 // Employee Pages
-// import { EmployeeLayout } from './components/layout/employeeLayout';
-// import EmployeeColisPanel from './page/employee/employeeconfirmation/pipeline';
-// import EmployeeConfirmationDashboard from './page/employee/employeeconfirmation/dashboard';
-// import EmployeePackaging from './page/employee/employeePackaging';
+import { EmployeeLayout } from './components/layout/employeeLayout';
+import ConfirmationDashboard from './page/employee/confirmation/dashboard'; 
+import ConfirmationClients from './page/employee/confirmation/clients';
+import Leaderboard from './page/employee/confirmation/leaderboard';
+import PackagingQueue from './page/employee/packaging/queue';
+import EmployeeTaskPage from './page/employee/tasks';
 
 export default function App() {
   return (
@@ -51,7 +53,7 @@ export default function App() {
       <Route path="/NewPassword" element={<NewPassword />} />
       
       {/* Admin Redirect - automatically go to employees page */}
-      <Route path="/admin" element={<Navigate to="/admin/employees" replace />} />
+      <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
       
       {/* Admin Routes with Layout */}
       {/* Employee Management Routes */}
@@ -113,9 +115,17 @@ export default function App() {
       <Route path="/admin/rapport" element={<AdminLayout><ReportsPage /></AdminLayout>} /> {/* Fallback route */}
 
       {/* Employee Routes (With Layout) */}
-      {/* <Route path="/employee/dashboard" element={<EmployeeLayout><EmployeeConfirmationDashboard /></EmployeeLayout>} /> */}
-      {/* <Route path="/employee/confirmation" element={<EmployeeLayout><EmployeeColisPanel /></EmployeeLayout>} /> */}
-      {/* <Route path="/employee/packaging" element={<EmployeeLayout><EmployeePackaging /></EmployeeLayout>} /> */}
+      <Route path="/employee" element={<Navigate to="/employee/confirmation/dashboard" replace />} />
+      
+      {/* Confirmation Role Routes */}
+      <Route path="/employee/confirmation/dashboard" element={<EmployeeLayout mode="confirmation"><ConfirmationDashboard /></EmployeeLayout>} />
+      <Route path="/employee/confirmation/clients" element={<EmployeeLayout mode="confirmation"><ConfirmationClients /></EmployeeLayout>} />
+      <Route path="/employee/confirmation/tasks" element={<EmployeeLayout mode="confirmation"><EmployeeTaskPage /></EmployeeLayout>} />
+      <Route path="/employee/confirmation/leaderboard" element={<EmployeeLayout mode="confirmation"><Leaderboard /></EmployeeLayout>} />
+
+      {/* Packaging Role Routes */}
+      <Route path="/employee/packaging/queue" element={<EmployeeLayout mode="packaging"><PackagingQueue /></EmployeeLayout>} />
+      <Route path="/employee/packaging/tasks" element={<EmployeeLayout mode="packaging"><EmployeeTaskPage /></EmployeeLayout>} />
 
     </Routes>
   );
