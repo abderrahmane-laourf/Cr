@@ -1,14 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, Briefcase, CheckSquare,
-  FileText, Settings, ChevronRight, ChevronLeft,
-  CreditCard, UserCheck, Bell, LogOut, Menu, X, Package,
-  Box, ClipboardList, ArrowLeftRight, History, Diff, Truck, ShoppingCart, Search
+  LayoutDashboard, 
+  Users, 
+  Briefcase, 
+  CheckSquare,
+  FileText, 
+  Settings, 
+  ChevronRight, 
+  ChevronLeft,
+  CreditCard, 
+  UserCheck, 
+  Bell, 
+  LogOut, 
+  Menu, 
+  X, 
+  Package,
+  Box, 
+  ClipboardList, 
+  ArrowLeftRight, 
+  History, 
+  Diff, 
+  Truck, 
+  ShoppingCart, 
+  Search,
+  AlertTriangle,
+  Factory,  
+  Workflow, 
+  List,
+  TrendingDown,
+  Megaphone,
+  ListTodo,
+  Wallet,
+  Building,
+  KanbanSquare,
+  Store,
+  Coins,
+  FileBarChart
 } from 'lucide-react';
 
 // ----------------------------------------------------------------------
-// 1. DATA (Keep same structure)
+// 1. DATA
 // ----------------------------------------------------------------------
 const MODULES = [
   {
@@ -24,7 +56,7 @@ const MODULES = [
     icon: Users,
     description: 'Gestion du personnel',
     subItems: [
-      { id: 'dashboard', label: 'Dashboard', path: '/admin/employees/dashboard', icon: LayoutDashboard },
+      { id: 'dashboard', label: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
       { id: 'emp-list', label: 'Liste des Employés', path: '/admin/employees', icon: Users },
       { id: 'emp-pay', label: 'Paiement & Salaires', path: '/admin/paiement', icon: CreditCard },
       { id: 'emp-presence', label: 'Suivi de Présence', path: '/admin/presence', icon: UserCheck }
@@ -39,7 +71,19 @@ const MODULES = [
       { id: 'stock-dash', label: 'Dashboard Stock', path: '/admin/stock/dashboard', icon: LayoutDashboard },
       { id: 'stock-state', label: 'État du Stock', path: '/admin/stock', icon: ClipboardList },
       { id: 'stock-transfer', label: 'Transferts', path: '/admin/stock/transfer', icon: Truck },
-      { id: 'stock-move', label: 'Historique', path: '/admin/stock/movements', icon: History }
+      { id: 'stock-move', label: 'Historique', path: '/admin/stock/movements', icon: History },
+    ]
+  },
+  {
+    id: 'pipeline',
+    label: 'Pipeline',
+    icon: Workflow,
+    path: '/admin/pipeline',
+    description: 'Gestion du pipeline',
+    subItems: [
+      { id: 'pipeline-dash', label: 'Dashboard', path: '/admin/pipeline/dashboard', icon: LayoutDashboard },
+      { id: 'pipeline-kanban', label: 'Management Pipeline', path: '/admin/pipeline', icon: List },
+      { id: 'pipeline-list', label: 'Liste des clients', path: '/admin/pipeline/list', icon: List },
     ]
   },
   {
@@ -61,56 +105,137 @@ const MODULES = [
       { id: 'buy-bon', label: 'Bons d\'achat', path: '/admin/bon-achat', icon: FileText },
       { id: 'buy-supp', label: 'Fournisseurs', path: '/admin/suppliers', icon: Users },
     ]
-  }
+  }, 
+  {
+    id: 'production',
+    label: 'Production',
+    icon: Factory,
+    description: 'Production',
+    subItems: [
+      {id: 'prod-dash', label: 'Dashboard', path: '/admin/production/dashboard', icon: LayoutDashboard},
+      {id: 'prod-manage', label: 'Gestion de Production', path: '/admin/production', icon: Factory},
+    ]
+  },
+  {
+    id: 'pertes',
+    label: 'Gestion des pertes',
+    icon: TrendingDown,
+    description: 'Gestion des pertes',
+    subItems: [
+      { id: 'pertes-list', label: 'Liste des pertes', path: '/admin/pertes', icon: AlertTriangle },
+    ]
+  },
+  {
+    id:'ads',
+    label : 'Publicité',
+    icon : Megaphone,
+    path : '/admin/ads',
+    description : 'Campagnes et Pubs',
+    subItems : [
+      { id: 'ads-dash', label: 'Dashboard', path: '/admin/ads/dashboard', icon: LayoutDashboard },
+      { id: 'ads-list', label: 'Liste des publicités', path: '/admin/ads', icon: Megaphone },
+    ]
+  },
+  {
+    id:'task',
+    label : 'Tâches',
+    icon : ListTodo,
+    path : '/admin/task',
+    description : 'Gestion des taches',
+    subItems : [
+      { id: 'task-list', label: 'Liste des taches', path: '/admin/task', icon: ListTodo },
+    ]
+  },
+  {
+    id: 'actifs',
+    label: 'Actifs',
+    icon: Building,
+    path: '/admin/actifs',
+    description: 'Gestion des actifs',
+    subItems: [
+      { id: 'actifs-dash', label: 'Dashboard', path: '/admin/actifs/dashboard', icon: LayoutDashboard },
+      { id: 'actifs-list', label: 'Liste des actifs', path: '/admin/actifs', icon: Building },
+    ]
+  },
+  {
+    id: 'dettes',
+    label: 'Dettes',
+    icon: Wallet,
+    path: '/admin/debts',
+    description: 'Gestion des dettes',
+    subItems: [
+      { id: 'debts-dash', label: 'Dashboard', path: '/admin/debts/dashboard', icon: LayoutDashboard },
+      { id: 'debts-list', label: 'Liste des Dettes', path: '/admin/debts', icon: List }
+    ]
+  },
+  {
+    id:'petitecaisse',
+    label:'Petite Caisse',
+    icon: Wallet, 
+    path:'/admin/petitecaisse',
+    description:'Gestion de la caisse',
+    subItems:[
+      {id:'petitecaisse-list',label:'Mouvements Caisse',path:'/admin/petitecaisse',icon:Wallet},
+    ]
+  },
+  {
+    id:'rapport',
+    label:'Rapports',
+    icon: FileText,
+    path:'/admin/rapport',
+    description:'Analyses et stats',
+    subItems:[
+      {id:'rapports-list',label:'Liste des rapports',path:'/admin/rapports',icon:FileText},
+    ]
+  },
 ];
 
 // ----------------------------------------------------------------------
-// 2. PRIMARY RAIL (No changes needed here, same as before)
+// 2. PRIMARY RAIL
 // ----------------------------------------------------------------------
 const PrimaryRail = ({ activeModule, setActiveModule, isMobile }) => {
+  const railClasses = `
+    flex flex-col items-center py-3 z-50
+    bg-white text-slate-700 border-r border-slate-100 shadow-lg
+    ${isMobile ? 'w-16' : 'w-16'} 
+    h-full flex-shrink-0 transition-all duration-300
+  `;
+
   return (
-    <div className={`
-      flex flex-col items-center py-6 bg-slate-900 text-white z-50
-      ${isMobile ? 'w-20' : 'w-20'} 
-      h-full border-r border-slate-800 shadow-2xl flex-shrink-0
-    `}>
-      <div className="mb-8 w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-        <span className="font-bold text-xl text-white">C</span>
+    <div className={railClasses}>
+      <div className="mb-4 w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 flex-shrink-0">
+        <span className="font-bold text-lg text-white">C</span>
       </div>
 
-      <div className="flex-1 w-full space-y-4 px-3 flex flex-col items-center">
+      <div className="flex-1 w-full space-y-2 px-2 flex flex-col items-center overflow-y-auto overflow-x-hidden custom-scrollbar">
         {MODULES.map((module) => {
           const isActive = activeModule === module.id;
+          
           return (
             <button
               key={module.id}
               onClick={() => setActiveModule(module.id)}
               className={`
-                group relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300
-                ${isActive 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 scale-105' 
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-                }
+                group relative w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 flex-shrink-0
+                ${isActive ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'text-slate-500 hover:bg-blue-50 hover:text-blue-600'}
               `}
             >
-              <module.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-              <div className="absolute left-14 px-3 py-1.5 bg-slate-800 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl border border-slate-700">
+              <module.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+              
+              {/* Tooltip on right */}
+              <div className="absolute left-14 px-2 py-1 text-xs font-medium rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl bg-slate-800 text-white border-none">
                 {module.label}
               </div>
             </button>
           );
         })}
       </div>
-
-      <div className="mt-auto space-y-4 pb-4">
-         {/* Bottom Icons... */}
-      </div>
     </div>
   );
 };
 
 // ----------------------------------------------------------------------
-// 3. SECONDARY PANEL (Updated to handle mobile close)
+// 3. SECONDARY PANEL
 // ----------------------------------------------------------------------
 const SecondaryPanel = ({ activeModuleId, isMobile, onCloseMobile }) => {
   const navigate = useNavigate();
@@ -181,16 +306,14 @@ const SecondaryPanel = ({ activeModuleId, isMobile, onCloseMobile }) => {
 };
 
 // ----------------------------------------------------------------------
-// 4. TOP HEADER (Updated: DYNAMIC TITLE)
+// 4. TOP HEADER
 // ----------------------------------------------------------------------
 const TopHeader = ({ isMobileOpen, setIsMobileOpen, activeModuleId }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 1. Get current Module Info
   const currentModule = MODULES.find(m => m.id === activeModuleId) || MODULES[0];
   
-  // 2. Get Current Page Info (Sub-item)
   let currentPageLabel = "Aperçu";
   if (currentModule.subItems) {
     const foundSub = currentModule.subItems.find(sub => sub.path === location.pathname);
@@ -200,48 +323,50 @@ const TopHeader = ({ isMobileOpen, setIsMobileOpen, activeModuleId }) => {
   }
 
   return (
-    <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 sticky top-0 z-20 w-full">
+    <header className="h-16 md:h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-4 md:px-6 sticky top-0 z-20 w-full">
       <div className="flex items-center gap-4">
+        {/* Mobile Toggle - Improved sizing/touch target */}
         <button 
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+          className="lg:hidden p-2.5 text-slate-600 hover:bg-slate-100 rounded-xl active:scale-95 transition-transform"
         >
-          <Menu size={20} />
+          <Menu size={24} />
         </button>
         
-        {/* DYNAMIC BREADCRUMB / TITLE */}
-        <div className="flex flex-col">
+        <div className="flex flex-col justify-center">
           <div className="hidden md:flex items-center gap-2 text-xs font-semibold text-blue-600 uppercase tracking-wide">
              {currentModule.label}
           </div>
-          <div className="flex items-center gap-2 text-lg font-bold text-slate-800">
+          <div className="flex items-center gap-2 text-base md:text-lg font-bold text-slate-800 line-clamp-1">
              {currentPageLabel}
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative hidden md:block">
+      <div className="flex items-center gap-2 md:gap-3">
+        {/* Search - Hidden on small mobile */}
+        <div className="relative hidden md:block mr-2">
            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
            <input 
             type="text" 
             placeholder="Rechercher..." 
-            className="pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white w-64 transition-all"
+            className="pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white w-48 lg:w-64 transition-all"
            />
         </div>
 
-        <button className="relative p-2.5 text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
+        <button className="relative w-10 h-10 flex items-center justify-center text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
           <Bell size={20} />
           <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
         </button>
 
-        <div className="h-8 w-px bg-slate-200 hidden sm:block"></div>
+        <div className="h-8 w-px bg-slate-200 hidden sm:block mx-1"></div>
 
         <button 
           onClick={() => { localStorage.clear(); navigate('/'); }}
-          className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-red-600 transition-colors"
+          className="w-10 h-10 flex items-center justify-center text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all"
+          title="Se déconnecter"
         >
-          <LogOut size={18} />
+          <LogOut size={20} />
         </button>
       </div>
     </header>
@@ -249,13 +374,14 @@ const TopHeader = ({ isMobileOpen, setIsMobileOpen, activeModuleId }) => {
 };
 
 // ----------------------------------------------------------------------
-// 5. MAIN LAYOUT (Updated: FULL WIDTH CONTENT)
+// 5. MAIN LAYOUT
 // ----------------------------------------------------------------------
 export function AdminLayout({ children }) {
   const [activeModule, setActiveModule] = useState('dashboard');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const location = useLocation();
-
+  
+  // Auto-sync active module logic
   useEffect(() => {
     const foundModule = MODULES.find(m => {
       if (m.path === location.pathname) return true;
@@ -266,19 +392,19 @@ export function AdminLayout({ children }) {
   }, [location.pathname]);
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden font-sans text-slate-800 antialiased">
       
-      {/* MOBILE OVERLAY */}
+      {/* Mobile Backdrop */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
-      {/* DOUBLE SIDEBAR CONTAINER */}
+      {/* Sidebar Container */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 flex transition-transform duration-300 lg:relative lg:translate-x-0
+        fixed inset-y-0 left-0 z-50 flex h-full shadow-2xl lg:shadow-none transition-transform duration-300 ease-out lg:relative lg:translate-x-0
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <PrimaryRail 
@@ -293,18 +419,16 @@ export function AdminLayout({ children }) {
         />
       </div>
 
-      {/* MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Pass activeModuleId to Header to make it dynamic */}
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#F8FAFC]">
         <TopHeader 
           isMobileOpen={isMobileOpen} 
           setIsMobileOpen={setIsMobileOpen} 
           activeModuleId={activeModule} 
         />
         
-        <main className="flex-1 overflow-y-auto bg-[#F8FAFC] scroll-smooth p-4 sm:p-6">
-          {/* REMOVED: max-w-7xl mx-auto (Now it's full width) */}
-          <div className="w-full h-full animate-in fade-in duration-500 slide-in-from-bottom-4">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 scroll-smooth">
+          <div className="w-full max-w-[2000px] mx-auto animate-in fade-in duration-500 slide-in-from-bottom-2">
             {children}
             <Outlet />
           </div>

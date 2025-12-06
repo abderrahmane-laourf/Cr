@@ -1,1 +1,61 @@
 @import "tailwindcss";
+
+@layer base {
+  html {
+    font-size: 14px; /* Reduced base font size */
+  }
+
+  body {
+    @apply antialiased text-slate-800;
+  }
+
+  /* Compact Tables Globally */
+  table {
+    @apply w-full text-sm;
+  }
+  
+  thead th {
+    @apply px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-50/50 !important;
+  }
+
+  tbody td {
+    @apply px-3 py-2.5 text-sm !important;
+  }
+
+  /* Compact Buttons & Inputs */
+  button, input, select {
+    @apply text-sm !important; 
+  }
+  
+  /* Reduction of large paddings in Cards/Containers */
+  .p-6 {
+    @apply p-4 !important;
+  }
+  
+  .p-8 {
+    @apply p-5 !important;
+  }
+
+  .gap-6 {
+    @apply gap-4 !important;
+  }
+  
+  .h-12 {
+    @apply h-10 !important;
+  }
+}
+
+/* Custom Scrollbar for tighter lists */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

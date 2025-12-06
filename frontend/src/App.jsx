@@ -10,14 +10,29 @@ import EmployeesPage from './page/admin/employee';
 import Paiement from './page/admin/paiement';
 import AttendancePage from './page/admin/presence';
 import EmployeeDashboard from './page/admin/employeeDashboard';
+import GeneralDashboard from './page/admin/generalDashboard';
 import StockListPage from './page/admin/stock';
 import StockMovementsPage from './page/admin/stockMovements';
 import StockTransferPage from './page/admin/stockTransfer';
 import StockDashboard from './page/admin/stockDashboard';
 import ProductsPage from './page/admin/products';
 import ProductDashboard from './page/admin/productDashboard';
-
-
+import KanbanBoard from './page/admin/managementpipeline'; 
+import PipelineDashboard from './page/admin/pipelineDash';
+import ListPipeline from './page/admin/listpipeline';
+import ProductionPage from './page/admin/production';
+import ProductionDashboard from './page/admin/productionDashboard';
+import LossesPage from './page/admin/losses';
+import AdsPage from './page/admin/ads';
+import AdsDashboard from './page/admin/adsDashboard';
+import AssetsPage from './page/admin/actifs';
+import AssetsDashboard from './page/admin/assetsDashboard';
+import DebtsPage from './page/admin/debts';
+import DebtsDashboard from './page/admin/debtsDashboard';
+import PetiteCaissePage from './page/admin/petitecaisse';
+import ReportsPage from './page/admin/rapports';
+import TaskManager from './page/admin/listtask';
+import ComingSoon from './components/comingSoon';
 
 export default function App() {
   return (
@@ -33,7 +48,7 @@ export default function App() {
       
       {/* Admin Routes with Layout */}
       {/* Employee Management Routes */}
-      <Route path="/admin/employees/dashboard" element={<AdminLayout><EmployeeDashboard /></AdminLayout>} />
+      <Route path="/admin/dashboard" element={<AdminLayout><GeneralDashboard /></AdminLayout>} />
       <Route path="/admin/employees" element={<AdminLayout><EmployeesPage /></AdminLayout>} />
       <Route path="/admin/paiement" element={<AdminLayout><Paiement /></AdminLayout>} />
       <Route path="/admin/presence" element={<AdminLayout><AttendancePage /></AdminLayout>} />
@@ -43,10 +58,50 @@ export default function App() {
       <Route path="/admin/stock" element={<AdminLayout><StockListPage /></AdminLayout>} />
       <Route path="/admin/stock/movements" element={<AdminLayout><StockMovementsPage /></AdminLayout>} />
       <Route path="/admin/stock/transfer" element={<AdminLayout><StockTransferPage /></AdminLayout>} />
+      <Route path="/admin/losses" element={<AdminLayout><LossesPage /></AdminLayout>} />
       
       {/* Product Management Routes */}
       <Route path="/admin/products/dashboard" element={<AdminLayout><ProductDashboard /></AdminLayout>} />
       <Route path="/admin/products" element={<AdminLayout><ProductsPage /></AdminLayout>} />
+
+      {/* Production Management Routes */}
+      <Route path="/admin/production/dashboard" element={<AdminLayout><ProductionDashboard /></AdminLayout>} />
+      <Route path="/admin/production" element={<AdminLayout><ProductionPage /></AdminLayout>} />
+
+      {/* Achats/Purchases Routes - Coming Soon */}
+      <Route path="/admin/bon-achat" element={<AdminLayout><ComingSoon title="Bons d'Achat" message="La gestion des bons d'achat sera bientôt disponible." /></AdminLayout>} />
+      <Route path="/admin/suppliers" element={<AdminLayout><ComingSoon title="Fournisseurs" message="La gestion des fournisseurs sera bientôt disponible." /></AdminLayout>} />
+
+      {/* Pipeline Management Routes */}
+      <Route path="/admin/pipeline" element={<AdminLayout><KanbanBoard /></AdminLayout>} />
+      <Route path="/admin/pipeline/dashboard" element={<AdminLayout><PipelineDashboard /></AdminLayout>} />
+      <Route path="/admin/pipeline/list" element={<AdminLayout><ListPipeline /></AdminLayout>} />
+
+      {/* lose page */}
+      <Route path='/admin/pertes' element={<AdminLayout><LossesPage /></AdminLayout>} />
+
+      {/* Ads Management Routes */}
+      <Route path="/admin/ads/dashboard" element={<AdminLayout><AdsDashboard /></AdminLayout>} />
+      <Route path="/admin/ads" element={<AdminLayout><AdsPage /></AdminLayout>} />
+      <Route path="/admin/task" element={<AdminLayout><TaskManager /></AdminLayout>} />
+      <Route path="/admin/task/dashboard" element={<AdminLayout><ComingSoon title="Task Dashboard" message="Le tableau de bord des tâches sera bientôt disponible." /></AdminLayout>} />
+      
+      {/* Assets Management Routes */}
+      <Route path="/admin/actifs/dashboard" element={<AdminLayout><AssetsDashboard /></AdminLayout>} />
+      <Route path="/admin/actifs" element={<AdminLayout><AssetsPage /></AdminLayout>} />
+
+      {/* Debts Management Routes */}
+      <Route path="/admin/debts" element={<AdminLayout><DebtsPage /></AdminLayout>} />
+      <Route path="/admin/debts/dashboard" element={<AdminLayout><DebtsDashboard /></AdminLayout>} />
+      
+      {/* Petite Caisse Routes - pointing to same component as it's a unified view */}
+      <Route path="/admin/petitecaisse" element={<AdminLayout><PetiteCaissePage /></AdminLayout>} />
+      <Route path="/admin/petitecaisse/dashboard" element={<AdminLayout><PetiteCaissePage /></AdminLayout>} />
+
+      {/* Reports Routes */}
+      <Route path="/admin/rapports" element={<AdminLayout><ReportsPage /></AdminLayout>} />
+      <Route path="/admin/rapport" element={<AdminLayout><ReportsPage /></AdminLayout>} /> {/* Fallback route */}
+
     </Routes>
   );
 }

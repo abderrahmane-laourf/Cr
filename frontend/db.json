@@ -306,6 +306,36 @@
       "scriptVente": "Le détox ultime pour votre peau! Ce masque absorbe l'excès de sébum, resserre les pores et élimine les impuretés. Résultat: peau nette et matifiée dès la première utilisation!"
     }
   ],
+  "productions": [
+    {
+      "id": "1",
+      "date": "2025-12-04",
+      "productId": "1",
+      "quantity": 50,
+      "rawMaterials": [
+        {
+          "productId": "2",
+          "quantity": 10
+        }
+      ],
+      "unitCost": 7,
+      "totalCost": 350
+    },
+    {
+      "id": "2",
+      "date": "2025-12-03",
+      "productId": "3",
+      "quantity": 30,
+      "rawMaterials": [
+        {
+          "productId": "2",
+          "quantity": 5
+        }
+      ],
+      "unitCost": 5.83,
+      "totalCost": 175
+    }
+  ],
   "warehouses": [
     {
       "id": "1",
@@ -528,6 +558,311 @@
       "productName": "Serum Vitamine C",
       "userId": "1",
       "userName": "Bernard Anouith"
+    }
+  ],
+  "clients": [
+    {
+      "id": "1",
+      "nom": "Ahmed Benali",
+      "tel": "0661234567",
+      "ville": "1",
+      "villeName": "Casablanca",
+      "quartier": "1",
+      "quartierName": "Maarif",
+      "adresse": "Rue 12, Immeuble 5, Apt 3",
+      "price": 450,
+      "produitId": "1",
+      "produitName": "Serum Vitamine C",
+      "commentaire": "Client régulier, préfère livraison le matin",
+      "nbPiece": 2,
+      "stage": "Annulé",
+      "dateReport": null,
+      "dateCreated": "2025-12-04T10:30:00",
+      "dateModified": "2025-12-04T15:17:40.261Z"
+    }
+  ],
+  "villes": [
+    {
+      "id": "1",
+      "name": "Casablanca"
+    },
+    {
+      "id": "2",
+      "name": "Rabat"
+    },
+    {
+      "id": "3",
+      "name": "Marrakech"
+    },
+    {
+      "id": "4",
+      "name": "Fès"
+    },
+    {
+      "id": "5",
+      "name": "Tanger"
+    },
+    {
+      "id": "6",
+      "name": "Agadir"
+    },
+    {
+      "id": "7",
+      "name": "Meknès"
+    },
+    {
+      "id": "8",
+      "name": "Oujda"
+    },
+    {
+      "id": "9",
+      "name": "Kenitra"
+    },
+    {
+      "id": "10",
+      "name": "Tétouan"
+    },
+    {
+      "id": "11",
+      "name": "Safi"
+    },
+    {
+      "id": "12",
+      "name": "El Jadida"
+    }
+  ],
+  "quartiers": [
+    {
+      "id": "1",
+      "villeId": "1",
+      "name": "Maarif"
+    },
+    {
+      "id": "2",
+      "villeId": "1",
+      "name": "Ain Diab"
+    },
+    {
+      "id": "3",
+      "villeId": "1",
+      "name": "Anfa"
+    },
+    {
+      "id": "4",
+      "villeId": "1",
+      "name": "Hay Hassani"
+    },
+    {
+      "id": "5",
+      "villeId": "1",
+      "name": "Sidi Moumen"
+    },
+    {
+      "id": "6",
+      "villeId": "1",
+      "name": "Ain Sebaa"
+    },
+    {
+      "id": "7",
+      "villeId": "1",
+      "name": "Derb Sultan"
+    },
+    {
+      "id": "8",
+      "villeId": "1",
+      "name": "Bourgogne"
+    },
+    {
+      "id": "9",
+      "villeId": "2",
+      "name": "Agdal"
+    },
+    {
+      "id": "10",
+      "villeId": "2",
+      "name": "Hassan"
+    },
+    {
+      "id": "11",
+      "villeId": "2",
+      "name": "Hay Riad"
+    },
+    {
+      "id": "12",
+      "villeId": "2",
+      "name": "Souissi"
+    },
+    {
+      "id": "13",
+      "villeId": "2",
+      "name": "Yacoub El Mansour"
+    },
+    {
+      "id": "14",
+      "villeId": "2",
+      "name": "Océan"
+    },
+    {
+      "id": "15",
+      "villeId": "3",
+      "name": "Guéliz"
+    },
+    {
+      "id": "16",
+      "villeId": "3",
+      "name": "Médina"
+    },
+    {
+      "id": "17",
+      "villeId": "3",
+      "name": "Hivernage"
+    },
+    {
+      "id": "18",
+      "villeId": "3",
+      "name": "Palmeraie"
+    },
+    {
+      "id": "19",
+      "villeId": "3",
+      "name": "Targa"
+    },
+    {
+      "id": "20",
+      "villeId": "4",
+      "name": "Médina"
+    },
+    {
+      "id": "21",
+      "villeId": "4",
+      "name": "Ville Nouvelle"
+    },
+    {
+      "id": "22",
+      "villeId": "4",
+      "name": "Zouagha"
+    },
+    {
+      "id": "23",
+      "villeId": "4",
+      "name": "Bensouda"
+    },
+    {
+      "id": "24",
+      "villeId": "5",
+      "name": "Malabata"
+    },
+    {
+      "id": "25",
+      "villeId": "5",
+      "name": "Médina"
+    },
+    {
+      "id": "26",
+      "villeId": "5",
+      "name": "Ville Nouvelle"
+    },
+    {
+      "id": "27",
+      "villeId": "5",
+      "name": "Boubana"
+    },
+    {
+      "id": "28",
+      "villeId": "6",
+      "name": "Talborjt"
+    },
+    {
+      "id": "29",
+      "villeId": "6",
+      "name": "Charaf"
+    },
+    {
+      "id": "30",
+      "villeId": "6",
+      "name": "Founty"
+    }
+  ],
+  "losses": [
+    {
+      "id": "1765011474206",
+      "date": "2025-12-06",
+      "productId": "3",
+      "quantity": 120,
+      "reason": "zad",
+      "productName": "Crème Hydratante Aloe Vera",
+      "dateRecorded": "2025-12-06T08:57:54.206Z"
+    },
+    {
+      "id": "1765011969865",
+      "date": "2025-12-06",
+      "productId": "1",
+      "employeeId": "2",
+      "quantity": 4,
+      "reason": "azd",
+      "productName": "Serum Vitamine C",
+      "employeeName": "Sarah Idrissi",
+      "dateRecorded": "2025-12-06T09:06:09.865Z"
+    }
+  ],
+  "ads": [
+    {
+      "id": "2",
+      "date": "2025-12-03",
+      "platform": "TikTok",
+      "project": "Alpha",
+      "productId": "2",
+      "productName": "Huile d'Argan Bio",
+      "campaignName": "Campagne Argan Bio - Hiver 2025",
+      "goal": "Sales",
+      "employeeId": "2",
+      "employeeName": "Sarah Idrissi",
+      "whatsappNumber": "0663-445566",
+      "dailyBudget": 100,
+      "orders": 60,
+      "spent": 750,
+      "cpo": 12.5,
+      "dateCreated": "2025-12-03T14:30:00.000Z"
+    },
+    {
+      "id": "3",
+      "date": "2025-12-05",
+      "platform": "Instagram",
+      "project": "Alpha",
+      "productId": "3",
+      "productName": "Crème Hydratante Aloe Vera",
+      "campaignName": "Promo Crème Hydratante",
+      "goal": "Message",
+      "employeeId": "1",
+      "employeeName": "Bernard Anouith",
+      "whatsappNumber": "0662-897654",
+      "dailyBudget": 50,
+      "orders": 35,
+      "spent": 280,
+      "cpo": 8,
+      "dateCreated": "2025-12-05T09:15:00.000Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "1",
+      "employeeId": "1",
+      "employeeName": "Bernard Anouith",
+      "startDate": "2025-12-10",
+      "description": "Préparer le rapport mensuel des ventes",
+      "duration": 2,
+      "status": "In Progress",
+      "dateCreated": "2025-12-06T10:00:00.000Z"
+    },
+     {
+      "id": "2",
+      "employeeId": "2",
+      "employeeName": "Sarah Idrissi",
+      "startDate": "2025-12-12",
+      "description": "Mise à jour du catalogue produit sur le site web",
+      "duration": 5,
+      "status": "Pending",
+      "dateCreated": "2025-12-06T11:00:00.000Z"
     }
   ]
 }
