@@ -12,7 +12,8 @@ export default function Login() {
   const users = [
     { id: 1, name: "abdelkrim", password: "ab1234$", role: "admin" },
     { id: 2, name: "hakima", password: "ha1234$", role: "manager" },
-    { id: 3, name: "mohamed", password: "mo1234$", role: "employee" }
+    { id: 3, name: "khadija", password: "kh1234$", role: "confirmation", business: "herboclear" },
+    { id: 4, name: "hassan", password: "ha1234$", role: "packaging"},
   ]
 
   // Toast function
@@ -78,13 +79,24 @@ export default function Login() {
     const user = users.find(u => u.name === login && u.password === password)
     
     if (user) {
+      // Store user info in localStorage
+      localStorage.setItem('currentUser', JSON.stringify(user))
+      
       showToast(`Bienvenue ${user.name} !`, 'success')
       
-      // Navigate after toast
+      // Navigate after toast based on role
       setTimeout(() => {
-        if (user.role === 'admin') navigate('/admin/employees')
-        else if (user.role === 'manager') navigate('/manager')
-        else navigate('/employee')
+        if (user.role === 'admin') {
+          navigate('/admin/employees')
+        } else if (user.role === 'manager') {
+          navigate('/manager')
+        } else if (user.role === 'confirmation') {
+          navigate('/employee/confirmation')
+        } else if (user.role === 'packaging') {
+          navigate('/employee/packaging')
+        } else {
+          navigate('/employee')
+        }
       }, 1000)
     } else {
       showToast('Login ou mot de passe incorrect', 'error')

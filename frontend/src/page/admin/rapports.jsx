@@ -7,8 +7,8 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
+import { clientAPI, productAPI, adsAPI } from '../../services/api';
 
-const API_URL = 'http://localhost:3000';
 const SHIPPING_COST_ESTIMATE = 25; // MAD per order
 
 // --- UTILITY ---
@@ -37,15 +37,11 @@ const ReportsDashboard = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [clientsRes, productsRes, adsRes] = await Promise.all([
-          fetch(`${API_URL}/clients`).catch(() => ({ ok: false, json: async () => [] })),
-          fetch(`${API_URL}/products`).catch(() => ({ ok: false, json: async () => [] })),
-          fetch(`${API_URL}/ads`).catch(() => ({ ok: false, json: async () => [] }))
+        const [clientsData, productsData, adsData] = await Promise.all([
+          clientAPI.getAll().catch(() => []),
+          productAPI.getAll().catch(() => []),
+          adsAPI.getAll().catch(() => [])
         ]);
-
-        const clientsData = clientsRes.ok ? await clientsRes.json() : [];
-        const productsData = productsRes.ok ? await productsRes.json() : [];
-        const adsData = adsRes.ok ? await adsRes.json() : [];
 
         setClients(clientsData);
         setProducts(productsData);

@@ -3,48 +3,9 @@ import {
   Calendar, Package, Truck, ArrowRight, ChevronDown, AlertCircle, Plus, X, Search
 } from 'lucide-react';
 
-// ----------------------------------------------------------------------
-// 1. API MOCKS
-// ----------------------------------------------------------------------
-const transfersAPI = {
-  getAll: async () => {
-    const response = await fetch('http://localhost:3000/stockTransfers');
-    return response.json();
-  },
-  create: async (transfer) => {
-    const response = await fetch('http://localhost:3000/stockTransfers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(transfer)
-    });
-    return response.json();
-  }
-};
-
-const movementsAPI = {
-  create: async (movement) => {
-    const response = await fetch('http://localhost:3000/stockMovements', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(movement)
-    });
-    return response.json();
-  }
-};
-
-const productsAPI = {
-  getAll: async () => {
-    const response = await fetch('http://localhost:3000/products');
-    return response.json();
-  }
-};
-
-const warehousesAPI = {
-  getAll: async () => {
-    const response = await fetch('http://localhost:3000/warehouses');
-    return response.json();
-  }
-};
+import { 
+  stockTransferAPI, stockMovementAPI, productAPI, warehouseAPI 
+} from '../../services/api';
 
 // Helper: Format Date
 const formatDate = (dateString) => {
@@ -274,9 +235,9 @@ export default function StockTransferPage() {
     try {
       setLoading(true);
       const [transfersData, productsData, warehousesData] = await Promise.all([
-        transfersAPI.getAll(),
-        productsAPI.getAll(),
-        warehousesAPI.getAll()
+        stockTransferAPI.getAll(),
+        productAPI.getAll(),
+        warehouseAPI.getAll()
       ]);
       setTransfers(transfersData);
       setProducts(productsData);
@@ -293,13 +254,13 @@ export default function StockTransferPage() {
     setIsSaving(true);
     try {
       // 1. Créer l'enregistrement
-      const newTransfer = await transfersAPI.create(transferData);
+      const newTransfer = await stockTransferAPI.create(transferData);
 
       // 2. Créer les Mouvements (Sortie / Entrée)
       const currentUser = { id: '1', name: 'Admin', avatar: '' };
 
       // A. Sortie (-)
-      await movementsAPI.create({
+      await stockMovementAPI.create({
         productId: transferData.productId,
         productName: transferData.productName,
         type: 'Sortie',
@@ -313,7 +274,7 @@ export default function StockTransferPage() {
       });
 
       // B. Entrée (+)
-      await movementsAPI.create({
+      await stockMovementAPI.create({
         productId: transferData.productId,
         productName: transferData.productName,
         type: 'Entrée',

@@ -36,8 +36,12 @@ import {
   KanbanSquare,
   Store,
   Coins,
-  FileBarChart
+  FileBarChart,
+  PanelLeftClose,
+  PanelLeftOpen,
+  CheckCircle2
 } from 'lucide-react';
+import api from '../../services/api';
 
 // ----------------------------------------------------------------------
 // 1. DATA
@@ -207,7 +211,7 @@ const PrimaryRail = ({ activeModule, setActiveModule, isMobile }) => {
         <span className="font-bold text-lg text-white">C</span>
       </div>
 
-      <div className="flex-1 w-full space-y-2 px-2 flex flex-col items-center overflow-y-auto overflow-x-hidden custom-scrollbar">
+      <div className="flex-1 w-full space-y-2 px-2 flex flex-col items-center overflow-y-auto custom-scrollbar">
         {MODULES.map((module) => {
           const isActive = activeModule === module.id;
           
@@ -237,7 +241,7 @@ const PrimaryRail = ({ activeModule, setActiveModule, isMobile }) => {
 // ----------------------------------------------------------------------
 // 3. SECONDARY PANEL
 // ----------------------------------------------------------------------
-const SecondaryPanel = ({ activeModuleId, isMobile, onCloseMobile }) => {
+const SecondaryPanel = ({ activeModuleId, isMobile, onCloseMobile, isOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const activeModule = MODULES.find(m => m.id === activeModuleId) || MODULES[0];
@@ -248,11 +252,23 @@ const SecondaryPanel = ({ activeModuleId, isMobile, onCloseMobile }) => {
   };
 
   return (
-    <div className="w-64 bg-white h-full border-r border-slate-100 flex flex-col shadow-sm relative z-40 flex-shrink-0">
-      <div className="h-24 px-6 flex flex-col justify-center border-b border-slate-50">
-        <span className="text-xs font-bold text-blue-600 tracking-wider uppercase mb-1 opacity-80">
-          Module Actif
-        </span>
+    <div className={`
+      bg-white h-full border-r border-slate-100 flex flex-col shadow-sm relative z-40 flex-shrink-0 transition-all duration-300 ease-in-out
+      ${isOpen ? 'w-64 opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-10 pointer-events-none lg:w-0 lg:opacity-0'}
+    `}>
+      <div className="h-24 px-6 flex flex-col justify-center border-b border-slate-50 relative group/header">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-blue-600 tracking-wider uppercase mb-1 opacity-80">
+            Module Actif
+          </span>
+          <button 
+            onClick={() => onCloseMobile()} 
+            className="hidden lg:flex items-center justify-center w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 rounded-full transition-all opacity-0 group-hover/header:opacity-100"
+            title="Masquer le panneau"
+          >
+            <PanelLeftClose size={16} />
+          </button>
+        </div>
         <h2 className="text-xl font-bold text-slate-800 leading-tight">
           {activeModule.label}
         </h2>
@@ -308,9 +324,31 @@ const SecondaryPanel = ({ activeModuleId, isMobile, onCloseMobile }) => {
 // ----------------------------------------------------------------------
 // 4. TOP HEADER
 // ----------------------------------------------------------------------
-const TopHeader = ({ isMobileOpen, setIsMobileOpen, activeModuleId }) => {
+const TopHeader = ({ isMobileOpen, setIsMobileOpen, activeModuleId, isSecondaryOpen, setIsSecondaryOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  // Sync notifications with tasks
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const tasks = await api.task.getAll();
+        // Count tasks that are not 'Done' or 'Completed'
+        const activeTasks = tasks.filter(t => t.status !== 'Done' && t.status !== 'Completed');
+        setNotifications(activeTasks);
+      } catch (error) {
+        console.error("Failed to fetch tasks for notifications", error);
+      }
+    };
+
+    fetchTasks();
+    // Poll every 30 seconds to keep sync
+    const interval = setInterval(fetchTasks, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const currentModule = MODULES.find(m => m.id === activeModuleId) || MODULES[0];
   
@@ -325,6 +363,17 @@ const TopHeader = ({ isMobileOpen, setIsMobileOpen, activeModuleId }) => {
   return (
     <header className="h-16 md:h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-4 md:px-6 sticky top-0 z-20 w-full">
       <div className="flex items-center gap-4">
+        {/* Desktop Toggle */}
+        {!isSecondaryOpen && (
+          <button 
+            onClick={() => setIsSecondaryOpen(true)}
+            className="hidden lg:flex items-center justify-center w-10 h-10 bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 rounded-full shadow-sm transition-all"
+            title="Afficher le panneau"
+          >
+            <PanelLeftOpen size={20} />
+          </button>
+        )}
+
         {/* Mobile Toggle - Improved sizing/touch target */}
         <button 
           onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -354,10 +403,65 @@ const TopHeader = ({ isMobileOpen, setIsMobileOpen, activeModuleId }) => {
            />
         </div>
 
-        <button className="relative w-10 h-10 flex items-center justify-center text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
-          <Bell size={20} />
-          <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowNotifications(!showNotifications)}
+            className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${showNotifications ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-100'}`}
+          >
+            <Bell size={20} />
+            {notifications.length > 0 && (
+              <span className="absolute top-2.5 right-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
+                {notifications.length}
+              </span>
+            )}
+          </button>
+
+          {/* Notification Dropdown */}
+          {showNotifications && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
+              <div className="absolute top-12 right-0 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="px-4 py-2 border-b border-slate-50 flex justify-between items-center bg-slate-50/50 rounded-t-2xl">
+                  <h3 className="font-semibold text-slate-800 text-sm">Notifications</h3>
+                  <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{notifications.length} nouvelles</span>
+                </div>
+                <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                  {notifications.length === 0 ? (
+                    <div className="p-8 text-center flex flex-col items-center text-slate-400">
+                       <Bell size={32} className="opacity-20 mb-2"/>
+                       <span className="text-sm">Aucune notification</span>
+                    </div>
+                  ) : (
+                    notifications.map(task => (
+                      <div key={task.id} className="p-3 border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-default group">
+                        <div className="flex justify-between items-center mb-1.5">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide border ${
+                            task.status === 'Accepted' ? 'bg-green-50 text-green-600 border-green-100' :
+                            task.status === 'In Progress' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                            'bg-amber-50 text-amber-600 border-amber-100'
+                          }`}>
+                            {task.status}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-medium">
+                            {new Date(task.dateCreated).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-700 font-medium leading-snug group-hover:text-blue-700 transition-colors">
+                          {task.description}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="p-2 border-t border-slate-50 bg-slate-50/50 rounded-b-2xl">
+                    <button className="w-full py-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 hover:bg-white rounded-lg transition-all" onClick={() => {navigate('/admin/task'); setShowNotifications(false)}}>
+                        Voir toutes les tâches
+                    </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         <div className="h-8 w-px bg-slate-200 hidden sm:block mx-1"></div>
 
@@ -379,6 +483,7 @@ const TopHeader = ({ isMobileOpen, setIsMobileOpen, activeModuleId }) => {
 export function AdminLayout({ children }) {
   const [activeModule, setActiveModule] = useState('dashboard');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isSecondaryOpen, setIsSecondaryOpen] = useState(true);
   const location = useLocation();
   
   // Auto-sync active module logic
@@ -415,7 +520,8 @@ export function AdminLayout({ children }) {
         <SecondaryPanel 
           activeModuleId={activeModule}
           isMobile={isMobileOpen}
-          onCloseMobile={() => setIsMobileOpen(false)}
+          onCloseMobile={() => isMobileOpen ? setIsMobileOpen(false) : setIsSecondaryOpen(false)}
+          isOpen={isMobileOpen || isSecondaryOpen}
         />
       </div>
 
@@ -424,7 +530,9 @@ export function AdminLayout({ children }) {
         <TopHeader 
           isMobileOpen={isMobileOpen} 
           setIsMobileOpen={setIsMobileOpen} 
-          activeModuleId={activeModule} 
+          activeModuleId={activeModule}
+          isSecondaryOpen={isSecondaryOpen}
+          setIsSecondaryOpen={setIsSecondaryOpen}
         />
         
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 scroll-smooth">

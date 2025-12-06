@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Package, TrendingUp, TrendingDown, Truck, ArrowLeftRight, History, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { productAPI, stockMovementAPI, stockTransferAPI } from '../../services/api';
 
 export default function StockDashboard() {
   const navigate = useNavigate();
@@ -20,16 +21,13 @@ export default function StockDashboard() {
   const loadStats = async () => {
     try {
       // Fetch products
-      const productsRes = await fetch('http://localhost:3000/products');
-      const products = await productsRes.json();
+      const products = await productAPI.getAll();
       
       // Fetch movements
-      const movementsRes = await fetch('http://localhost:3000/stockMovements');
-      const movements = await movementsRes.json();
+      const movements = await stockMovementAPI.getAll();
       
       // Fetch transfers
-      const transfersRes = await fetch('http://localhost:3000/stockTransfers');
-      const transfers = await transfersRes.json();
+      const transfers = await stockTransferAPI.getAll();
 
       const totalStock = products.reduce((sum, p) => sum + p.stockTotal, 0);
       const lowStock = products.filter(p => p.stockTotal < 50).length;

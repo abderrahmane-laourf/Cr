@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Plus, Trash2, Search, X, Check, Package, Calendar, CheckCircle, AlertCircle, User } from 'lucide-react';
 import Swal from 'sweetalert2';
-
-// API Configuration - assuming standard json-server behavior
-const API_URL = 'http://localhost:3000';
+import { lossAPI, productAPI, employeeAPI } from '../../services/api';
 
 // Toast Component for better user feedback
 const Toast = ({ message, type = 'success', onClose }) => {
@@ -51,26 +49,15 @@ export default function LossesPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [lossesRes, productsRes, employeesRes] = await Promise.all([
-        fetch(`${API_URL}/losses`).catch(() => ({ ok: false, json: async () => [] })), // Handle potential 404 if not created yet
-        fetch(`${API_URL}/products`),
-        fetch(`${API_URL}/employees`)
+      const [lossesData, productsData, employeesData] = await Promise.all([
+        lossAPI.getAll().catch(() => []),
+        productAPI.getAll(),
+        employeeAPI.getAll()
       ]);
 
-      if (lossesRes.ok) {
-        setLosses(await lossesRes.json());
-      } else {
-        // Fallback for demo if endpoint doesn't exist
-        console.warn('Endpoint /losses not found, using local state or empty array');
-      }
-
-      if (productsRes.ok) {
-        setProducts(await productsRes.json());
-      }
-
-      if (employeesRes.ok) {
-        setEmployees(await employeesRes.json());
-      }
+      setLosses(lossesData);
+      setProducts(productsData);
+      setEmployees(employeesData);
 
     } catch (error) {
       console.error('Error loading data:', error);
@@ -89,37 +76,26 @@ export default function LossesPage() {
       const product = products.find(p => p.id === formData.productId);
       const employee = employees.find(e => e.id === formData.employeeId);
       const newLoss = {
-        id: Date.now().toString(),
         ...formData,
         productName: product ? product.nom : 'Inconnu',
         employeeName: employee ? employee.name : 'Inconnu',
         dateRecorded: new Date().toISOString()
       };
 
-      // Attempt to save to backend
-      const response = await fetch(`${API_URL}/losses`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newLoss)
+      await lossAPI.create(newLoss);
+      setLosses([...losses, newLoss]);
+      setIsModalOpen(false);
+      setFormData({
+          date: new Date().toISOString().split('T')[0],
+          productId: '',
+          employeeId: '',
+          quantity: 1,
+          reason: ''
       });
-
-      if (response.ok) {
-        setLosses([...losses, newLoss]);
-        setIsModalOpen(false);
-        setFormData({
-            date: new Date().toISOString().split('T')[0],
-            productId: '',
-            employeeId: '',
-            quantity: 1,
-            reason: ''
-        });
-        showToast('Perte enregistrée avec succès !', 'success');
-      } else {
-        throw new Error('Failed to save');
-      }
+      showToast('Perte enregistrée avec succès !', 'success');
     } catch (error) {
       console.error('Error saving loss:', error);
-      showToast('Impossible d\'enregistrer la perte. Vérifiez que le serveur est démarré.', 'error');
+      showToast('Impossible d\'enregistrer la perte.', 'error');
     }
   };
 
@@ -141,7 +117,7 @@ export default function LossesPage() {
 
     if (result.isConfirmed) {
       try {
-        await fetch(`${API_URL}/losses/${id}`, { method: 'DELETE' });
+        await lossAPI.delete(id);
         setLosses(losses.filter(l => l.id !== id));
         Swal.fire('Supprimé !', 'L\'enregistrement a été supprimé.', 'success');
       } catch (error) {

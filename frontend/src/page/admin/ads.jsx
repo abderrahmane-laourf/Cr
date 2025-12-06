@@ -4,9 +4,7 @@ import {
   Megaphone, Calendar, User, Package, Settings
 } from 'lucide-react';
 import Swal from 'sweetalert2';
-
-// API Configuration
-const API_URL = 'http://localhost:3000';
+import { adsAPI, productAPI, employeeAPI } from '../../services/api';
 
 // Toast Component
 const Toast = ({ message, type = 'success', onClose }) => {
@@ -69,15 +67,15 @@ export default function AdsPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [adsRes, productsRes, employeesRes] = await Promise.all([
-        fetch(`${API_URL}/ads`).catch(() => ({ ok: false, json: async () => [] })),
-        fetch(`${API_URL}/products`),
-        fetch(`${API_URL}/employees`)
+      const [adsData, productsData, employeesData] = await Promise.all([
+        adsAPI.getAll().catch(() => []),
+        productAPI.getAll(),
+        employeeAPI.getAll()
       ]);
 
-      if (adsRes.ok) setAds(await adsRes.json());
-      if (productsRes.ok) setProducts(await productsRes.json());
-      if (employeesRes.ok) setEmployees(await employeesRes.json());
+      setAds(adsData);
+      setProducts(productsData);
+      setEmployees(employeesData);
     } catch (error) {
       console.error('Error loading data:', error);
       showToast('Erreur de chargement des données', 'error');
@@ -129,26 +127,13 @@ export default function AdsPage() {
       };
 
       if (modalMode === 'add') {
-        const newAd = { id: Date.now().toString(), ...adData };
-        const response = await fetch(`${API_URL}/ads`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newAd)
-        });
-        if (response.ok) {
-          setAds([...ads, newAd]);
-          showToast('Publicité ajoutée avec succès !', 'success');
-        }
+        const newAd = await adsAPI.create(adData);
+        setAds([...ads, newAd]);
+        showToast('Publicité ajoutée avec succès !', 'success');
       } else if (modalMode === 'edit') {
-        const response = await fetch(`${API_URL}/ads/${selectedAd.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...selectedAd, ...adData })
-        });
-        if (response.ok) {
-          setAds(ads.map(ad => ad.id === selectedAd.id ? { ...selectedAd, ...adData } : ad));
-          showToast('Modifications enregistrées !', 'success');
-        }
+        const updatedAd = await adsAPI.update(selectedAd.id, { ...selectedAd, ...adData });
+        setAds(ads.map(ad => ad.id === selectedAd.id ? updatedAd : ad));
+        showToast('Modifications enregistrées !', 'success');
       }
 
       setIsModalOpen(false);
@@ -173,7 +158,7 @@ export default function AdsPage() {
 
     if (result.isConfirmed) {
       try {
-        await fetch(`${API_URL}/ads/${id}`, { method: 'DELETE' });
+        await adsAPI.delete(id);
         setAds(ads.filter(ad => ad.id !== id));
         Swal.fire('Supprimé !', 'La publicité a été supprimée.', 'success');
       } catch (error) {

@@ -4,28 +4,7 @@ import {
   AlertTriangle, ArrowUpCircle, ArrowDownCircle
 } from 'lucide-react';
 
-// Mock APIs
-const movementsAPI = {
-  getAll: async () => {
-    const response = await fetch('http://localhost:3000/stockMovements');
-    return response.json();
-  },
-  create: async (movement) => {
-    const response = await fetch('http://localhost:3000/stockMovements', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(movement)
-    });
-    return response.json();
-  }
-};
-
-const productsAPI = {
-  getAll: async () => {
-    const response = await fetch('http://localhost:3000/products');
-    return response.json();
-  }
-};
+import { stockMovementAPI, productAPI } from '../../services/api';
 
 // Format date helper
 const formatDate = (dateString) => {
@@ -273,8 +252,8 @@ export default function StockMovementsPage() {
     try {
       setLoading(true);
       const [movementsData, productsData] = await Promise.all([
-        movementsAPI.getAll(),
-        productsAPI.getAll()
+        stockMovementAPI.getAll(),
+        productAPI.getAll()
       ]);
       setMovements(movementsData);
       setProducts(productsData);
@@ -287,7 +266,7 @@ export default function StockMovementsPage() {
 
   const handleAddMovement = async (movement) => {
     try {
-      await movementsAPI.create(movement);
+      await stockMovementAPI.create(movement);
       loadData();
     } catch (error) {
       console.error('Error adding movement:', error);

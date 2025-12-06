@@ -4,6 +4,7 @@ import {
   MapPin, Calendar, Clock, AlertCircle, CheckCircle, 
   ChevronDown, Filter, FileText, User
 } from 'lucide-react';
+import { employeeAPI, taskAPI } from '../../services/api';
 
 // --- 1. UTILITY COMPONENTS ---
 
@@ -190,27 +191,43 @@ const TaskModal = ({ isOpen, onClose, employees, onSave }) => {
 
 const TaskManager = () => {
   const [tasks, setTasks] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Mock Data for Employees (In real app, fetch from API)
-  const employees = [
-    { id: 1, name: 'Bernard Anouith' },
-    { id: 2, name: 'Sarah Idrissi' },
-    { id: 3, name: 'Fatiha Abassi' },
-  ];
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  const handleSaveTask = (taskData) => {
-      const newTask = {
-          id: tasks.length + 1,
-          ...taskData,
-          status: 'En attente',
-          confirmStatus: 'Non débuté'
-      };
-      setTasks([...tasks, newTask]);
-      setIsModalOpen(false);
-      setToast({ message: "Tâche attribuée avec succès !", type: "success" });
+  const loadData = async () => {
+    try {
+      const [tasksData, employeesData] = await Promise.all([
+        taskAPI.getAll().catch(() => []),
+        employeeAPI.getAll()
+      ]);
+      setTasks(tasksData);
+      setEmployees(employeesData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  };
+
+  const handleSaveTask = async (taskData) => {
+      try {
+        const newTask = {
+            ...taskData,
+            status: 'En attente',
+            confirmStatus: 'Non débuté'
+        };
+        await taskAPI.create(newTask);
+        setTasks([...tasks, newTask]);
+        setIsModalOpen(false);
+        setToast({ message: "Tâche attribuée avec succès !", type: "success" });
+      } catch (error) {
+        console.error('Error saving task:', error);
+        setToast({ message: "Erreur lors de la sauvegarde", type: "error" });
+      }
   };
 
   const filteredTasks = tasks.filter(task => 

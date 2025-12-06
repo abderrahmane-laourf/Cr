@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, CreditCard, UserCheck, TrendingUp, DollarSign, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { employeeAPI, paymentAPI, presenceAPI } from '../../services/api';
 
 export default function EmployeeDashboard() {
   const navigate = useNavigate();
@@ -18,16 +19,13 @@ export default function EmployeeDashboard() {
   const loadStats = async () => {
     try {
       // Fetch employees
-      const employeesRes = await fetch('http://localhost:3000/employees');
-      const employees = await employeesRes.json();
+      const employees = await employeeAPI.getAll();
       
       // Fetch payments
-      const paymentsRes = await fetch('http://localhost:3000/payments');
-      const payments = await paymentsRes.json();
+      const payments = await paymentAPI.getAll();
       
       // Fetch presence
-      const presenceRes = await fetch('http://localhost:3000/presence');
-      const presence = await presenceRes.json();
+      const presence = await presenceAPI.getAll();
 
       setStats({
         totalEmployees: employees.length,

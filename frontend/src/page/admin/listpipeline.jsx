@@ -10,6 +10,7 @@ import {
   Calendar, 
   CheckCircle // Added CheckCircle for the toast
 } from 'lucide-react';
+import { productAPI, villeAPI, quartierAPI } from '../../services/api';
 
 const EMPLOYEES = ['Mohamed', 'Fatima', 'Youssef', 'Amina', 'Hassan', 'Khadija'];
 const BUSINESSES = ['Commit', 'Herboclear', 'Other'];
@@ -92,15 +93,15 @@ export default function ColisManagement() {
 
   const loadData = async () => {
     try {
-      const [productsRes, villesRes, quartiersRes] = await Promise.all([
-        fetch('http://localhost:3000/products').catch(() => ({ json: () => [] })),
-        fetch('http://localhost:3000/villes').catch(() => ({ json: () => [] })),
-        fetch('http://localhost:3000/quartiers').catch(() => ({ json: () => [] }))
+      const [productsData, villesData, quartiersData] = await Promise.all([
+        productAPI.getAll().catch(() => []),
+        villeAPI.getAll().catch(() => []),
+        quartierAPI.getAll().catch(() => [])
       ]);
       
-      setProducts(await productsRes.json());
-      setVilles(await villesRes.json());
-      setQuartiers(await quartiersRes.json());
+      setProducts(productsData);
+      setVilles(villesData);
+      setQuartiers(quartiersData);
     } catch (error) {
       console.error('Error loading data:', error);
     }

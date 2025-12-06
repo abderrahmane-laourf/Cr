@@ -2,7 +2,8 @@
 
 @layer base {
   html {
-    font-size: 14px; /* Reduced base font size */
+    font-size: 14px;
+    /* Reduced base font size */
   }
 
   body {
@@ -13,35 +14,37 @@
   table {
     @apply w-full text-sm;
   }
-  
+
   thead th {
-    @apply px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-50/50 !important;
+    @apply px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-50/50;
   }
 
   tbody td {
-    @apply px-3 py-2.5 text-sm !important;
+    @apply px-3 py-2.5 text-sm;
   }
 
   /* Compact Buttons & Inputs */
-  button, input, select {
-    @apply text-sm !important; 
+  button,
+  input,
+  select {
+    @apply text-sm;
   }
-  
+
   /* Reduction of large paddings in Cards/Containers */
   .p-6 {
-    @apply p-4 !important;
+    @apply !p-4;
   }
-  
+
   .p-8 {
-    @apply p-5 !important;
+    @apply !p-5;
   }
 
   .gap-6 {
-    @apply gap-4 !important;
+    @apply !gap-4;
   }
-  
+
   .h-12 {
-    @apply h-10 !important;
+    @apply !h-10;
   }
 }
 
@@ -49,13 +52,16 @@
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }

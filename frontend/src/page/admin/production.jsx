@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Plus, X, Trash2, Calendar, DollarSign, Eye } from 'lucide-react';
+import { productionAPI, productAPI } from '../../services/api';
 
 export default function ProductionManagement() {
   const [productions, setProductions] = useState([]);
@@ -16,13 +17,13 @@ export default function ProductionManagement() {
 
   const loadData = async () => {
     try {
-      const [productionsRes, productsRes] = await Promise.all([
-        fetch('http://localhost:3000/productions'),
-        fetch('http://localhost:3000/products')
+      const [productionsData, productsData] = await Promise.all([
+        productionAPI.getAll(),
+        productAPI.getAll()
       ]);
       
-      setProductions(await productionsRes.json());
-      setProducts(await productsRes.json());
+      setProductions(productionsData);
+      setProducts(productsData);
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -30,16 +31,9 @@ export default function ProductionManagement() {
 
   const handleAddProduction = async (newProduction) => {
     try {
-      const response = await fetch('http://localhost:3000/productions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newProduction)
-      });
-      
-      if (response.ok) {
-        loadData();
-        setShowAddModal(false);
-      }
+      await productionAPI.create(newProduction);
+      loadData();
+      setShowAddModal(false);
     } catch (error) {
       console.error('Error adding production:', error);
     }
@@ -48,9 +42,7 @@ export default function ProductionManagement() {
   const handleDeleteProduction = async (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cette production?')) {
       try {
-        await fetch(`http://localhost:3000/productions/${id}`, {
-          method: 'DELETE'
-        });
+        await productionAPI.delete(id);
         loadData();
       } catch (error) {
         console.error('Error deleting production:', error);

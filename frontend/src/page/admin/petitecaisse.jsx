@@ -4,6 +4,7 @@ import {
   Plus, Minus, Trash2, Calendar, FileText, CheckCircle, X, Search 
 } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { employeeAPI } from '../../services/api';
 
 // --- UTILITY COMPONENTS ---
 
@@ -231,8 +232,7 @@ const PetiteCaissePage = () => {
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
-                const response = await fetch('http://localhost:3000/employees');
-                const data = await response.json();
+                const data = await employeeAPI.getAll();
                 setEmployees(data);
             } catch (error) {
                 console.error("Error fetching employees:", error);

@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Package, AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 
-// Mock API - Replace with actual API calls
-const stockAPI = {
-  getAll: async () => {
-    const response = await fetch('http://localhost:3000/products');
-    return response.json();
-  }
-};
+import { productAPI } from '../../services/api';
 
 export default function StockListPage() {
   const [products, setProducts] = useState([]);
@@ -21,7 +15,7 @@ export default function StockListPage() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const data = await stockAPI.getAll();
+      const data = await productAPI.getAll();
       setProducts(data);
     } catch (error) {
       console.error('Error loading products:', error);

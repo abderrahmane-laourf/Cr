@@ -34,6 +34,12 @@ import ReportsPage from './page/admin/rapports';
 import TaskManager from './page/admin/listtask';
 import ComingSoon from './components/comingSoon';
 
+// Employee Pages
+// import { EmployeeLayout } from './components/layout/employeeLayout';
+// import EmployeeColisPanel from './page/employee/employeeconfirmation/pipeline';
+// import EmployeeConfirmationDashboard from './page/employee/employeeconfirmation/dashboard';
+// import EmployeePackaging from './page/employee/employeePackaging';
+
 export default function App() {
   return (
     <Routes>
@@ -101,6 +107,11 @@ export default function App() {
       {/* Reports Routes */}
       <Route path="/admin/rapports" element={<AdminLayout><ReportsPage /></AdminLayout>} />
       <Route path="/admin/rapport" element={<AdminLayout><ReportsPage /></AdminLayout>} /> {/* Fallback route */}
+
+      {/* Employee Routes (With Layout) */}
+      {/* <Route path="/employee/dashboard" element={<EmployeeLayout><EmployeeConfirmationDashboard /></EmployeeLayout>} /> */}
+      {/* <Route path="/employee/confirmation" element={<EmployeeLayout><EmployeeColisPanel /></EmployeeLayout>} /> */}
+      {/* <Route path="/employee/packaging" element={<EmployeeLayout><EmployeePackaging /></EmployeeLayout>} /> */}
 
     </Routes>
   );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Factory, Package, DollarSign, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { productionAPI } from '../../services/api';
 
 export default function ProductionDashboard() {
   const navigate = useNavigate();
@@ -18,8 +19,7 @@ export default function ProductionDashboard() {
   const loadStats = async () => {
     try {
       // Fetch productions
-      const productionsRes = await fetch('http://localhost:3000/productions');
-      const productions = await productionsRes.json();
+      const productions = await productionAPI.getAll();
       
       // Calculate stats
       const totalQuantity = productions.reduce((sum, p) => sum + p.quantity, 0);

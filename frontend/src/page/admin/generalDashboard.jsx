@@ -6,16 +6,19 @@ import {
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  LineChart, Line 
+  LineChart, Line, PieChart, Pie, Cell, Legend
 } from 'recharts';
+import { clientAPI, adsAPI, productAPI, employeeAPI, paymentAPI } from '../../services/api';
 
-const API_URL = 'http://localhost:3000';
+const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
 export default function GeneralDashboard() {
   const [loading, setLoading] = useState(true);
   const [colis, setColis] = useState([]);
   const [ads, setAds] = useState([]);
   const [products, setProducts] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [currencyExchange, setCurrencyExchange] = useState([]);
   
   // Filters
@@ -39,19 +42,26 @@ export default function GeneralDashboard() {
     try {
       // Load Colis (LocalStorage primarily)
       const savedColis = localStorage.getItem('colis');
-      if (savedColis) setColis(JSON.parse(savedColis));
-      else {
-        const res = await fetch(`${API_URL}/clients`); // Fallback
-        if(res.ok) setColis(await res.json());
+      let colisData = [];
+      if (savedColis) {
+        colisData = JSON.parse(savedColis);
+      } else {
+        colisData = await clientAPI.getAll().catch(() => []);
       }
+      setColis(colisData);
 
-      // Load Ads
-      const adsRes = await fetch(`${API_URL}/ads`);
-      if(adsRes.ok) setAds(await adsRes.json());
+      // Load all data from API
+      const [adsData, productsData, employeesData, paymentsData] = await Promise.all([
+        adsAPI.getAll().catch(() => []),
+        productAPI.getAll().catch(() => []),
+        employeeAPI.getAll().catch(() => []),
+        paymentAPI.getAll().catch(() => [])
+      ]);
       
-      // Load Products
-      const prodRes = await fetch(`${API_URL}/products`);
-      if(prodRes.ok) setProducts(await prodRes.json());
+      setAds(adsData);
+      setProducts(productsData);
+      setEmployees(employeesData);
+      setPayments(paymentsData);
 
       // Load Currency Exchange
       const savedCurrency = localStorage.getItem('currency_exchange');
@@ -87,7 +97,7 @@ export default function GeneralDashboard() {
 
     // Filter Colis
     const filteredColis = colis.filter(c => {
-        const d = new Date(c.dateCreated || c.createdAt || c.date); // Handle date variances
+        const d = new Date(c.dateCreated || c.createdAt || c.date);
         if(d < start || d > end) return false;
         if(selectedEmployee !== 'all' && c.employee !== selectedEmployee) return false;
         if(selectedProduct !== 'all' && c.productId !== selectedProduct) return false;
@@ -95,21 +105,18 @@ export default function GeneralDashboard() {
         return true;
     });
 
-    // Filter Ads (Assuming 'date' field)
+    // Filter Ads
     const filteredAds = ads.filter(a => {
         const d = new Date(a.date);
         if(d < start || d > end) return false;
-        // Basic linking if Ads have product/employee fields (often they don't, but filter applies generally)
         if(selectedProduct !== 'all' && a.product !== selectedProduct) return false; 
         return true;
     });
 
     // --- Marketing ---
-    const totalSpend = filteredAds.reduce((sum, a) => sum + (parseFloat(a.amount) || parseFloat(a.spend) || 0), 0);
-    // Usually "Total Confirmed" means passed the confirmation stage.
+    const totalSpend = filteredAds.reduce((sum, a) => sum + (parseFloat(a.amount) || parseFloat(a.spend) || parseFloat(a.spent) || 0), 0);
     const confirmedAllTime = filteredColis.filter(c => ['Confirmé', 'Packaging', 'Out for Delivery', 'Livré', 'Retourné', 'Returned', 'Expédié'].includes(c.stage)).length;
     
-    // Assuming 'Livré' is the only "Delivered" state for CPL
     const deliveredCount = filteredColis.filter(c => c.stage === 'Livré').length;
     const totalOrders = filteredColis.length; 
 
@@ -119,28 +126,34 @@ export default function GeneralDashboard() {
 
     // --- Confirmation ---
     const confirmRate = totalOrders > 0 ? (confirmedAllTime / totalOrders) * 100 : 0;
-    // Delivery Rate: Delivered / Confirmed
     const deliveryRate = confirmedAllTime > 0 ? (deliveredCount / confirmedAllTime) * 100 : 0;
 
     // --- Stock & Revenue ---
-    // Rest Stock: sum of active products
-    const restStock = products.reduce((sum, p) => sum + (parseInt(p.stock) || 0), 0);
+    const restStock = products.reduce((sum, p) => sum + (parseInt(p.stock) || parseInt(p.stockTotal) || 0), 0);
     
-    // Revenue (Facture Entre)
     const revenue = filteredColis
         .filter(c => c.stage === 'Livré')
         .reduce((sum, c) => sum + (parseFloat(c.prix) || parseFloat(c.price) || 0), 0);
     
     const aov = deliveredCount > 0 ? revenue / deliveredCount : 0;
 
+    // --- Expenses Breakdown ---
+    const totalSalaries = payments.reduce((sum, p) => sum + (parseFloat(p.net) || 0), 0);
+    const shippingCost = deliveredCount * 25; // Estimate 25 DH per delivery
+    
+    const expensesData = [
+      { name: 'Publicité', value: totalSpend, color: '#EF4444' },
+      { name: 'Salaires', value: totalSalaries, color: '#3B82F6' },
+      { name: 'Livraison', value: shippingCost, color: '#F59E0B' }
+    ];
+
     // --- Currency ---
     const totalCurrencyDh = currencyExchange.reduce((sum, item) => sum + item.totalDh, 0);
 
     // --- Leaderboard ---
-    // Top Product (by Sales/Leads)
     const prodMap = {};
     filteredColis.forEach(c => {
-        const pName = c.productName || 'Inconnu';
+        const pName = c.productName || c.produitName || 'Inconnu';
         prodMap[pName] = (prodMap[pName] || 0) + 1;
     });
     const topProducts = Object.entries(prodMap)
@@ -148,7 +161,7 @@ export default function GeneralDashboard() {
         .slice(0, 5)
         .map(([name, count]) => ({ name, count }));
 
-    // Top Employee (by Confirm Rate)
+    // Top Employee
     const empMap = {};
     filteredColis.forEach(c => {
         const eName = c.employee || 'Non assigné';
@@ -164,8 +177,25 @@ export default function GeneralDashboard() {
             confRate: stats.total > 0 ? (stats.confirmed / stats.total) * 100 : 0,
             delivRate: stats.confirmed > 0 ? (stats.delivered / stats.confirmed) * 100 : 0
         }))
-        .sort((a,b) => b.confRate - a.confRate) // Sort by Confirmation Rate
+        .sort((a,b) => b.confRate - a.confRate)
         .slice(0, 5);
+
+    // --- Sales Trend (Last 7 days) ---
+    const salesTrend = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      const daySales = colis.filter(c => {
+        const cDate = new Date(c.dateCreated || c.createdAt || c.date);
+        return cDate.toISOString().split('T')[0] === dateStr && c.stage === 'Livré';
+      }).reduce((sum, c) => sum + (parseFloat(c.prix) || parseFloat(c.price) || 0), 0);
+      
+      salesTrend.push({
+        date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
+        ventes: daySales
+      });
+    }
 
     return {
         totalSpend,
@@ -179,10 +209,13 @@ export default function GeneralDashboard() {
         revenue,
         aov,
         totalCurrencyDh,
+        totalSalaries,
+        expensesData,
         topProducts,
-        topEmployees
+        topEmployees,
+        salesTrend
     };
-  }, [colis, ads, products, currencyExchange, dateRange, selectedProduct, selectedEmployee, phoneSearch]);
+  }, [colis, ads, products, payments, currencyExchange, dateRange, selectedProduct, selectedEmployee, phoneSearch]);
 
   const uniqueEmployees = [...new Set(colis.map(c => c.employee).filter(Boolean))];
 
@@ -389,6 +422,87 @@ export default function GeneralDashboard() {
                             )}
                         </tbody>
                     </table>
+                </div>
+            </div>
+       </div>
+
+       {/* 6. CHARTS SECTION */}
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Pie Chart - Expenses Breakdown */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <Activity size={18} className="text-slate-400"/>
+                    Répartition des Dépenses
+                </h3>
+                <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={metrics.expensesData}
+                                cx="50%"
+                                cy="50%"
+                                labelLine={false}
+                                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                outerRadius={80}
+                                fill="#8884d8"
+                                dataKey="value"
+                            >
+                                {metrics.expensesData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => `${value.toLocaleString()} DH`} />
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                    {metrics.expensesData.map((item, i) => (
+                        <div key={i} className="p-2 bg-slate-50 rounded-lg">
+                            <p className="text-xs text-slate-500 font-semibold">{item.name}</p>
+                            <p className="text-sm font-bold text-slate-800">{item.value.toLocaleString()} DH</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Line Chart - Sales Trend */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <TrendingUp size={18} className="text-slate-400"/>
+                    Évolution des Ventes (7 derniers jours)
+                </h3>
+                <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={metrics.salesTrend}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                            <XAxis 
+                                dataKey="date" 
+                                tick={{ fontSize: 12 }}
+                                stroke="#94A3B8"
+                            />
+                            <YAxis 
+                                tick={{ fontSize: 12 }}
+                                stroke="#94A3B8"
+                            />
+                            <Tooltip 
+                                contentStyle={{ 
+                                    borderRadius: '12px', 
+                                    border: 'none', 
+                                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' 
+                                }}
+                                formatter={(value) => [`${value.toLocaleString()} DH`, 'Ventes']}
+                            />
+                            <Line 
+                                type="monotone" 
+                                dataKey="ventes" 
+                                stroke="#10B981" 
+                                strokeWidth={3}
+                                dot={{ fill: '#10B981', r: 4 }}
+                                activeDot={{ r: 6 }}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
                 </div>
             </div>
        </div>
