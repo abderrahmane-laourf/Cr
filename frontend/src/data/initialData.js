@@ -133,6 +133,31 @@ export const initialData = {
         "packaging"
       ],
       "avatar": "https://i.pravatar.cc/150?img=20"
+    },
+    {
+      "id": "admin-asim",
+      "firstName": "Asim",
+      "lastName": "Admin",
+      "name": "Asim",
+      "phone": "0600-000000",
+      "cin": "A000000",
+      "cnss": "00000000",
+      "salary": 15000,
+      "bank": "CIH",
+      "rib": "000000000000000000000000",
+      "project": "Alpha",
+      "business": "Herboclear",
+      "role": "Admin",
+      "active": true,
+      "login": "asim",
+      "password": "password123",
+      "permissions": [
+        "dashboard",
+        "employees",
+        "settings",
+        "business"
+      ],
+      "avatar": "https://i.pravatar.cc/150?img=12"
     }
   ],
   "presence": [
@@ -1078,6 +1103,20 @@ export const initialData = {
       "duration": 5,
       "status": "Pending",
       "dateCreated": "2025-12-06T11:00:00.000Z"
+    }
+  ],
+  "businesses": [
+    {
+      "id": "1",
+      "name": "Herboclear",
+      "apiId": "API-HERBO-001",
+      "apiToken": "tk_live_herbo_123456789"
+    },
+    {
+      "id": "2",
+      "name": "Commit",
+      "apiId": "API-COMMIT-002",
+      "apiToken": "tk_live_commit_987654321"
     }
   ]
 };

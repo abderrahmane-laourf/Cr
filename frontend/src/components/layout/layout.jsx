@@ -175,7 +175,7 @@ const MODULES = [
   {
     id:'petitecaisse',
     label:'Petite Caisse',
-    icon: Wallet, 
+    icon: Coins, 
     path:'/admin/petitecaisse',
     description:'Gestion de la caisse',
     subItems:[
@@ -192,26 +192,38 @@ const MODULES = [
       {id:'rapports-list',label:'Liste des rapports',path:'/admin/rapports',icon:FileText},
     ]
   },
+  {
+    id: 'settings',
+    label: 'Paramètres',
+    icon: Settings,
+    path: '/admin/settings',
+    description: 'Configuration',
+    subItems: [
+      { id: 'business', label: 'Business', path: '/admin/business', icon: Briefcase },
+    ]
+  }
 ];
 
 // ----------------------------------------------------------------------
 // 2. PRIMARY RAIL
 // ----------------------------------------------------------------------
 const PrimaryRail = ({ activeModule, setActiveModule, isMobile }) => {
+  const [tooltip, setTooltip] = useState(null);
+
   const railClasses = `
     flex flex-col items-center py-3 z-50
     bg-white text-slate-700 border-r border-slate-100 shadow-lg
     ${isMobile ? 'w-16' : 'w-16'} 
-    h-full flex-shrink-0 transition-all duration-300
+    h-full flex-shrink-0 transition-all duration-300 relative
   `;
 
   return (
     <div className={railClasses}>
-      <div className="mb-4 w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 flex-shrink-0">
+      <div className="mb-4 w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 flex-shrink-0 z-50">
         <span className="font-bold text-lg text-white">C</span>
       </div>
 
-      <div className="flex-1 w-full space-y-2 px-2 flex flex-col items-center overflow-y-auto custom-scrollbar">
+      <div className="flex-1 w-full space-y-1 px-2 flex flex-col items-center overflow-y-auto [&::-webkit-scrollbar]:hidden -ms-overflow-style:none [scrollbar-width:none]">
         {MODULES.map((module) => {
           const isActive = activeModule === module.id;
           
@@ -219,21 +231,32 @@ const PrimaryRail = ({ activeModule, setActiveModule, isMobile }) => {
             <button
               key={module.id}
               onClick={() => setActiveModule(module.id)}
+              onMouseEnter={(e) => {
+                 const rect = e.currentTarget.getBoundingClientRect();
+                 setTooltip({ label: module.label, top: rect.top, left: rect.right });
+              }}
+              onMouseLeave={() => setTooltip(null)}
               className={`
-                group relative w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 flex-shrink-0
+                relative w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 flex-shrink-0
                 ${isActive ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'text-slate-500 hover:bg-blue-50 hover:text-blue-600'}
               `}
             >
               <module.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-              
-              {/* Tooltip on right */}
-              <div className="absolute left-14 px-2 py-1 text-xs font-medium rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl bg-slate-800 text-white border-none">
-                {module.label}
-              </div>
             </button>
           );
         })}
       </div>
+
+      {/* Floating Tooltip Portal-like */}
+      {tooltip && (
+        <div 
+          className="fixed z-[100] px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-md shadow-xl pointer-events-none animate-in fade-in slide-in-from-left-2 duration-150 whitespace-nowrap"
+          style={{ top: tooltip.top + 5, left: tooltip.left + 10 }}
+        >
+          {tooltip.label}
+          <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 border-4 border-transparent border-r-slate-800"></div>
+        </div>
+      )}
     </div>
   );
 };
@@ -406,11 +429,11 @@ const TopHeader = ({ isMobileOpen, setIsMobileOpen, activeModuleId, isSecondaryO
         <div className="relative">
           <button 
             onClick={() => setShowNotifications(!showNotifications)}
-            className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${showNotifications ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-100'}`}
+            className={`w-12 h-12 flex items-center justify-center rounded-xl transition-colors ${showNotifications ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-100'}`}
           >
-            <Bell size={20} />
+            <Bell size={28} />
             {notifications.length > 0 && (
-              <span className="absolute top-2.5 right-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
+              <span className="absolute top-3 right-3 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
                 {notifications.length}
               </span>
             )}

@@ -7,6 +7,7 @@ import { AdminLayout } from './components/layout/layout';
 
 // Import Pages
 import EmployeesPage from './page/admin/employee';
+import BusinessPage from './page/admin/business';
 import Paiement from './page/admin/paiement';
 import AttendancePage from './page/admin/presence';
 import EmployeeDashboard from './page/admin/employeeDashboard';
@@ -56,6 +57,8 @@ export default function App() {
       {/* Employee Management Routes */}
       <Route path="/admin/dashboard" element={<AdminLayout><GeneralDashboard /></AdminLayout>} />
       <Route path="/admin/employees" element={<AdminLayout><EmployeesPage /></AdminLayout>} />
+      <Route path="/admin/business" element={<AdminLayout><BusinessPage /></AdminLayout>} />
+      <Route path="/admin/settings" element={<Navigate to="/admin/business" replace />} />
       <Route path="/admin/paiement" element={<AdminLayout><Paiement /></AdminLayout>} />
       <Route path="/admin/presence" element={<AdminLayout><AttendancePage /></AdminLayout>} />
       

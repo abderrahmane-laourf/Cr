@@ -267,6 +267,7 @@ export const villeAPI = createGenericAPI('villes');
 export const quartierAPI = createGenericAPI('quartiers');
 export const lossAPI = createGenericAPI('losses');
 export const adsAPI = createGenericAPI('ads');
+export const businessAPI = createGenericAPI('businesses');
 export const taskAPI = createGenericAPI('tasks');
 
 // Export all APIs as a single object
@@ -284,6 +285,7 @@ export default {
   quartier: quartierAPI,
   loss: lossAPI,
   ads: adsAPI,
+  business: businessAPI,
   task: taskAPI,
   
   // Helpers
