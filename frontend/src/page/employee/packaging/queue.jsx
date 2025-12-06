@@ -9,7 +9,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Truck
 } from 'lucide-react';
 import { productAPI } from '../../../services/api';
 
@@ -19,6 +20,9 @@ const MOCK_ORDERS = [
   { id: 'CMD-305', client: 'Ahmed K.', product: 'Crème Hydratante', quantity: 1, status: 'pending', image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfbc8?auto=format&fit=crop&q=80&w=200', barcode: '789012' },
   { id: 'CMD-310', client: 'Samira R.', product: 'Pack Anti-Age', quantity: 1, status: 'completed', image: 'https://images.unsplash.com/photo-1556228578-8c858564a275?auto=format&fit=crop&q=80&w=200', barcode: '345678' }
 ];
+
+// Global pickup time for all packages
+const GLOBAL_PICKUP_TIME = '16:00'; // 16h00
 
 export default function PackagingQueue() {
   const [activeTab, setActiveTab] = useState('pending'); // 'pending' | 'completed'
@@ -79,6 +83,35 @@ export default function PackagingQueue() {
   const currentList = activeTab === 'pending' ? pendingOrders : completedOrders;
   const progress = Math.round((completedOrders.length / orders.length) * 100) || 0;
 
+  // Calculate time remaining until pickup
+  const calculateTimeRemaining = () => {
+    const now = new Date();
+    const [hours, minutes] = GLOBAL_PICKUP_TIME.split(':').map(Number);
+    const pickupTime = new Date();
+    pickupTime.setHours(hours, minutes, 0, 0);
+    
+    // If pickup time has passed today, set it for tomorrow
+    if (pickupTime < now) {
+      pickupTime.setDate(pickupTime.getDate() + 1);
+    }
+    
+    const diff = pickupTime - now;
+    const hoursRemaining = Math.floor(diff / (1000 * 60 * 60));
+    const minutesRemaining = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return { hours: hoursRemaining, minutes: minutesRemaining };
+  };
+
+  const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining(calculateTimeRemaining());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
+
   // ----------------------------------------------------------------------
   // RENDER
   // ----------------------------------------------------------------------
@@ -86,8 +119,28 @@ export default function PackagingQueue() {
   return (
     <div className="max-w-md mx-auto min-h-screen pb-20 md:pb-0 md:max-w-4xl">
       
-      {/* Top Progress Section */}
+      {/* Top Progress Section with Global Pickup Time */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6 sticky top-0 md:static z-10">
+        {/* Pickup Time Banner */}
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-xl mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+              <Truck className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs font-medium text-blue-100">Ramassage Global</p>
+              <p className="text-2xl font-bold">{GLOBAL_PICKUP_TIME.replace(':', 'h')}</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-xs font-medium text-blue-100">Temps Restant</p>
+            <p className="text-xl font-bold">
+              {timeRemaining.hours}h {timeRemaining.minutes}m
+            </p>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
         <div className="flex justify-between items-end mb-2">
           <div>
             <h1 className="text-xl font-bold text-slate-900">File d'emballage</h1>
