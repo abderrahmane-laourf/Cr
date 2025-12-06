@@ -535,7 +535,8 @@ export default function EmployeesPage() {
       (emp.cin && emp.cin.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesRole = roleFilter === 'All' || emp.role === roleFilter;
     const matchesBusiness = businessFilter === 'All' || emp.business === businessFilter;
-    return matchesSearch && matchesRole && matchesBusiness;
+    const isExcluded = ['confirmation', 'packaging'].includes(emp.role);
+    return matchesSearch && matchesRole && matchesBusiness && !isExcluded;
   });
 
   return (
