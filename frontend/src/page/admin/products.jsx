@@ -5,7 +5,7 @@ import {
   Camera, AlertCircle, CheckCircle, ChevronDown, Printer,
   AlertTriangle, ShoppingCart, Info
 } from 'lucide-react';
-import { productAPI } from '../../services/api';
+import { productAPI, warehouseAPI } from '../../services/api';
 import Swal from 'sweetalert2';
 
 // ============================================
@@ -189,7 +189,7 @@ const Step2 = ({ formData, handleInputChange, isViewMode }) => (
   </div>
 );
 
-const Step3 = ({ formData, handleInputChange, isViewMode, setFormData }) => (
+const Step3 = ({ formData, handleInputChange, isViewMode, setFormData, warehouses = [] }) => (
   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
     <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 mb-6 flex items-start gap-3">
       <ShoppingCart className="text-orange-600 shrink-0 mt-0.5" size={18} />
@@ -198,6 +198,17 @@ const Step3 = ({ formData, handleInputChange, isViewMode, setFormData }) => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
       <InputField label="Quantité en Stock" type="number" value={formData.stock} onChange={(e) => handleInputChange('stock', e)} disabled={isViewMode} placeholder="0" />
       <InputField label="Alerte de Stock" type="number" value={formData.alerteStock} onChange={(e) => handleInputChange('alerteStock', e)} disabled={isViewMode} placeholder="10" />
+      <div className="md:col-span-2">
+        <InputField 
+          label="Entrepôt / Dépôt" 
+          type="select" 
+          options={['', ...warehouses.map(w => w.name)]} 
+          value={formData.warehouse} 
+          onChange={(e) => handleInputChange('warehouse', e)} 
+          disabled={isViewMode} 
+          required={false}
+        />
+      </div>
       <div className="md:col-span-2">
         <CheckboxField 
           label="Produit Fragile" 
@@ -282,7 +293,7 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
           </div>
 
           {/* Stock Info */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
               <p className="text-xs text-slate-500 font-bold uppercase mb-1">Stock Actuel</p>
               <p className="text-xl font-bold text-slate-700">{product.stock} {product.uniteCalcul}</p>
@@ -290,6 +301,10 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
               <p className="text-xs text-slate-500 font-bold uppercase mb-1">Alerte Stock</p>
               <p className="text-xl font-bold text-slate-700">{product.alerteStock} {product.uniteCalcul}</p>
+            </div>
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <p className="text-xs text-slate-500 font-bold uppercase mb-1">Entrepôt</p>
+              <p className="text-xl font-bold text-slate-700">{product.warehouse || 'Non défini'}</p>
             </div>
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
               <p className="text-xs text-slate-500 font-bold uppercase mb-1">Fragile</p>
@@ -316,14 +331,14 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
 // MAIN PRODUCT MODAL
 // ============================================
 
-const ProductModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
+const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses = [] }) => {
   const [step, setStep] = useState(1);
   
   const emptyForm = {
     nom: '', image: '', type: PRODUCT_TYPES[0], categorie: PRODUCT_CATEGORIES[0],
     uniteCalcul: UNITE_CALCUL[0], business: BUSINESS_OPTIONS[0],
     prixAchat: '', prix1: '', prix2: '', prix3: '',
-    fragile: false, stock: '', alerteStock: '',
+    fragile: false, stock: '', alerteStock: '', warehouse: '',
     description: '', ingredients: '', modeEmploi: '', utilisationsInterdites: '', faq: '', scriptVente: ''
   };
 
@@ -383,7 +398,7 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
           <Stepper step={step} setStep={setStep} />
           {step === 1 && <Step1 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
           {step === 2 && <Step2 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
-          {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
+          {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} warehouses={warehouses} />}
           {step === 4 && <Step4 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
         </div>
         
@@ -413,6 +428,7 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('Tous');
   const [categoryFilter, setCategoryFilter] = useState('Tous');
@@ -435,8 +451,12 @@ export default function ProductsPage() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const data = await productAPI.getAll();
-      setProducts(data);
+      const [productsData, warehousesData] = await Promise.all([
+        productAPI.getAll(),
+        warehouseAPI.getAll()
+      ]);
+      setProducts(productsData);
+      setWarehouses(warehousesData);
     } catch (error) {
       console.error('Error loading products:', error);
       showToast('Erreur de chargement des produits', 'error');
@@ -643,9 +663,10 @@ export default function ProductsPage() {
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Image</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nom</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Catégorie</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Entrepôt</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Stock</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Achat</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Vente 1</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Alerte</th>
                 <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -669,18 +690,23 @@ export default function ProductsPage() {
                         {product.categorie}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm font-semibold text-slate-700">{product.prixAchat} MAD</td>
-                    <td className="px-6 py-4 text-sm font-semibold text-emerald-600">{product.prix1} MAD</td>
                     <td className="px-6 py-4">
-                      {isLowStock ? (
-                        <div className="flex items-center gap-1 text-orange-600">
-                          <AlertTriangle size={16} />
-                          <span className="text-xs font-bold">{product.stock}</span>
-                        </div>
+                      {product.warehouse ? (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                          {product.warehouse}
+                        </span>
                       ) : (
-                        <span className="text-sm text-slate-500">{product.stock}</span>
+                        <span className="text-xs text-slate-400">-</span>
                       )}
                     </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-black text-slate-800">{product.stock || 0}</span>
+                        <span className="text-xs text-slate-400">{product.uniteCalcul}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-semibold text-slate-700">{product.prixAchat} MAD</td>
+                    <td className="px-6 py-4 text-sm font-semibold text-emerald-600">{product.prix1} MAD</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => handleOpenView(product)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir"><Eye size={18} /></button>
@@ -709,6 +735,7 @@ export default function ProductsPage() {
         mode={modalMode}
         initialData={selectedProduct}
         onSave={handleSave}
+        warehouses={warehouses}
       />
 
       <ViewProductModal 

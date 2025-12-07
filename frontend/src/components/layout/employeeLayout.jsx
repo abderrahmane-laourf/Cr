@@ -8,154 +8,143 @@ import {
   LogOut,
   Menu, 
   Bell,
-  Search,
-  PanelLeftClose,
-  PanelLeftOpen,
   ClipboardList,
-  CheckCircle2
+  CheckCircle2,
+  Check,
+  X,
+  AlertCircle
 } from 'lucide-react';
+import { taskAPI } from '../../services/api';
 
 // ----------------------------------------------------------------------
-// 1. DATA
+// 1. DATA DE DÉMONSTRATION (Pour voir l'exemple tout de suite)
 // ----------------------------------------------------------------------
+const MOCK_NOTIFICATIONS = [
+  {
+    id: 901,
+    title: "Urgent : Validation retour client",
+    description: "Le client X demande un retour. Vérifier l'état du colis.",
+    status: "En attente",
+    assignedTo: "confirmation",
+    dateCreated: new Date().toISOString()
+  },
+  {
+    id: 902,
+    title: "Inventaire fin de mois",
+    description: "Compter les cartons de la zone B.",
+    status: "En attente",
+    assignedTo: "packaging",
+    dateCreated: new Date().toISOString()
+  }
+];
+
 const MODULES = {
   confirmation: [
-    {
-      id: 'dashboard',
-      label: 'Tableau de bord',
-      icon: LayoutDashboard,
-      path: '/employee/confirmation/dashboard',
-      description: 'Vue d\'ensemble'
-    },
-    {
-      id: 'clients',
-      label: 'Clients',
-      icon: Users,
-      path: '/employee/confirmation/clients',
-      description: 'Gestion des clients'
-    },
-    {
-      id: 'tasks',
-      label: 'Tâches',
-      icon:  ClipboardList, // Ensure ClipboardList is imported or use existing icon
-      path: '/employee/confirmation/tasks',
-      description: 'Mes tâches'
-    },
-    {
-      id: 'leaderboard',
-      label: 'Leaderboard',
-      icon: Trophy,
-      path: '/employee/confirmation/leaderboard',
-      description: 'Classement'
-    }
+    { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/employee/confirmation/dashboard' },
+    { id: 'clients', label: 'Clients', icon: Users, path: '/employee/confirmation/clients' },
+    { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/confirmation/tasks' }, // Badge apparaîtra ici
+    { id: 'leaderboard', label: 'Leaderboard', icon: Trophy, path: '/employee/confirmation/leaderboard' }
   ],
   packaging: [
-    {
-      id: 'queue',
-      label: 'File de Colis',
-      icon: Package,
-      path: '/employee/packaging/queue',
-      description: 'Préparation des commandes'
-    },
-    {
-      id: 'tasks',
-      label: 'Tâches',
-      icon: ClipboardList,
-      path: '/employee/packaging/tasks',
-      description: 'Mes tâches'
-    },
+    { id: 'queue', label: 'File de Colis', icon: Package, path: '/employee/packaging/queue' },
+    { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/packaging/tasks' },
   ], 
-  // Fallback for generic employee or if role missing
   default: [
-     {
-      id: 'dashboard',
-      label: 'Tableau de bord',
-      icon: LayoutDashboard,
-      path: '/employee',
-      description: 'Accueil'
-    }
+     { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/employee' },
+     { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/tasks' },
   ]
 };
 
-import { taskAPI } from '../../services/api';
-
-// ... (MODULES remains the same)
-
 // ----------------------------------------------------------------------
-// 2. COMPONENTS
+// 2. SIDEBAR ITEM (Avec le Badge Rouge)
 // ----------------------------------------------------------------------
-
-const SidebarItem = ({ item, isActive, onClick, isMobile }) => (
+const SidebarItem = ({ item, isActive, onClick, isMobile, badgeCount }) => (
   <button
     onClick={onClick}
     className={`
-      w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group
+      w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group
       ${isActive 
         ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' 
         : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600'
       }
     `}
   >
-    <item.icon size={20} className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-blue-600'} />
-    <span className={isMobile ? 'block' : 'hidden lg:block'}>{item.label}</span>
+    <div className="flex items-center gap-3">
+      <item.icon size={20} className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-blue-600'} />
+      <span className={isMobile ? 'block' : 'hidden lg:block'}>{item.label}</span>
+    </div>
+
+    {/* BADGE ROUGE : Nombre de tâches à faire */}
+    {item.id === 'tasks' && badgeCount > 0 && (
+      <div className={`
+        flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-[11px] font-bold shadow-sm animate-in zoom-in
+        ${isActive ? 'bg-white text-blue-600' : 'bg-red-500 text-white'}
+      `}>
+        {badgeCount}
+      </div>
+    )}
   </button>
 );
 
 // ----------------------------------------------------------------------
-// 3. NOTIFICATION DROPDOWN
+// 3. DROPDOWN NOTIFICATION (Liste des tâches à accepter)
 // ----------------------------------------------------------------------
-
-const NotificationDropdown = ({ tasks, onValidate, onClose }) => {
-  if (tasks.length === 0) {
-    return (
-      <div className="absolute top-16 right-4 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 z-50 animate-in fade-in zoom-in-95 duration-200">
-        <div className="text-center text-slate-500">
-           <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
-             <Bell className="w-6 h-6 text-slate-300" />
-           </div>
-           <p className="font-medium text-sm">Aucune nouvelle tâche</p>
-        </div>
-      </div>
-    );
-  }
-
+const NotificationDropdown = ({ tasks, onAccept, onClose }) => {
   return (
-    <div className="absolute top-16 right-4 w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
-       <div className="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-          <h3 className="font-bold text-slate-800">
-            Notifications 
-            <span className="ml-2 px-2 py-0.5 bg-red-100 text-red-600 rounded-full text-xs">{tasks.length}</span>
-          </h3>
+    <div className="absolute top-16 right-4 w-80 md:w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+       {/* En-tête */}
+       <div className="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/80 backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+            <AlertCircle size={18} className="text-red-500" />
+            <h3 className="font-bold text-slate-800">À accepter</h3>
+            <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-[10px] font-bold">{tasks.length}</span>
+          </div>
+          <button onClick={onClose} className="p-1 hover:bg-slate-200 rounded-full transition-colors text-slate-400">
+            <X size={16}/>
+          </button>
        </div>
-       <div className="max-h-[400px] overflow-y-auto">
-          {tasks.map(task => (
-            <div key={task.id} className="p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors">
-               <div className="flex justify-between items-start mb-2">
-                 <h4 className="font-bold text-slate-700 text-sm">{task.title || 'Nouvelle tâche'}</h4>
-                 <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
-                   {new Date(task.dateCreated).toLocaleDateString()}
-                 </span>
+       
+       {/* Liste */}
+       <div className="max-h-[400px] overflow-y-auto bg-slate-50/30">
+          {tasks.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">
+               <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                 <Bell className="w-6 h-6 text-slate-300" />
                </div>
-               <p className="text-xs text-slate-500 mb-3 line-clamp-2">{task.description}</p>
-               <button 
-                 onClick={() => onValidate(task.id)}
-                 className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
-               >
-                 <CheckCircle2 size={14} />
-                 Confirmer la lecture
-               </button>
+               <p className="text-sm font-medium">Vous êtes à jour !</p>
             </div>
-          ))}
+          ) : (
+            tasks.map(task => (
+              <div key={task.id} className="p-4 border-b border-slate-100 bg-white hover:bg-slate-50 transition-colors group">
+                 <div className="flex justify-between items-start mb-2">
+                   <h4 className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors">
+                     {task.title || "Nouvelle tâche"}
+                   </h4>
+                   <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                     {new Date(task.dateCreated).toLocaleDateString()}
+                   </span>
+                 </div>
+                 <p className="text-xs text-slate-500 mb-3 line-clamp-2 leading-relaxed">{task.description}</p>
+                 
+                 <button 
+                   onClick={() => onAccept(task.id)}
+                   className="w-full py-2 bg-slate-900 text-white rounded-lg text-xs font-bold transition-all hover:bg-slate-800 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10"
+                 >
+                   <Check size={14} />
+                   Accepter la tâche
+                 </button>
+              </div>
+            ))
+          )}
        </div>
     </div>
   );
 };
 
 // ----------------------------------------------------------------------
-// 4. HEADER COMPONENT
+// 4. HEADER PRINCIPAL
 // ----------------------------------------------------------------------
-
-const TopHeader = ({ isMobileOpen, setIsMobileOpen, title, notifications, onValidate, showDropdown, setShowDropdown }) => {
+const TopHeader = ({ isMobileOpen, setIsMobileOpen, title, notifications, onAccept, showDropdown, setShowDropdown }) => {
   const navigate = useNavigate();
   
   return (
@@ -171,31 +160,36 @@ const TopHeader = ({ isMobileOpen, setIsMobileOpen, title, notifications, onVali
         <h1 className="text-xl font-bold text-slate-800 tracking-tight">{title}</h1>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 md:gap-3">
+        {/* BOUTON CLOCHE */}
         <div className="relative">
           <button 
             onClick={() => setShowDropdown(!showDropdown)}
-            className={`p-2 rounded-xl transition-all relative ${showDropdown ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
+            className={`p-2.5 rounded-xl transition-all relative ${showDropdown ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
           >
             <Bell size={20} />
             {notifications?.length > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-red-500 rounded-full border border-white text-[10px] text-white flex items-center justify-center font-bold">
-                {notifications.length}
-              </span>
+              <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
             )}
           </button>
           
           {showDropdown && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setShowDropdown(false)} />
-              <NotificationDropdown tasks={notifications || []} onValidate={onValidate} onClose={() => setShowDropdown(false)} />
+              <NotificationDropdown 
+                tasks={notifications || []} 
+                onAccept={onAccept} 
+                onClose={() => setShowDropdown(false)} 
+              />
             </>
           )}
         </div>
 
+        <div className="h-8 w-px bg-slate-200 mx-1 hidden md:block"></div>
+
         <button 
           onClick={() => { localStorage.clear(); navigate('/'); }}
-          className="p-2 text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all flex items-center gap-2"
+          className="p-2.5 text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all flex items-center gap-2"
           title="Se déconnecter"
         >
           <LogOut size={20} />
@@ -205,73 +199,62 @@ const TopHeader = ({ isMobileOpen, setIsMobileOpen, title, notifications, onVali
   );
 };
 
+// ----------------------------------------------------------------------
+// 5. LAYOUT PRINCIPAL
+// ----------------------------------------------------------------------
 export function EmployeeLayout({ children, mode = 'default' }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [pendingTasks, setPendingTasks] = useState([]);
+  // INITIALISATION AVEC DONNÉES MOCK POUR L'EXEMPLE
+  const [pendingTasks, setPendingTasks] = useState(MOCK_NOTIFICATIONS); 
   const [showDropdown, setShowDropdown] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Get User Role from LocalStorage (just for profile info)
   const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
   
-  // Select modules based on mode prop
-  // mode: 'confirmation' | 'packaging' | default
   let currentModules = [];
-  if (mode === 'confirmation') {
-    currentModules = MODULES.confirmation;
-  } else if (mode === 'packaging') {
-     currentModules = MODULES.packaging;
-  } else {
-     currentModules = MODULES.default;
-  }
+  if (mode === 'confirmation') currentModules = MODULES.confirmation;
+  else if (mode === 'packaging') currentModules = MODULES.packaging;
+  else currentModules = MODULES.default;
 
+  // Récupération des données API (Optionnel si vous voulez garder le mock)
   const fetchNotifications = async () => {
       try {
           const allTasks = await taskAPI.getAll();
-          const myPendingTasks = allTasks.filter(t => {
-              const isMyTask = t.assignedTo === user.name || 
-                             t.assignedTo === user.role ||
-                             (t.assignedTo === 'confirmation' && mode === 'confirmation') ||
-                             (t.assignedTo === 'packaging' && mode === 'packaging');
-              
-              // Only get 'En attente' tasks for notification
-              return isMyTask && t.status === 'En attente';
-          });
-          setPendingTasks(myPendingTasks);
+          // Logique de filtre... (simulée ici par le mock pour l'exemple)
+          // setPendingTasks(...) 
       } catch (error) {
-          console.error("Error fetching notifications", error);
+          console.log("Mode démo : utilisation des données statiques");
       }
   };
 
   useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 60000);
-    return () => clearInterval(interval);
-  }, [user.name, user.role, mode]);
+    // fetchNotifications(); // Décommenter pour utiliser l'API réelle
+  }, []);
 
-  const handleValidateTask = async (taskId) => {
+  // Action : Accepter une tâche
+  const handleAcceptTask = async (taskId) => {
       try {
-          // Update task to 'Validé'
-          await taskAPI.update(taskId, { status: 'Validé' });
+          // 1. Simulation API (On met à jour le statut)
+          // await taskAPI.update(taskId, { status: 'En cours' });
           
-          // Remove locally for immediate UI update
+          // 2. Mise à jour de l'affichage (On retire la tâche de la liste des notifs)
           setPendingTasks(prev => prev.filter(t => t.id !== taskId));
           
-          // Close dropdown if empty
-          if (pendingTasks.length <= 1) setShowDropdown(false);
-          
-          // Optional: Navigate to tasks page
+          // 3. Navigation vers la page des tâches
           const tasksModule = currentModules.find(m => m.id === 'tasks');
           if (tasksModule && location.pathname !== tasksModule.path) {
               navigate(tasksModule.path);
           }
+          
+          // 4. Fermer le dropdown s'il est vide
+          if (pendingTasks.length <= 1) setShowDropdown(false);
+
       } catch (error) {
-          console.error("Error validating task", error);
+          console.error("Erreur", error);
       }
   };
 
-  // Find current active module for title
   const activeModule = currentModules.find(m => m.path === location.pathname) || currentModules[0];
   
   return (
@@ -292,14 +275,7 @@ export function EmployeeLayout({ children, mode = 'default' }) {
       `}>
         <div className="h-20 flex items-center justify-center border-b border-slate-50">
           <div className="flex items-center gap-2">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="text-[#1325ec] w-8 h-8">
-              <circle cx="12" cy="12" r="3" />
-              <circle cx="12" cy="5" r="2" opacity="0.2" />
-              <circle cx="12" cy="19" r="2" opacity="0.2" />
-              <circle cx="5" cy="12" r="2" opacity="0.2" />
-              <circle cx="19" cy="12" r="2" opacity="0.2" />
-            </svg>
-            <span className="text-xl font-bold tracking-wide text-slate-900">Platform</span>
+            <span className="text-xl font-bold tracking-wide text-blue-700">MyPlatform</span>
           </div>
         </div>
 
@@ -309,17 +285,19 @@ export function EmployeeLayout({ children, mode = 'default' }) {
               key={item.id} 
               item={item} 
               isActive={location.pathname === item.path}
+              // LOGIQUE DU BADGE : On passe le nombre seulement si c'est 'tasks'
+              badgeCount={item.id === 'tasks' ? pendingTasks.length : 0}
               onClick={() => {
                 navigate(item.path);
                 setIsMobileOpen(false);
               }}
-              isMobile={true} // Always show labels in this sidebar style
+              isMobile={true} 
             />
           ))}
         </div>
 
         <div className="p-4 border-t border-slate-50">
-          <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl">
+          <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl border border-slate-100">
             <img 
                src={user.avatar || "https://i.pravatar.cc/150?img=12"} 
                alt="Profile" 
@@ -340,7 +318,7 @@ export function EmployeeLayout({ children, mode = 'default' }) {
           setIsMobileOpen={setIsMobileOpen}
           title={activeModule?.label || 'Espace Employé'} 
           notifications={pendingTasks}
-          onValidate={handleValidateTask}
+          onAccept={handleAcceptTask}
           showDropdown={showDropdown}
           setShowDropdown={setShowDropdown}
         />
