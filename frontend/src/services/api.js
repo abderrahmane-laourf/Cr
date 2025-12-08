@@ -270,6 +270,41 @@ export const adsAPI = createGenericAPI('ads');
 export const businessAPI = createGenericAPI('businesses');
 export const taskAPI = createGenericAPI('tasks');
 
+export const settingsAPI = {
+  // Generic helper to get/set lists
+  getList: (key, defaults = []) => {
+    const saved = localStorage.getItem(key);
+    if (!saved) {
+      // Seed defaults if nothing saved
+      localStorage.setItem(key, JSON.stringify(defaults));
+      return defaults;
+    }
+    return JSON.parse(saved);
+  },
+  
+  saveList: (key, list) => {
+    localStorage.setItem(key, JSON.stringify(list));
+    return list;
+  },
+
+  // Specific Getters with Defaults
+  getProductTypes: () => settingsAPI.getList('settings_product_types', ['Matière Première', 'Fabriqué', 'Produit Pré']),
+  getProductCategories: () => settingsAPI.getList('settings_product_categories', ['Cosmétique', 'Alimentaire', 'Pharmaceutique', 'Autre']),
+  getUnits: () => settingsAPI.getList('settings_units', ['ml', 'L', 'g', 'kg', 'unité', 'pièce']),
+  getStores: () => settingsAPI.getList('settings_stores', ['Magasin Principal', 'Magasin Secondaire', 'Entrepôt A', 'Entrepôt B']),
+  getBusinesses: () => settingsAPI.getList('settings_businesses', ['Herboclear', 'Commit', 'Other']),
+  
+  // Generic Updater
+  updateList: (key, newList) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            settingsAPI.saveList(key, newList);
+            resolve(newList);
+        }, 300); // Simulate network delay
+    });
+  }
+};
+
 // Export all APIs as a single object
 export default {
   employee: employeeAPI,
@@ -287,6 +322,7 @@ export default {
   ads: adsAPI,
   business: businessAPI,
   task: taskAPI,
+  settings: settingsAPI,
   
   // Helpers
   calculateDailyRate,

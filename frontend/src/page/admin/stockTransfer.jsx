@@ -33,6 +33,23 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses, isSaving
     setError('');
   };
 
+  // Get current stock for selected product in selected warehouse
+  const getStockInWarehouse = (productId, warehouseName) => {
+    if (!productId || !warehouseName) return null;
+    const product = products.find(p => String(p.id) === String(productId));
+    if (!product) return null;
+    
+    // Check if product is in this warehouse
+    if (product.magasin === warehouseName) {
+      return product.stock || 0;
+    }
+    return 0; // Product not in this warehouse
+  };
+
+  const selectedProduct = products.find(p => String(p.id) === String(formData.productId));
+  const sourceStock = getStockInWarehouse(formData.productId, formData.sourceWarehouse);
+  const destStock = getStockInWarehouse(formData.productId, formData.destinationWarehouse);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -46,7 +63,11 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses, isSaving
       return;
     }
 
-    const selectedProduct = products.find(p => String(p.id) === String(formData.productId));
+    // Check if enough stock in source
+    if (sourceStock !== null && parseInt(formData.quantity) > sourceStock) {
+      setError(`Stock insuffisant dans ${formData.sourceWarehouse}. Disponible: ${sourceStock}`);
+      return;
+    }
     
     onSave({
       ...formData,
@@ -168,6 +189,15 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses, isSaving
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
               </div>
+              {/* Show source stock */}
+              {formData.productId && formData.sourceWarehouse && sourceStock !== null && (
+                <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-blue-50 border border-blue-100 rounded-lg">
+                  <Package size={14} className="text-blue-600" />
+                  <span className="text-xs font-semibold text-blue-700">
+                    Stock actuel: <span className="font-black">{sourceStock}</span> {selectedProduct?.uniteCalcul || 'unités'}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Destination */}
@@ -187,6 +217,15 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses, isSaving
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
               </div>
+              {/* Show destination stock */}
+              {formData.productId && formData.destinationWarehouse && destStock !== null && (
+                <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg">
+                  <Package size={14} className="text-emerald-600" />
+                  <span className="text-xs font-semibold text-emerald-700">
+                    Stock actuel: <span className="font-black">{destStock}</span> {selectedProduct?.uniteCalcul || 'unités'}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 

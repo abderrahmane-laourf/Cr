@@ -126,6 +126,234 @@ const ReceiptModal = ({ isOpen, onClose, payment, employee }) => {
   );
 };
 
+// --- MODAL AVANCE (SIMPLE) ---
+const AvanceModal = ({ isOpen, onClose, onSave, employees }) => {
+  const [formData, setFormData] = useState({
+    employeeId: '',
+    date: new Date().toISOString().slice(0, 10),
+    amount: '',
+    method: 'Espèces',
+    proof: null
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.employeeId || !formData.amount) return;
+    
+    onSave({
+      ...formData,
+      type: 'Avance',
+      basic: 0,
+      commission: 0,
+      deduction: parseFloat(formData.amount),
+      net: -parseFloat(formData.amount), // Negative because it's an advance
+      month: formData.date.slice(0, 7),
+      proofUrl: formData.proof ? URL.createObjectURL(formData.proof) : null
+    });
+    setFormData({ employeeId: '', date: new Date().toISOString().slice(0, 10), amount: '', method: 'Espèces', proof: null });
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100">
+          <h2 className="text-lg font-bold text-slate-800">Nouvelle Avance</h2>
+          <button onClick={onClose} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition"><X size={20}/></button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase ml-1">Employé <span className="text-red-400">*</span></label>
+            <select 
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none"
+              value={formData.employeeId}
+              onChange={e => setFormData({...formData, employeeId: e.target.value})}
+              required
+            >
+              <option value="">Sélectionner...</option>
+              {employees?.map(emp => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase ml-1">Date</label>
+              <input 
+                type="date" 
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none"
+                value={formData.date}
+                onChange={e => setFormData({...formData, date: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase ml-1">Montant <span className="text-red-400">*</span></label>
+              <input 
+                type="number" 
+                step="0.01"
+                placeholder="0.00"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none"
+                value={formData.amount}
+                onChange={e => setFormData({...formData, amount: e.target.value})}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase ml-1">Moyen de paiement</label>
+            <select 
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none"
+              value={formData.method}
+              onChange={e => setFormData({...formData, method: e.target.value})}
+            >
+              <option>Espèces</option>
+              <option>Virement</option>
+              <option>Chèque</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase ml-1">Preuve (optionnel)</label>
+            <label className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-slate-50 border border-dashed border-slate-300 hover:border-orange-400 cursor-pointer transition-colors group">
+              <Download size={16} className="text-slate-400 group-hover:text-orange-500"/>
+              <span className="text-sm text-slate-500 group-hover:text-slate-700">Ajouter un fichier...</span>
+              <input type="file" className="hidden" onChange={e => setFormData({...formData, proof: e.target.files[0]})} />
+            </label>
+            {formData.proof && <p className="text-xs text-emerald-600 font-medium ml-1 flex items-center gap-1"><Check size={12}/> {formData.proof.name}</p>}
+          </div>
+
+          <button type="submit" className="w-full py-3 rounded-xl bg-orange-600 text-white font-bold hover:bg-orange-700 shadow-lg transition-all flex items-center justify-center gap-2">
+            <Check size={18} /> Enregistrer l'Avance
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// --- MODAL PRIME (SIMPLE) ---
+const PrimeModal = ({ isOpen, onClose, onSave, employees }) => {
+  const [formData, setFormData] = useState({
+    employeeId: '',
+    date: new Date().toISOString().slice(0, 10),
+    amount: '',
+    reason: '',
+    method: 'Virement',
+    proof: null
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.employeeId || !formData.amount) return;
+    
+    onSave({
+      ...formData,
+      type: 'Prime',
+      basic: 0,
+      commission: parseFloat(formData.amount),
+      deduction: 0,
+      net: parseFloat(formData.amount),
+      month: formData.date.slice(0, 7),
+      proofUrl: formData.proof ? URL.createObjectURL(formData.proof) : null
+    });
+    setFormData({ employeeId: '', date: new Date().toISOString().slice(0, 10), amount: '', reason: '', method: 'Virement', proof: null });
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100">
+          <h2 className="text-lg font-bold text-slate-800">Nouvelle Prime</h2>
+          <button onClick={onClose} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition"><X size={20}/></button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase ml-1">Employé <span className="text-red-400">*</span></label>
+            <select 
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none"
+              value={formData.employeeId}
+              onChange={e => setFormData({...formData, employeeId: e.target.value})}
+              required
+            >
+              <option value="">Sélectionner...</option>
+              {employees?.map(emp => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase ml-1">Date</label>
+              <input 
+                type="date" 
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none"
+                value={formData.date}
+                onChange={e => setFormData({...formData, date: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase ml-1">Montant <span className="text-red-400">*</span></label>
+              <input 
+                type="number" 
+                step="0.01"
+                placeholder="0.00"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none"
+                value={formData.amount}
+                onChange={e => setFormData({...formData, amount: e.target.value})}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase ml-1">Raison / Description</label>
+            <textarea 
+              placeholder="Ex: Performance exceptionnelle, objectifs atteints..."
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none resize-none"
+              rows="2"
+              value={formData.reason}
+              onChange={e => setFormData({...formData, reason: e.target.value})}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase ml-1">Moyen de paiement</label>
+            <select 
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none"
+              value={formData.method}
+              onChange={e => setFormData({...formData, method: e.target.value})}
+            >
+              <option>Virement</option>
+              <option>Espèces</option>
+              <option>Chèque</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase ml-1">Preuve (optionnel)</label>
+            <label className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-slate-50 border border-dashed border-slate-300 hover:border-emerald-400 cursor-pointer transition-colors group">
+              <Download size={16} className="text-slate-400 group-hover:text-emerald-500"/>
+              <span className="text-sm text-slate-500 group-hover:text-slate-700">Ajouter un fichier...</span>
+              <input type="file" className="hidden" onChange={e => setFormData({...formData, proof: e.target.files[0]})} />
+            </label>
+            {formData.proof && <p className="text-xs text-emerald-600 font-medium ml-1 flex items-center gap-1"><Check size={12}/> {formData.proof.name}</p>}
+          </div>
+
+          <button type="submit" className="w-full py-3 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-lg transition-all flex items-center justify-center gap-2">
+            <Check size={18} /> Enregistrer la Prime
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 // --- MODAL AJOUT PAIEMENT (AVEC AUTO-CALCUL) ---
 const AddPaymentModal = ({ isOpen, onClose, onSave, employees }) => {
   const [formData, setFormData] = useState({
@@ -207,8 +435,8 @@ const AddPaymentModal = ({ isOpen, onClose, onSave, employees }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          {/* Ligne 1 : Employé & Type */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Ligne 1 : Employé */}
+          <div className="grid grid-cols-1 gap-6">
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase ml-1">Employé <span className="text-red-400">*</span></label>
               <div className="relative">
@@ -220,23 +448,6 @@ const AddPaymentModal = ({ isOpen, onClose, onSave, employees }) => {
                 >
                   <option value="">Sélectionner...</option>
                   {employees?.map(emp => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-500 uppercase ml-1">Type de paiement</label>
-              <div className="relative">
-                <select 
-                  className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none appearance-none"
-                  value={formData.type}
-                  onChange={e => handleFieldChange('type', e.target.value)}
-                >
-                  <option>Salaire</option>
-                  <option>Avance</option>
-                  <option>Prime</option>
-                  <option>Solde de tout compte</option>
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
               </div>
@@ -363,6 +574,8 @@ export default function PaymentsPage() {
   const [loading, setLoading] = useState(true);
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAvanceModalOpen, setIsAvanceModalOpen] = useState(false);
+  const [isPrimeModalOpen, setIsPrimeModalOpen] = useState(false);
   const [receiptData, setReceiptData] = useState(null); 
   const [expandedEmployeeId, setExpandedEmployeeId] = useState(null);
 
@@ -457,9 +670,26 @@ export default function PaymentsPage() {
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gérer les Paiements</h1>
             <p className="text-slate-500 mt-1 font-medium">Historique des salaires, avances et primes.</p>
           </div>
-          <button onClick={() => setIsAddModalOpen(true)} className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold">
-            <Plus size={20} /> Nouveau Paiement
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsAvanceModalOpen(true)} 
+              className="flex items-center justify-center gap-2 px-5 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-all shadow-lg shadow-orange-500/30 font-semibold"
+            >
+              <TrendingDown size={18} /> Avance
+            </button>
+            <button 
+              onClick={() => setIsPrimeModalOpen(true)} 
+              className="flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/30 font-semibold"
+            >
+              <TrendingUp size={18} /> Prime
+            </button>
+            <button 
+              onClick={() => setIsAddModalOpen(true)} 
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
+            >
+              <Plus size={20} /> Salaire
+            </button>
+          </div>
         </div>
         
         {/* FILTERS SECTION */}
@@ -604,6 +834,20 @@ export default function PaymentsPage() {
       <AddPaymentModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
+        onSave={handleAddPayment}
+        employees={employees}
+      />
+
+      <AvanceModal 
+        isOpen={isAvanceModalOpen} 
+        onClose={() => setIsAvanceModalOpen(false)} 
+        onSave={handleAddPayment}
+        employees={employees}
+      />
+
+      <PrimeModal 
+        isOpen={isPrimeModalOpen} 
+        onClose={() => setIsPrimeModalOpen(false)} 
         onSave={handleAddPayment}
         employees={employees}
       />

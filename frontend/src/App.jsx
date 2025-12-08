@@ -34,6 +34,9 @@ import PetiteCaissePage from './page/admin/petitecaisse';
 import ReportsPage from './page/admin/rapports';
 import TaskManager from './page/admin/listtask';
 import ComingSoon from './components/comingSoon';
+import SettingsPage from './page/admin/settings';
+import AffectationsPage from './page/admin/affectations';
+import PermissionsPage from './page/admin/permissions';
 
 // Employee Pages
 import { EmployeeLayout } from './components/layout/employeeLayout';
@@ -61,9 +64,12 @@ export default function App() {
       <Route path="/admin/employees" element={<AdminLayout><EmployeesPage /></AdminLayout>} />
       <Route path="/admin/employees/dashboard" element={<AdminLayout><EmployeeDashboard /></AdminLayout>} />
       <Route path="/admin/business" element={<AdminLayout><BusinessPage /></AdminLayout>} />
-      <Route path="/admin/settings" element={<Navigate to="/admin/business" replace />} />
+      <Route path="/admin/settings" element={<AdminLayout><SettingsPage /></AdminLayout>} />
       <Route path="/admin/paiement" element={<AdminLayout><Paiement /></AdminLayout>} />
       <Route path="/admin/presence" element={<AdminLayout><AttendancePage /></AdminLayout>} />
+      <Route path="/admin/affectations" element={<AdminLayout><AffectationsPage /></AdminLayout>} />
+      <Route path="/admin/permissions" element={<AdminLayout><PermissionsPage /></AdminLayout>} />
+      
       
       {/* Stock Management Routes */}
       <Route path="/admin/stock/dashboard" element={<AdminLayout><StockDashboard /></AdminLayout>} />
@@ -105,10 +111,10 @@ export default function App() {
       {/* Debts Management Routes */}
       <Route path="/admin/debts" element={<AdminLayout><DebtsPage /></AdminLayout>} />
       <Route path="/admin/debts/dashboard" element={<AdminLayout><DebtsDashboard /></AdminLayout>} />
-      
-      {/* Petite Caisse Routes - pointing to same component as it's a unified view */}
-      <Route path="/admin/petitecaisse" element={<AdminLayout><PetiteCaissePage /></AdminLayout>} />
-      <Route path="/admin/petitecaisse/dashboard" element={<AdminLayout><PetiteCaissePage /></AdminLayout>} />
+      {/* Petite Caisse Routes */}
+      <Route path="/admin/petitecaisse" element={<AdminLayout><PetiteCaissePage defaultTab="espece" /></AdminLayout>} />
+      <Route path="/admin/petitecaisse/espece" element={<AdminLayout><PetiteCaissePage defaultTab="espece" /></AdminLayout>} />
+      <Route path="/admin/petitecaisse/virement" element={<AdminLayout><PetiteCaissePage defaultTab="virement" /></AdminLayout>} />
 
       {/* Reports Routes */}
       <Route path="/admin/rapports" element={<AdminLayout><ReportsPage /></AdminLayout>} />

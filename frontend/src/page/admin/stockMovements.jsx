@@ -24,10 +24,7 @@ const StockAdjustmentModal = ({ isOpen, onClose, onSave, products }) => {
   });
 
   const entryReasons = [
-    'Réception Fournisseur',
-    'Retour Client',
-    'Correction Inventaire (+)',
-    'Production Interne'
+    'Correction de stock'
   ];
 
   const exitReasons = [
@@ -36,14 +33,18 @@ const StockAdjustmentModal = ({ isOpen, onClose, onSave, products }) => {
     'Vol / Perte',
     'Cadeau / Marketing',
     'Périmé',
-    'Correction Inventaire (-)'
+    'Correction de stock'
   ];
 
   const handleFieldChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Reset reason when type changes
+    // Auto-select reason when type changes to Entrée
     if (field === 'type') {
-      setFormData(prev => ({ ...prev, reason: '' }));
+      if (value === 'Entrée') {
+        setFormData(prev => ({ ...prev, reason: 'Correction de stock' }));
+      } else {
+        setFormData(prev => ({ ...prev, reason: '' }));
+      }
     }
   };
 
@@ -147,26 +148,41 @@ const StockAdjustmentModal = ({ isOpen, onClose, onSave, products }) => {
             </div>
           </div>
 
-          {/* Reason Selection */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-500 uppercase ml-1">
-              Motif <span className="text-red-400">*</span>
-            </label>
-            <div className="relative">
-              <select 
-                className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-700 outline-none appearance-none"
-                value={formData.reason}
-                onChange={e => handleFieldChange('reason', e.target.value)}
-                required
-              >
-                <option value="">-- Choisir un motif --</option>
-                {reasons.map(reason => (
-                  <option key={reason} value={reason}>{reason}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+          {/* Reason Selection - Only show for Sortie */}
+          {formData.type === 'Sortie' && (
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase ml-1">
+                Motif <span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <select 
+                  className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-700 outline-none appearance-none"
+                  value={formData.reason}
+                  onChange={e => handleFieldChange('reason', e.target.value)}
+                  required
+                >
+                  <option value="">-- Choisir un motif --</option>
+                  {reasons.map(reason => (
+                    <option key={reason} value={reason}>{reason}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Info for Entrée */}
+          {formData.type === 'Entrée' && (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start gap-3">
+              <ArrowUpCircle className="text-emerald-600 shrink-0 mt-0.5" size={20} />
+              <div>
+                <h4 className="text-sm font-bold text-emerald-800">Correction de stock</h4>
+                <p className="text-xs text-emerald-700 mt-1">
+                  Cette entrée sera enregistrée comme une correction de stock automatiquement.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Quantity */}
           <div className="space-y-2">

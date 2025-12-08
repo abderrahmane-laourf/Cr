@@ -10,10 +10,11 @@ import {
   Calendar, 
   CheckCircle // Added CheckCircle for the toast
 } from 'lucide-react';
-import { productAPI, villeAPI, quartierAPI } from '../../services/api';
+import { productAPI, villeAPI, quartierAPI, settingsAPI } from '../../services/api';
 
 const EMPLOYEES = ['Mohamed', 'Fatima', 'Youssef', 'Amina', 'Hassan', 'Khadija'];
-const BUSINESSES = ['Commit', 'Herboclear', 'Other'];
+// BUSINESSES replaced by dynamic settings
+
 
 // Add animation style
 const style = document.createElement('style');
@@ -48,60 +49,25 @@ export default function ColisManagement() {
   const [selectedPipeline, setSelectedPipeline] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState('all');
+  const [businesses, setBusinesses] = useState([]); // Dynamic Businesses
   
   // Toast State
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState({ title: '', description: '', type: 'success' });
-  
-  const [showMoveModal, setShowMoveModal] = useState(false);
-  const [colisToMove, setColisToMove] = useState(null);
-  const [showTrackingModal, setShowTrackingModal] = useState(false);
-  const [selectedColisForTracking, setSelectedColisForTracking] = useState(null);
-  const [searchText, setSearchText] = useState('');
-  const [searchDate, setSearchDate] = useState('');
-
-  // Load data on mount
-  useEffect(() => {
-    loadData();
-    loadPipelineStages();
-  }, []);
-
-  // Save colis to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('colis', JSON.stringify(colis));
-  }, [colis]);
-
-  // Auto-transition colis from Reporter to Confirmé when date arrives
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      setColis(prevColis => 
-        prevColis.map(c => {
-          if (c.stage === 'Reporter' && c.dateReport) {
-            const reportDate = new Date(c.dateReport);
-            if (now >= reportDate) {
-              return { ...c, stage: 'Confirmé', prix: '' };
-            }
-          }
-          return c;
-        })
-      );
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
+// ...
 
   const loadData = async () => {
     try {
-      const [productsData, villesData, quartiersData] = await Promise.all([
+      const [productsData, villesData, quartiersData, businessesData] = await Promise.all([
         productAPI.getAll().catch(() => []),
         villeAPI.getAll().catch(() => []),
-        quartierAPI.getAll().catch(() => [])
+        quartierAPI.getAll().catch(() => []),
+        Promise.resolve(settingsAPI.getBusinesses())
       ]);
       
       setProducts(productsData);
       setVilles(villesData);
       setQuartiers(quartiersData);
+      setBusinesses(businessesData);
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -622,6 +588,7 @@ export default function ColisManagement() {
           onClose={() => setShowAddModal(false)}
           onAdd={handleAddColis}
           employees={EMPLOYEES}
+          businesses={businesses}
           products={products}
           villes={villes}
           quartiers={quartiers}
@@ -719,7 +686,7 @@ function SearchIcon(props) {
   );
 }
 
-function AddClientModal({ onClose, onAdd, employees, products, villes, quartiers }) {
+function AddClientModal({ onClose, onAdd, employees, businesses, products, villes, quartiers }) {
   const [formData, setFormData] = useState({
     productId: '',
     productName: '',
@@ -729,7 +696,7 @@ function AddClientModal({ onClose, onAdd, employees, products, villes, quartiers
     tel: '',
     prix: '',
     employee: employees[0] || '',
-    business: 'Commit',
+    business: businesses[0] || 'Herboclear',
     stage: 'Reporter',
     commentaire: '',
     nbPiece: '1',
@@ -849,6 +816,15 @@ function AddClientModal({ onClose, onAdd, employees, products, villes, quartiers
           </div>
 
           <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Business *</label>
+              <select value={formData.business} onChange={(e) => setFormData({...formData, business: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all">
+                {businesses.map(b => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+            </div>
+            
             <div className="col-span-2">
               <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Produit *</label>
               <select value={formData.productId} onChange={handleProductChange} className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all">

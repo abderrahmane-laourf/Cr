@@ -5,17 +5,20 @@ import {
   Camera, AlertCircle, CheckCircle, ChevronDown, Printer,
   AlertTriangle, ShoppingCart, Info
 } from 'lucide-react';
-import { productAPI } from '../../services/api';
+import { productAPI, settingsAPI } from '../../services/api';
 import Swal from 'sweetalert2';
 
 // ============================================
 // CONSTANTS & CONFIGURATION
 // ============================================
 
-const PRODUCT_TYPES = ['Matière Première', 'Fabriqué', 'Produit Pré'];
-const PRODUCT_CATEGORIES = ['Cosmétique', 'Alimentaire', 'Pharmaceutique', 'Autre'];
-const UNITE_CALCUL = ['ml', 'L', 'g', 'kg', 'unité', 'pièce'];
-const BUSINESS_OPTIONS = ['Herboclear', 'Commit'];
+// Replaced by API calls
+// const PRODUCT_TYPES = ... 
+// const PRODUCT_CATEGORIES = ...
+// const UNITE_CALCUL = ...
+// const BUSINESS_OPTIONS = ...
+// const MAGASIN_OPTIONS = ...
+// We will now load these dynamically.
 
 // ============================================
 // UTILITY COMPONENTS
@@ -143,7 +146,8 @@ const Stepper = ({ step, setStep }) => {
   );
 };
 
-const Step1 = ({ formData, handleInputChange, isViewMode, setFormData }) => (
+// Update Step 1 to accept settings
+const Step1 = ({ formData, handleInputChange, isViewMode, setFormData, settings }) => (
   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
     <div className="flex justify-center mb-8">
       <div className="relative group">
@@ -162,10 +166,10 @@ const Step1 = ({ formData, handleInputChange, isViewMode, setFormData }) => (
       <div className="md:col-span-2">
         <InputField label="Nom du Produit" value={formData.nom} onChange={(e) => handleInputChange('nom', e)} disabled={isViewMode} placeholder="Ex: Sérum Vitamine C" />
       </div>
-      <InputField label="Type de Produit" type="select" options={PRODUCT_TYPES} value={formData.type} onChange={(e) => handleInputChange('type', e)} disabled={isViewMode} />
-      <InputField label="Catégorie" type="select" options={PRODUCT_CATEGORIES} value={formData.categorie} onChange={(e) => handleInputChange('categorie', e)} disabled={isViewMode} />
-      <InputField label="Unité de Calcul" type="select" options={UNITE_CALCUL} value={formData.uniteCalcul} onChange={(e) => handleInputChange('uniteCalcul', e)} disabled={isViewMode} />
-      <InputField label="Business" type="select" options={BUSINESS_OPTIONS} value={formData.business} onChange={(e) => handleInputChange('business', e)} disabled={isViewMode} />
+      <InputField label="Type de Produit" type="select" options={settings?.types || []} value={formData.type} onChange={(e) => handleInputChange('type', e)} disabled={isViewMode} />
+      <InputField label="Catégorie" type="select" options={settings?.categories || []} value={formData.categorie} onChange={(e) => handleInputChange('categorie', e)} disabled={isViewMode} />
+      <InputField label="Unité de Calcul" type="select" options={settings?.units || []} value={formData.uniteCalcul} onChange={(e) => handleInputChange('uniteCalcul', e)} disabled={isViewMode} />
+      <InputField label="Business" type="select" options={settings?.businesses || []} value={formData.business} onChange={(e) => handleInputChange('business', e)} disabled={isViewMode} />
     </div>
   </div>
 );
@@ -189,13 +193,14 @@ const Step2 = ({ formData, handleInputChange, isViewMode }) => (
   </div>
 );
 
-const Step3 = ({ formData, handleInputChange, isViewMode, setFormData }) => (
+const Step3 = ({ formData, handleInputChange, isViewMode, setFormData, settings }) => (
   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
     <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 mb-6 flex items-start gap-3">
       <ShoppingCart className="text-orange-600 shrink-0 mt-0.5" size={18} />
       <div><h4 className="text-sm font-bold text-orange-800">Gestion du Stock</h4><p className="text-xs text-orange-600 mt-1">Configurez les quantités et les alertes de stock.</p></div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <InputField label="Magasin" type="select" options={settings?.stores || []} value={formData.magasin} onChange={(e) => handleInputChange('magasin', e)} disabled={isViewMode} />
       <InputField label="Quantité en Stock" type="number" value={formData.stock} onChange={(e) => handleInputChange('stock', e)} disabled={isViewMode} placeholder="0" />
       <InputField label="Alerte de Stock" type="number" value={formData.alerteStock} onChange={(e) => handleInputChange('alerteStock', e)} disabled={isViewMode} placeholder="10" />
       <div className="md:col-span-2">
@@ -210,21 +215,97 @@ const Step3 = ({ formData, handleInputChange, isViewMode, setFormData }) => (
   </div>
 );
 
-const Step4 = ({ formData, handleInputChange, isViewMode }) => (
-  <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-5">
-    <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex items-start gap-3">
-      <Info className="text-purple-600 shrink-0 mt-0.5" size={18} />
-      <div><h4 className="text-sm font-bold text-purple-800">Informations Détaillées</h4><p className="text-xs text-purple-600 mt-1">Ajoutez toutes les informations produit pour vos clients.</p></div>
+const Step4 = ({ formData, handleInputChange, isViewMode, setFormData }) => {
+  const [detailsType, setDetailsType] = useState('text'); // 'text' or 'pdf'
+  
+  return (
+    <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-5">
+      <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex items-start gap-3">
+        <Info className="text-purple-600 shrink-0 mt-0.5" size={18} />
+        <div><h4 className="text-sm font-bold text-purple-800">Informations Détaillées</h4><p className="text-xs text-purple-600 mt-1">Ajoutez toutes les informations produit pour vos clients.</p></div>
+      </div>
+      
+      {/* Choice: Text or PDF */}
+      {!isViewMode && (
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => setDetailsType('text')}
+            className={`flex-1 py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${
+              detailsType === 'text' 
+                ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+            }`}
+          >
+            <FileText className="inline mr-2" size={18} />
+            Saisir en Texte
+          </button>
+          <button
+            type="button"
+            onClick={() => setDetailsType('pdf')}
+            className={`flex-1 py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${
+              detailsType === 'pdf' 
+                ? 'border-purple-500 bg-purple-50 text-purple-700' 
+                : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+            }`}
+          >
+            <Upload className="inline mr-2" size={18} />
+            Importer un PDF
+          </button>
+        </div>
+      )}
+
+      {/* Conditional Rendering based on choice */}
+      {detailsType === 'text' ? (
+        <>
+          <InputField label="Description" textarea value={formData.description} onChange={(e) => handleInputChange('description', e)} disabled={isViewMode} placeholder="Description complète du produit..." required={false} />
+          <InputField label="🥣 Ingrédients" textarea value={formData.ingredients} onChange={(e) => handleInputChange('ingredients', e)} disabled={isViewMode} placeholder="Liste des ingrédients..." required={false} />
+          <InputField label="📖 Mode d'Emploi" textarea value={formData.modeEmploi} onChange={(e) => handleInputChange('modeEmploi', e)} disabled={isViewMode} placeholder="Instructions d'utilisation..." required={false} />
+          <InputField label="⛔ Utilisations Interdites" textarea value={formData.utilisationsInterdites} onChange={(e) => handleInputChange('utilisationsInterdites', e)} disabled={isViewMode} placeholder="Contre-indications et précautions..." required={false} />
+          <InputField label="❓ FAQ" textarea value={formData.faq} onChange={(e) => handleInputChange('faq', e)} disabled={isViewMode} placeholder="Questions fréquentes et réponses..." required={false} />
+          <InputField label="🗣️ Script de Vente" textarea value={formData.scriptVente} onChange={(e) => handleInputChange('scriptVente', e)} disabled={isViewMode} placeholder="Arguments de vente..." required={false} />
+        </>
+      ) : (
+        <div className="space-y-3">
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Fichier PDF des Détails</label>
+          <label className="flex flex-col items-center gap-4 w-full px-6 py-8 rounded-xl bg-purple-50 border-2 border-dashed border-purple-300 hover:border-purple-400 cursor-pointer transition-all group">
+            <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 group-hover:bg-purple-200 transition-colors">
+              <Upload size={32} />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-semibold text-purple-700 group-hover:text-purple-800">Cliquez pour importer un PDF</p>
+              <p className="text-xs text-purple-500 mt-1">Contenant toutes les informations du produit</p>
+            </div>
+            <input 
+              type="file" 
+              accept=".pdf" 
+              className="hidden" 
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  setFormData(prev => ({...prev, detailsPDF: file}));
+                }
+              }} 
+            />
+          </label>
+          {formData.detailsPDF && (
+            <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+              <CheckCircle size={18} className="text-emerald-600" />
+              <span className="text-sm font-semibold text-emerald-700">{formData.detailsPDF.name}</span>
+              <button 
+                type="button"
+                onClick={() => setFormData(prev => ({...prev, detailsPDF: null}))}
+                className="ml-auto p-1 hover:bg-emerald-100 rounded text-emerald-600"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
-    
-    <InputField label="Description" textarea value={formData.description} onChange={(e) => handleInputChange('description', e)} disabled={isViewMode} placeholder="Description complète du produit..." required={false} />
-    <InputField label="🥣 Ingrédients" textarea value={formData.ingredients} onChange={(e) => handleInputChange('ingredients', e)} disabled={isViewMode} placeholder="Liste des ingrédients..." required={false} />
-    <InputField label="📖 Mode d'Emploi" textarea value={formData.modeEmploi} onChange={(e) => handleInputChange('modeEmploi', e)} disabled={isViewMode} placeholder="Instructions d'utilisation..." required={false} />
-    <InputField label="⛔ Utilisations Interdites" textarea value={formData.utilisationsInterdites} onChange={(e) => handleInputChange('utilisationsInterdites', e)} disabled={isViewMode} placeholder="Contre-indications et précautions..." required={false} />
-    <InputField label="❓ FAQ" textarea value={formData.faq} onChange={(e) => handleInputChange('faq', e)} disabled={isViewMode} placeholder="Questions fréquentes et réponses..." required={false} />
-    <InputField label="🗣️ Script de Vente" textarea value={formData.scriptVente} onChange={(e) => handleInputChange('scriptVente', e)} disabled={isViewMode} placeholder="Arguments de vente..." required={false} />
-  </div>
-);
+  );
+};
 
 // ============================================
 // VIEW PRODUCT MODAL
@@ -321,10 +402,11 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
   
   const emptyForm = {
     nom: '', image: '', type: PRODUCT_TYPES[0], categorie: PRODUCT_CATEGORIES[0],
-    uniteCalcul: UNITE_CALCUL[0], business: BUSINESS_OPTIONS[0],
+    uniteCalcul: UNITE_CALCUL[0], business: BUSINESS_OPTIONS[0], magasin: MAGASIN_OPTIONS[0],
     prixAchat: '', prix1: '', prix2: '', prix3: '',
     fragile: false, stock: '', alerteStock: '',
-    description: '', ingredients: '', modeEmploi: '', utilisationsInterdites: '', faq: '', scriptVente: ''
+    description: '', ingredients: '', modeEmploi: '', utilisationsInterdites: '', faq: '', scriptVente: '',
+    detailsPDF: null
   };
 
   const [formData, setFormData] = useState(emptyForm);
@@ -372,334 +454,303 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+    <div className={`fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+      <div className={`bg-white rounded-3xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh] transition-all duration-300 ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
-          <div><h2 className="text-2xl font-bold text-slate-800">{modalTitle}</h2></div>
-          <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors"><X size={24} /></button>
+          <div>
+              <h2 className="text-2xl font-bold text-slate-800">{modalTitle}</h2>
+              <p className="text-slate-500 text-sm mt-1">Gérez les détails de votre produit.</p>
+          </div>
+          <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors">
+            <X size={20} />
+          </button>
         </div>
-        
-        <div className="p-8 overflow-y-auto flex-1 custom-scrollbar">
-          <Stepper step={step} setStep={setStep} />
-          {step === 1 && <Step1 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
-          {step === 2 && <Step2 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
-          {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
-          {step === 4 && <Step4 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
-        </div>
-        
-        <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 rounded-b-3xl flex justify-between items-center">
-          {step > 1 ? (
-            <button onClick={() => setStep(step - 1)} className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-white border border-transparent hover:border-slate-200 flex items-center gap-2 transition-all"><ChevronLeft size={18} /> Précédent</button>
-          ) : <div />}
+
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
+            <Stepper step={step} setStep={setStep} />
+            
+            <div className="mt-6">
+                {step === 1 && <Step1 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} settings={settings} />}
+                {step === 2 && <Step2 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
+                {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} settings={settings} />}
+                {step === 4 && <Step4 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
+            </div>
           
-          {step < 4 ? (
-             <button onClick={() => setStep(step + 1)} className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all">Suivant <ChevronRight size={18} /></button>
-          ) : (
-             !isViewMode && (
-                <button onClick={handleSubmit} className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all">
-                    <Check size={18} /> {mode === 'add' ? 'Créer le produit' : 'Sauvegarder'}
-                </button>
-             )
-          )}
+            <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-100">
+                {step > 1 ? (
+                    <button onClick={() => setStep(s => s - 1)} className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 border border-slate-200 transition-all flex items-center gap-2">
+                        <ChevronLeft size={18} /> Précédent
+                    </button>
+                ) : <div></div>}
+
+                <div className="flex gap-3">
+                    {step < 4 ? (
+                        <button onClick={() => setStep(s => s + 1)} className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold shadow-lg shadow-blue-500/30 transition-all flex items-center gap-2">
+                            Suivant <ChevronRight size={18} />
+                        </button>
+                    ) : (
+                        !isViewMode && (
+                            <button onClick={handleSubmit} className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-semibold shadow-lg shadow-emerald-500/30 transition-all flex items-center gap-2">
+                                <Check size={18} /> Enregistrer
+                            </button>
+                        )
+                    )}
+                </div>
+            </div>
         </div>
       </div>
     </div>
   );
 };
 
-// ============================================
-// MAIN PAGE COMPONENT
-// ============================================
-
 export default function ProductsPage() {
-  const [products, setProducts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState('Tous');
-  const [categoryFilter, setCategoryFilter] = useState('Tous');
-  const [businessFilter, setBusinessFilter] = useState('Tous');
-  const [loading, setLoading] = useState(true);
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('add');
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [viewProduct, setViewProduct] = useState(null);
-  
-  const [toast, setToast] = useState(null);
-
-  useEffect(() => {
-    loadProducts();
-  }, []);
-
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      const data = await productAPI.getAll();
-      setProducts(data);
-    } catch (error) {
-      console.error('Error loading products:', error);
-      showToast('Erreur de chargement des produits', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSave = async (productData) => {
-    try {
-      if (modalMode === 'add') {
-        await productAPI.create(productData);
-        showToast("Produit ajouté avec succès !", "success");
-      } else if (modalMode === 'edit') {
-        await productAPI.update(selectedProduct.id, productData);
-        showToast("Modifications enregistrées !", "success");
-      }
-      setIsModalOpen(false);
-      loadProducts();
-    } catch (error) {
-      console.error('Error saving product:', error);
-      showToast('Erreur lors de la sauvegarde', 'error');
-    }
-  };
-
-  const handleDelete = async (id) => {
-    const result = await Swal.fire({
-      title: 'Êtes-vous sûr ?',
-      text: "Vous ne pourrez pas revenir en arrière !",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Oui, supprimer !',
-      cancelButtonText: 'Annuler'
+    const [products, setProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [settings, setSettings] = useState({ 
+        types: [], categories: [], units: [], stores: [], businesses: [] 
     });
 
-    if (result.isConfirmed) {
-      try {
-        await productAPI.delete(id);
-        Swal.fire('Supprimé !', 'Le produit a été supprimé.', 'success');
-        loadProducts();
-      } catch (error) {
-        console.error('Error deleting product:', error);
-        Swal.fire('Erreur !', 'Une erreur est survenue lors de la suppression.', 'error');
-      }
-    }
-  };
+    // Modal States
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState('add'); // 'add', 'edit', 'view'
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [viewProduct, setViewProduct] = useState(null);
 
-  const handlePrint = (product) => {
-    const printWindow = window.open('', '', 'width=800,height=600');
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Fiche Produit - ${product.nom}</title>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 40px; }
-            h1 { color: #1e293b; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }
-            .section { margin: 20px 0; padding: 15px; background: #f8fafc; border-left: 4px solid #3b82f6; }
-            .section h2 { color: #3b82f6; margin-top: 0; }
-            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-            .info { margin: 10px 0; }
-            .label { font-weight: bold; color: #64748b; }
-          </style>
-        </head>
-        <body>
-          <h1>${product.nom}</h1>
-          <div class="grid">
-            <div class="info"><span class="label">Type:</span> ${product.type}</div>
-            <div class="info"><span class="label">Catégorie:</span> ${product.categorie}</div>
-            <div class="info"><span class="label">Unité:</span> ${product.uniteCalcul}</div>
-            <div class="info"><span class="label">Fragile:</span> ${product.fragile ? 'Oui' : 'Non'}</div>
-          </div>
-          
-          <div class="section">
-            <h2>Tarification</h2>
-            <div class="grid">
-              <div class="info"><span class="label">Prix d'achat:</span> ${product.prixAchat} MAD</div>
-              <div class="info"><span class="label">Prix vente 1:</span> ${product.prix1} MAD</div>
-              <div class="info"><span class="label">Prix vente 2:</span> ${product.prix2} MAD</div>
-              <div class="info"><span class="label">Prix vente 3:</span> ${product.prix3} MAD</div>
-            </div>
-          </div>
-          
-          <div class="section">
-            <h2>Stock</h2>
-            <div class="info"><span class="label">Quantité:</span> ${product.stock} ${product.uniteCalcul}</div>
-            <div class="info"><span class="label">Alerte:</span> ${product.alerteStock} ${product.uniteCalcul}</div>
-          </div>
-          
-          ${product.description ? `<div class="section"><h2>Description</h2><p>${product.description}</p></div>` : ''}
-          ${product.ingredients ? `<div class="section"><h2>🥣 Ingrédients</h2><p>${product.ingredients}</p></div>` : ''}
-          ${product.modeEmploi ? `<div class="section"><h2>📖 Mode d'Emploi</h2><p>${product.modeEmploi}</p></div>` : ''}
-          ${product.utilisationsInterdites ? `<div class="section"><h2>⛔ Utilisations Interdites</h2><p>${product.utilisationsInterdites}</p></div>` : ''}
-          ${product.faq ? `<div class="section"><h2>❓ FAQ</h2><p>${product.faq}</p></div>` : ''}
-          ${product.scriptVente ? `<div class="section"><h2>🗣️ Script de Vente</h2><p>${product.scriptVente}</p></div>` : ''}
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
-  };
+    useEffect(() => {
+        loadData();
+    }, []);
 
-  const handleOpenView = (product) => {
-    setViewProduct(product);
-    setIsViewModalOpen(true);
-  };
+    const loadData = async () => {
+        try {
+            setIsLoading(true);
+            const [productsData, 
+                   types, categories, units, stores, businesses
+            ] = await Promise.all([
+                productAPI.getAll(),
+                settingsAPI.getProductTypes(),
+                settingsAPI.getProductCategories(),
+                settingsAPI.getUnits(),
+                settingsAPI.getStores(),
+                settingsAPI.getBusinesses()
+            ]);
+            
+            setProducts(productsData);
+            setSettings({ types, categories, units, stores, businesses });
+        } catch (error) {
+            console.error("Error loading data:", error);
+            // Fallback defaults if API fails
+            setSettings({
+                types: ['Matière Première', 'Fabriqué', 'Produit Pré'],
+                categories: ['Cosmétique', 'Alimentaire'],
+                units: ['ml', 'g', 'kg'],
+                stores: ['Magasin Principal'],
+                businesses: ['Herboclear', 'Commit']
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-  const handleOpenEdit = (product) => {
-    setModalMode('edit');
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-  };
+    const handleSave = async (productData) => {
+        try {
+            if (modalMode === 'add') {
+                const newProduct = await productAPI.create(productData);
+                setProducts([...products, newProduct]);
+                Swal.fire('Succès', 'Produit ajouté avec succès', 'success');
+            } else {
+                const updated = await productAPI.update(selectedProduct.id, productData);
+                setProducts(products.map(p => p.id === updated.id ? updated : p));
+                Swal.fire('Succès', 'Produit mis à jour', 'success');
+            }
+            setIsModalOpen(false);
+        } catch (error) {
+            console.error("Error saving product:", error);
+            Swal.fire('Erreur', 'Impossible d\'enregistrer le produit', 'error');
+        }
+    };
 
-  const handleOpenAdd = () => {
-    setModalMode('add');
-    setSelectedProduct(null);
-    setIsModalOpen(true);
-  };
+    const handleDelete = async (id) => {
+        try {
+            const result = await Swal.fire({
+                title: 'Êtes-vous sûr ?',
+                text: "Cette action est irréversible !",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Oui, supprimer !'
+            });
 
-  const showToast = (message, type) => {
-    setToast({ message, type });
-  };
+            if (result.isConfirmed) {
+                await productAPI.delete(id);
+                setProducts(products.filter(p => p.id !== id));
+                Swal.fire('Supprimé !', 'Le produit a été supprimé.', 'success');
+            }
+        } catch (error) {
+            Swal.fire('Erreur', 'Erreur lors de la suppression', 'error');
+        }
+    };
 
-  const filteredProducts = products.filter(prod => {
-    const matchesSearch = (prod.nom && prod.nom.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesType = typeFilter === 'Tous' || prod.type === typeFilter;
-    const matchesCategory = categoryFilter === 'Tous' || prod.categorie === categoryFilter;
-    const matchesBusiness = businessFilter === 'Tous' || prod.business === businessFilter;
-    return matchesSearch && matchesType && matchesCategory && matchesBusiness;
-  });
+    const handleOpenAdd = () => {
+        setModalMode('add');
+        setSelectedProduct(null);
+        setIsModalOpen(true);
+    };
+
+    const handleOpenEdit = (product) => {
+        setModalMode('edit');
+        setSelectedProduct(product);
+        setIsModalOpen(true);
+    };
+    
+    const handleOpenView = (product) => {
+        setViewProduct(product);
+        setIsViewModalOpen(true);
+    };
+
+    const handlePrint = (product) => {
+        // Placeholder print
+        window.print();
+    };
+
+    // Filter
+    const filteredProducts = products.filter(p => 
+        p.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.categorie?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const lowStockCount = products.filter(p => parseFloat(p.stock) <= parseFloat(p.alerteStock || 10)).length;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800 relative">
-      
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-
-      {/* Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestion des Produits</h1>
-            <p className="text-slate-500 mt-1 font-medium">Gérez votre catalogue de produits efficacement.</p>
-          </div>
-          <button 
-            onClick={handleOpenAdd}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
-          >
-            <Plus size={20} /> Ajouter un produit
-          </button>
-        </div>
+    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-900">
+      <div className="max-w-[1600px] mx-auto space-y-8">
         
-        <div className="flex flex-col md:flex-row gap-4 mt-6">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-            <input type="text" placeholder="Rechercher par nom..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
-          </div>
-          
-          <div className="relative">
-            <select 
-              value={typeFilter} 
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="Tous">Tous les types</option>
-              {PRODUCT_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-          </div>
-
-          <div className="relative">
-            <select 
-              value={categoryFilter} 
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="Tous">Toutes catégories</option>
-              {PRODUCT_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-          </div>
-
-          <div className="relative">
-            <select 
-              value={businessFilter} 
-              onChange={(e) => setBusinessFilter(e.target.value)}
-              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="Tous">Tous Business</option>
-              {BUSINESS_OPTIONS.map(biz => <option key={biz} value={biz}>{biz}</option>)}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-          </div>
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-100">
-              <tr>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Image</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nom</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Catégorie</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Achat</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Vente 1</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Alerte</th>
-                <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {filteredProducts.map((product, index) => {
-                const isLowStock = product.stock <= product.alerteStock;
-                return (
-                  <tr key={product.id} className="hover:bg-slate-50/80 transition-colors group">
-                    <td className="px-6 py-4 text-sm font-semibold text-slate-600">{index + 1}</td>
-                    <td className="px-6 py-4">
-                      <img src={product.image} alt={product.nom} className="w-12 h-12 rounded-lg object-cover shadow-sm ring-1 ring-slate-100" />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <span className="block font-semibold text-slate-800">{product.nom}</span>
-                        <span className="text-xs text-slate-400">{product.type}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
-                        {product.categorie}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm font-semibold text-slate-700">{product.prixAchat} MAD</td>
-                    <td className="px-6 py-4 text-sm font-semibold text-emerald-600">{product.prix1} MAD</td>
-                    <td className="px-6 py-4">
-                      {isLowStock ? (
-                        <div className="flex items-center gap-1 text-orange-600">
-                          <AlertTriangle size={16} />
-                          <span className="text-xs font-bold">{product.stock}</span>
-                        </div>
-                      ) : (
-                        <span className="text-sm text-slate-500">{product.stock}</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => handleOpenView(product)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir"><Eye size={18} /></button>
-                        <button onClick={() => handleOpenEdit(product)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition" title="Modifier"><Edit2 size={18} /></button>
-                        <button onClick={() => handlePrint(product)} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition" title="Imprimer"><Printer size={18} /></button>
-                        <button onClick={() => handleDelete(product.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer"><Trash2 size={18} /></button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          {filteredProducts.length === 0 && (
-            <div className="p-10 text-center text-slate-400 flex flex-col items-center">
-                <Package size={40} className="mb-2 opacity-20" />
-                <p>Aucun produit trouvé</p>
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+            <div className="flex items-center gap-4">
+                <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg shadow-blue-500/20 text-white">
+                    <Package size={32} strokeWidth={1.5} />
+                </div>
+                <div>
+                    <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Catalogue Produits</h1>
+                    <div className="flex items-center gap-3 mt-1.5">
+                        <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100">
+                            {products.length} références
+                        </span>
+                        {lowStockCount > 0 && (
+                             <span className="px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-700 text-xs font-bold border border-orange-100 flex items-center gap-1">
+                                <AlertTriangle size={12} /> {lowStockCount} stock faible
+                             </span>
+                        )}
+                    </div>
+                </div>
             </div>
-          )}
+
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <div className="relative group flex-1 sm:flex-none">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
+                    <input 
+                        type="text" 
+                        placeholder="Rechercher un produit..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full sm:w-72 pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-700 font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-400"
+                    />
+                </div>
+                <button 
+                    onClick={handleOpenAdd}
+                    className="px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-xl shadow-blue-600/20 border border-blue-500/50 transition-all active:scale-95 flex items-center justify-center gap-2"
+                >
+                    <Plus size={20} strokeWidth={2.5} />
+                    <span>Nouveau Produit</span>
+                </button>
+            </div>
+        </div>
+
+        {/* Product Table */}
+        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+             <div className="overflow-x-auto">
+                <table className="w-full">
+                    <thead>
+                        <tr className="bg-slate-50/80 border-b border-slate-200">
+                            <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Produit</th>
+                            <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Catégorie</th>
+                            <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Prix Unitaire</th>
+                            <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Business</th>
+                            <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Stock</th>
+                            <th className="px-6 py-5 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                        {filteredProducts.map(product => {
+                             const isLowStock = parseFloat(product.stock) <= parseFloat(product.alerteStock || 10);
+                             return (
+                                <tr key={product.id} className="hover:bg-slate-50/80 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+                                                {product.image ? (
+                                                    <img src={product.image} alt="" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <Package className="text-slate-300" size={20} />
+                                                )}
+                                            </div>
+                                            <div>
+                                                <div className="font-bold text-slate-800">{product.nom}</div>
+                                                <div className="text-xs text-slate-500">{product.type}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
+                                            {product.categorie}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="font-bold text-slate-700">{product.prix1} MAD</div>
+                                        <div className="text-xs text-slate-400">Achat: {product.prixAchat}</div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                         <div className="text-sm text-slate-600 font-medium">{product.business}</div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                         {isLowStock ? (
+                                             <div className="flex items-center gap-1.5 text-orange-600 bg-orange-50 px-3 py-1 rounded-lg w-fit border border-orange-100">
+                                                 <AlertTriangle size={14} />
+                                                 <span className="text-xs font-bold">{product.stock} {product.uniteCalcul}</span>
+                                             </div>
+                                         ) : (
+                                             <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg w-fit border border-emerald-100">
+                                                 <CheckCircle size={14} />
+                                                 <span className="text-xs font-bold">{product.stock} {product.uniteCalcul}</span>
+                                             </div>
+                                         )}
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onClick={() => handleOpenView(product)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Voir"><Eye size={18} /></button>
+                                            <button onClick={() => handleOpenEdit(product)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors" title="Modifier"><Edit2 size={18} /></button>
+                                            <button onClick={() => handlePrint(product)} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Imprimer"><Printer size={18} /></button>
+                                            <button onClick={() => handleDelete(product.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Supprimer"><Trash2 size={18} /></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                             );
+                        })}
+                    </tbody>
+                </table>
+                {filteredProducts.length === 0 && (
+                     <div className="p-12 text-center text-slate-400 flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                             <Package size={40} className="opacity-20 text-slate-600" />
+                        </div>
+                        <h3 className="font-bold text-lg text-slate-700">Aucun produit trouvé</h3>
+                        <p className="text-slate-500 max-w-xs mx-auto mt-1">Essayez de modifier vos filtres ou ajoutez un nouveau produit.</p>
+                     </div>
+                )}
+             </div>
         </div>
       </div>
 
@@ -709,6 +760,7 @@ export default function ProductsPage() {
         mode={modalMode}
         initialData={selectedProduct}
         onSave={handleSave}
+        settings={settings}
       />
 
       <ViewProductModal 

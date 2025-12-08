@@ -3,7 +3,7 @@ import {
   Search, Plus, Edit2, Trash2, Eye, X, Check, 
   MapPin, Calendar, Upload, AlertCircle, CheckCircle, 
   ChevronDown, Building, DollarSign, Camera, Phone,
-  AlertTriangle
+  AlertTriangle, Printer
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 
@@ -404,6 +404,91 @@ const AssetsPage = () => {
     // In a real app, you would also post to the damages endpoint here
   };
 
+  const handlePrintContract = () => {
+    const printWindow = window.open('', '_blank');
+    const currentDate = new Date().toLocaleDateString('ar-MA');
+    
+    // Generate Rows
+    const rows = filteredAssets.map(asset => `
+      <tr>
+        <td>${asset.name}</td>
+        <td>${asset.category}</td>
+        <td>${asset.status}</td>
+        <td>${asset.id}</td>
+      </tr>
+    `).join('');
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html dir="rtl" lang="ar">
+      <head>
+        <title>محضر استلام عهدة</title>
+        <style>
+          body { font-family: 'Arial', sans-serif; padding: 40px; direction: rtl; }
+          .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+          .title { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+          .sub-title { font-size: 18px; color: #666; }
+          table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+          th, td { border: 1px solid #000; padding: 12px; text-align: center; }
+          th { background-color: #f8f9fa; font-weight: bold; }
+          .content { margin-top: 30px; line-height: 1.6; font-size: 16px; }
+          .footer { margin-top: 80px; display: flex; justify-content: space-between; page-break-inside: avoid; }
+          .signature-section { text-align: center; width: 250px; }
+          .signature-box { border: 1px solid #000; height: 100px; margin-top: 15px; border-radius: 8px; }
+          @media print {
+            @page { margin: 1cm; size: A4; }
+            button { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="title">محضر تسليم واستلام عهدة</div>
+          <div class="sub-title">Custody Handover Protocol</div>
+        </div>
+
+        <div class="content">
+          <br /><br />
+          
+          <table>
+            <thead>
+              <tr>
+                <th width="35%">الاسم (Item)</th>
+                <th width="25%">الفئة (Category)</th>
+                <th width="25%">الحالة (Status)</th>
+                <th width="15%">الكود (Code)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="footer">
+          <div class="signature-section">
+            <p><strong>توقيع المستلم</strong></p>
+            <p>التاريخ: ${currentDate}</p>
+            <div class="signature-box"></div>
+          </div>
+          <div class="signature-section">
+            <p><strong>المسؤول الإداري</strong></p>
+            <p>التاريخ: ${currentDate}</p>
+            <div class="signature-box"></div>
+          </div>
+        </div>
+
+        <script>
+          window.onload = function() { window.print(); }
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
   // Filter Logic
   const filteredAssets = assets.filter(a => 
       a.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -422,12 +507,20 @@ const AssetsPage = () => {
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestion des Actifs</h1>
             <p className="text-slate-500 mt-1 font-medium">Suivez votre inventaire, équipements et mobilier.</p>
           </div>
-          <button 
-            onClick={handleOpenAdd}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
-          >
-            <Plus size={20} /> Ajouter un actif
-          </button>
+          <div className="flex gap-3">
+            <button 
+              onClick={handlePrintContract}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all font-semibold"
+            >
+              <Printer size={20} /> Imprimer Contrat
+            </button>
+            <button 
+              onClick={handleOpenAdd}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
+            >
+              <Plus size={20} /> Ajouter un actif
+            </button>
+          </div>
         </div>
         
         <div className="mt-6 max-w-md relative">

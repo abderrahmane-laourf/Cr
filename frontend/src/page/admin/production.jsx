@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Plus, X, Trash2, Calendar, DollarSign, Eye } from 'lucide-react';
 import { productionAPI, productAPI } from '../../services/api';
+import Swal from 'sweetalert2';
 
 export default function ProductionManagement() {
   const [productions, setProductions] = useState([]);
@@ -280,7 +281,32 @@ function AddProductionModal({ onClose, onAdd, products }) {
 
   const handleAddMaterial = () => {
     if (!currentMaterial.productId || currentMaterial.quantity <= 0) {
-      alert('Veuillez sélectionner une matière première et une quantité valide');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Attention',
+        text: 'Veuillez sélectionner une matière première et une quantité valide',
+        confirmButtonColor: '#3b82f6'
+      });
+      return;
+    }
+
+    // Vérifier le stock disponible
+    const selectedProduct = products.find(p => p.id === currentMaterial.productId);
+    const stockDisponible = selectedProduct?.stock || 0;
+    
+    if (currentMaterial.quantity > stockDisponible) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Stock insuffisant!',
+        html: `
+          <div class="text-left">
+            <p class="mb-2"><strong>Stock disponible:</strong> ${stockDisponible} ${selectedProduct?.uniteCalcul}</p>
+            <p class="mb-2"><strong>Quantité demandée:</strong> ${currentMaterial.quantity} ${selectedProduct?.uniteCalcul}</p>
+            <p class="text-red-600 font-semibold mt-3">⚠️ Veuillez réduire la quantité.</p>
+          </div>
+        `,
+        confirmButtonColor: '#ef4444'
+      });
       return;
     }
 
@@ -417,6 +443,23 @@ function AddProductionModal({ onClose, onAdd, products }) {
                       onChange={(e) => setCurrentMaterial({ ...currentMaterial, quantity: parseFloat(e.target.value) })}
                       className="flex-1 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all"
                     />
+                    
+                    {/* Stock disponible badge */}
+                    {currentMaterial.productId && (() => {
+                      const selectedProduct = rawMaterialProducts.find(p => p.id === currentMaterial.productId);
+                      const stockActuel = selectedProduct?.stock || 0;
+                      const isLowStock = currentMaterial.quantity > stockActuel;
+                      
+                      return (
+                        <div className={`px-3 py-2.5 rounded-xl flex items-center gap-1.5 ${isLowStock ? 'bg-red-50 border border-red-200' : 'bg-emerald-50 border border-emerald-200'}`}>
+                          <Package size={16} className={isLowStock ? 'text-red-600' : 'text-emerald-600'} />
+                          <span className={`text-xs font-bold ${isLowStock ? 'text-red-700' : 'text-emerald-700'}`}>
+                            {stockActuel}
+                          </span>
+                        </div>
+                      );
+                    })()}
+                    
                     <button
                       onClick={handleAddMaterial}
                       className="px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all font-semibold"

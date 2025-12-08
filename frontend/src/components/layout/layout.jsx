@@ -39,7 +39,11 @@ import {
   FileBarChart,
   PanelLeftClose,
   PanelLeftOpen,
-  CheckCircle2
+  CheckCircle2,
+  Clipboard,
+  ShieldCheck,
+  Banknote,
+  Smartphone
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -63,7 +67,9 @@ const MODULES = [
       { id: 'dashboard', label: 'Dashboard', path: '/admin/employees/dashboard', icon: LayoutDashboard },
       { id: 'emp-list', label: 'Liste des Employés', path: '/admin/employees', icon: Users },
       { id: 'emp-pay', label: 'Paiement & Salaires', path: '/admin/paiement', icon: CreditCard },
-      { id: 'emp-presence', label: 'Suivi de Présence', path: '/admin/presence', icon: UserCheck }
+      { id: 'emp-presence', label: 'Suivi de Présence', path: '/admin/presence', icon: UserCheck },
+      { id: 'emp-permissions', label: 'Permissions', path: '/admin/permissions', icon: ShieldCheck },
+      { id: 'emp-affectations', label: 'Affectations', path: '/admin/affectations', icon: Clipboard },
     ]
   },
   {
@@ -121,15 +127,6 @@ const MODULES = [
     ]
   },
   {
-    id: 'pertes',
-    label: 'Gestion des pertes',
-    icon: TrendingDown,
-    description: 'Gestion des pertes',
-    subItems: [
-      { id: 'pertes-list', label: 'Liste des pertes', path: '/admin/pertes', icon: AlertTriangle },
-    ]
-  },
-  {
     id:'ads',
     label : 'Publicité',
     icon : Megaphone,
@@ -179,7 +176,7 @@ const MODULES = [
     path:'/admin/petitecaisse',
     description:'Gestion de la caisse',
     subItems:[
-      {id:'petitecaisse-list',label:'Mouvements Caisse',path:'/admin/petitecaisse',icon:Wallet},
+      {id:'petitecaisse-nav',label:'Tableau de Bord',path:'/admin/petitecaisse',icon:Wallet},
     ]
   },
   {
@@ -197,10 +194,7 @@ const MODULES = [
     label: 'Paramètres',
     icon: Settings,
     path: '/admin/settings',
-    description: 'Configuration',
-    subItems: [
-      { id: 'business', label: 'Business', path: '/admin/business', icon: Briefcase },
-    ]
+    description: 'Configuration'
   }
 ];
 
@@ -208,28 +202,39 @@ const MODULES = [
 // 2. PRIMARY RAIL
 // ----------------------------------------------------------------------
 const PrimaryRail = ({ activeModule, setActiveModule, isMobile }) => {
-  const [tooltip, setTooltip] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
 
+  // Width transition
   const railClasses = `
-    flex flex-col items-center py-3 z-50
-    bg-white text-slate-700 border-r border-slate-100 shadow-lg
-    ${isMobile ? 'w-16' : 'w-16'} 
-    h-full flex-shrink-0 transition-all duration-300 relative
+    flex flex-col py-4 z-50
+    bg-white text-slate-700 border-r border-slate-200 shadow-xl
+    h-full flex-shrink-0 transition-all duration-300 ease-in-out relative
+    ${isHovered ? 'w-64' : 'w-20'}
   `;
 
   return (
-    <div className={railClasses}>
-      <div className="mb-4 w-10 h-10 flex items-center justify-center flex-shrink-0 z-50 mt-1">
-        <svg viewBox="0 0 24 24" fill="currentColor" className="text-[#1325ec] w-10 h-10">
-          <circle cx="12" cy="12" r="3" />
-          <circle cx="12" cy="5" r="2" opacity="0.2" />
-          <circle cx="12" cy="19" r="2" opacity="0.2" />
-          <circle cx="5" cy="12" r="2" opacity="0.2" />
-          <circle cx="19" cy="12" r="2" opacity="0.2" />
-        </svg>
+    <div 
+      className={railClasses}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Brand Icon */}
+      <div className={`mb-6 flex items-center justify-center flex-shrink-0 transition-all duration-300 ${isHovered ? 'px-6 justify-start gap-3' : ''}`}>
+        <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+          <svg viewBox="0 0 24 24" fill="currentColor" className="text-[#1325ec] w-10 h-10">
+            <circle cx="12" cy="12" r="3" />
+            <circle cx="12" cy="5" r="2" opacity="0.2" />
+            <circle cx="12" cy="19" r="2" opacity="0.2" />
+            <circle cx="5" cy="12" r="2" opacity="0.2" />
+            <circle cx="19" cy="12" r="2" opacity="0.2" />
+          </svg>
+        </div>
+        <div className={`font-bold text-xl tracking-wide text-slate-900 whitespace-nowrap overflow-hidden transition-all duration-300 ${isHovered ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+           Platform
+        </div>
       </div>
 
-      <div className="flex-1 w-full space-y-1 px-2 flex flex-col items-center overflow-y-auto [&::-webkit-scrollbar]:hidden -ms-overflow-style:none [scrollbar-width:none]">
+      <div className="flex-1 w-full space-y-1.5 px-3 flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar">
         {MODULES.map((module) => {
           const isActive = activeModule === module.id;
           
@@ -237,52 +242,58 @@ const PrimaryRail = ({ activeModule, setActiveModule, isMobile }) => {
             <button
               key={module.id}
               onClick={() => setActiveModule(module.id)}
-              onMouseEnter={(e) => {
-                 const rect = e.currentTarget.getBoundingClientRect();
-                 setTooltip({ label: module.label, top: rect.top, left: rect.right });
-              }}
-              onMouseLeave={() => setTooltip(null)}
               className={`
-                relative w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 flex-shrink-0
-                ${isActive ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'text-slate-500 hover:bg-blue-50 hover:text-blue-600'}
+                relative w-full h-12 rounded-xl flex items-center transition-all duration-200 group
+                ${isActive 
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-blue-600'
+                }
+                ${isHovered ? 'px-4 justify-start gap-3' : 'justify-center'}
               `}
             >
-              <module.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+              <module.icon 
+                size={22} 
+                strokeWidth={isActive ? 2.5 : 2} 
+                className={`flex-shrink-0 transition-all duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} 
+              />
+              
+              <span className={`font-semibold whitespace-nowrap overflow-hidden transition-all duration-300 ${isHovered ? 'opacity-100 max-w-[200px] translate-x-0' : 'opacity-0 max-w-0 -translate-x-4'}`}>
+                {module.label}
+              </span>
+
+              {/* Active Indicator Dot when collapsed */}
+              {isActive && !isHovered && (
+                <div className="absolute right-2 top-2 w-2 h-2 rounded-full bg-white/30 animate-pulse" />
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* Profile Button at Bottom */}
-      <div className="mt-auto pb-4 flex flex-col items-center gap-2 z-50">
-        <button
-          className="relative w-10 h-10 rounded-full border-2 border-slate-200 hover:border-blue-500 transition-all overflow-hidden"
-          onMouseEnter={(e) => {
-             const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-             const label = user.name ? `${user.role || 'User'} ${user.name}` : 'Mon Profil';
-             const rect = e.currentTarget.getBoundingClientRect();
-             setTooltip({ label: label, top: rect.top, left: rect.right });
-          }}
-          onMouseLeave={() => setTooltip(null)}
-        >
-           <img 
-             src={JSON.parse(localStorage.getItem('currentUser') || '{}').avatar || "https://i.pravatar.cc/150?img=12"} 
-             alt="Profile" 
-             className="w-full h-full object-cover"
-           />
-        </button>
+      {/* Profile Section */}
+      <div className="mt-auto px-3 pb-4 pt-2 w-full">
+         <button className={`
+            w-full flex items-center rounded-xl border border-slate-100 p-1.5 hover:bg-slate-50 transition-all group overflow-hidden
+            ${isHovered ? 'justify-start gap-3' : 'justify-center'}
+         `}>
+           <div className="w-10 h-10 rounded-full border-2 border-white shadow-md overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform">
+             <img 
+               src={JSON.parse(localStorage.getItem('currentUser') || '{}').avatar || "https://i.pravatar.cc/150?img=12"} 
+               alt="Profile" 
+               className="w-full h-full object-cover"
+             />
+           </div>
+           
+           <div className={`text-left overflow-hidden transition-all duration-300 ${isHovered ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0 hidden'}`}>
+              <div className="font-bold text-sm text-slate-800 truncate">
+                {JSON.parse(localStorage.getItem('currentUser') || '{}').name || 'Utilisateur'}
+              </div>
+              <div className="text-xs text-slate-500 truncate">
+                {JSON.parse(localStorage.getItem('currentUser') || '{}').role || 'Admin'}
+              </div>
+           </div>
+         </button>
       </div>
-
-      {/* Floating Tooltip Portal-like */}
-      {tooltip && (
-        <div 
-          className="fixed z-[100] px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-md shadow-xl pointer-events-none animate-in fade-in slide-in-from-left-2 duration-150 whitespace-nowrap"
-          style={{ top: tooltip.top + 5, left: tooltip.left + 10 }}
-        >
-          {tooltip.label}
-          <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 border-4 border-transparent border-r-slate-800"></div>
-        </div>
-      )}
     </div>
   );
 };

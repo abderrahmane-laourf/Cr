@@ -252,6 +252,77 @@ const DebtModal = ({ isOpen, onClose, onSave, mode = 'add', initialData = null }
     );
 };
 
+// --- 2.5 PAYMENT PROOF MODAL ---
+
+const PaymentProofModal = ({ isOpen, onClose, onConfirm }) => {
+    const [file, setFile] = useState(null);
+
+    useEffect(() => {
+        if (!isOpen) setFile(null);
+    }, [isOpen]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (file) {
+            onConfirm(file);
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[60] p-4">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md flex flex-col animate-in zoom-in-95 duration-200">
+                <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
+                    <div>
+                        <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <CheckCircle className="text-emerald-500" /> Confirmer Paiement
+                        </h2>
+                        <p className="text-sm text-slate-500">Veuillez joindre une preuve de paiement</p>
+                    </div>
+                    <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors">
+                        <X size={24} />
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                    <div className="group">
+                        <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider">
+                            Preuve de paiement (Reçu/Virement) <span className="text-red-400">*</span>
+                        </label>
+                        <label className={`flex flex-col items-center justify-center gap-3 w-full h-32 rounded-xl bg-slate-50 border-2 border-dashed ${file ? 'border-emerald-500 bg-emerald-50/30' : 'border-slate-300 hover:bg-slate-100'} cursor-pointer transition-all`}>
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${file ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>
+                                {file ? <Check size={24} /> : <Paperclip size={24} />}
+                            </div>
+                            <span className="text-sm text-slate-500 font-medium truncate max-w-[200px]">
+                                {file ? file.name : "Cliquez pour déposer un fichier"}
+                            </span>
+                            <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => setFile(e.target.files[0])} />
+                        </label>
+                    </div>
+
+                    <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
+                        <button 
+                            type="button" 
+                            onClick={onClose}
+                            className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all"
+                        >
+                            Annuler
+                        </button>
+                        <button 
+                            type="submit"
+                            disabled={!file}
+                            className="px-6 py-2.5 rounded-xl text-white font-bold flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/30 transition-all"
+                        >
+                            <CheckCircle size={18} /> Confirmer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
 // --- 3. MAIN PAGE COMPONENT ---
 
 const DebtsPage = () => {
@@ -261,12 +332,15 @@ const DebtsPage = () => {
   const [selectedDebt, setSelectedDebt] = useState(null);
   const [toast, setToast] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [pendingDebtId, setPendingDebtId] = useState(null);
 
   // Mock Data
   const [debts, setDebts] = useState([
-      { id: 1, date: '2024-12-01', project: 'Alpha', supplier: 'Global Info', amount: 15000, paymentMethod: 'Chèque', dueDate: '2024-12-08', status: 'Ouvert', responsible: 'Ahmed', note: 'Facture N°123' },
-      { id: 2, date: '2024-11-20', project: 'Alpha', supplier: 'Bricoma', amount: 3200, paymentMethod: 'Espèces', dueDate: '2024-12-05', status: 'Ouvert', responsible: 'Sarah', note: 'Achat peinture' },
-      { id: 3, date: '2024-10-15', project: 'Alpha', supplier: 'Office Depot', amount: 5000, paymentMethod: 'Virement', dueDate: '2024-10-30', status: 'Payé', responsible: 'Ali', note: 'Mobilier bureau' },
+      { id: 1, date: '2024-12-01', project: 'Alpha', supplier: 'Global Info', amount: 15000, paymentMethod: 'Chèque', dueDate: '2024-12-08', status: 'Ouvert', responsible: 'Ahmed', note: 'Facture N°123', proofFile: null },
+      { id: 2, date: '2024-11-20', project: 'Alpha', supplier: 'Bricoma', amount: 3200, paymentMethod: 'Espèces', dueDate: '2024-12-05', status: 'Ouvert', responsible: 'Sarah', note: 'Achat peinture', proofFile: null },
+      { id: 3, date: '2024-10-15', project: 'Alpha', supplier: 'Office Depot', amount: 5000, paymentMethod: 'Virement', dueDate: '2024-10-30', status: 'Payé', responsible: 'Ali', note: 'Mobilier bureau', proofFile: 'proof.jpg' },
   ]);
 
   const handleOpenAdd = () => {
@@ -293,7 +367,8 @@ const DebtsPage = () => {
           status: 'Ouvert', // Default
           responsible: data.responsible,
           note: data.note,
-          file: data.file
+          file: data.file,
+          proofFile: null
       };
       setDebts([newDebt, ...debts]);
       setIsModalOpen(false);
@@ -302,22 +377,16 @@ const DebtsPage = () => {
   };
 
   const handleMarkAsPaid = (id) => {
-      Swal.fire({
-          title: 'Marquer comme Payé ?',
-          text: "Cette action déplacera la dette vers l'historique.",
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#10b981',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Oui, confirmer payment',
-          cancelButtonText: 'Annuler'
-      }).then((result) => {
-          if (result.isConfirmed) {
-              setDebts(debts.map(d => d.id === id ? { ...d, status: 'Payé' } : d));
-              setToast({ message: "Dette marquée comme payée !", type: "success" });
-              setTimeout(() => setToast(null), 3000);
-          }
-      });
+      setPendingDebtId(id);
+      setIsPaymentModalOpen(true);
+  };
+
+  const handleConfirmPayment = (file) => {
+      setDebts(debts.map(d => d.id === pendingDebtId ? { ...d, status: 'Payé', proofFile: file } : d));
+      setIsPaymentModalOpen(false);
+      setPendingDebtId(null);
+      setToast({ message: "Dette marquée comme payée ! Preuve enregistrée.", type: "success" });
+      setTimeout(() => setToast(null), 3000);
   };
 
   const handleDelete = (id) => {
@@ -505,6 +574,12 @@ const DebtsPage = () => {
         onSave={handleSave}
         mode={modalMode}
         initialData={selectedDebt}
+      />
+
+      <PaymentProofModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onConfirm={handleConfirmPayment}
       />
     </div>
   );

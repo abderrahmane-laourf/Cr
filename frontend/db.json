@@ -240,7 +240,9 @@
       "modeEmploi": "Appliquer 3-4 gouttes sur le visage propre matin et soir. Masser délicatement jusqu'à absorption complète. Suivre avec une crème hydratante.",
       "utilisationsInterdites": "Ne pas utiliser sur peau irritée ou lésée. Éviter le contour des yeux. Déconseillé aux femmes enceintes sans avis médical.",
       "faq": "Q: Peut-on l'utiliser tous les jours? R: Oui, matin et soir.\nQ: Convient-il aux peaux sensibles? R: Oui, mais faire un test cutané d'abord.",
-      "scriptVente": "Ce sérum révolutionnaire à la vitamine C pure transforme votre peau en seulement 2 semaines! Résultats visibles: teint éclatant, rides réduites, texture affinée."
+      "scriptVente": "Ce sérum révolutionnaire à la vitamine C pure transforme votre peau en seulement 2 semaines! Résultats visibles: teint éclatant, rides réduites, texture affinée.",
+      "magasin": "Magasin Principal",
+      "business": "Herboclear"
     },
     {
       "id": "2",
@@ -261,7 +263,9 @@
       "modeEmploi": "Pour le visage: 2-3 gouttes sur peau humide. Pour les cheveux: appliquer sur longueurs et pointes, laisser poser 30 min. Pour le corps: masser sur peau humide après la douche.",
       "utilisationsInterdites": "Usage externe uniquement. Ne pas ingérer. Éviter en cas d'allergie aux fruits à coque.",
       "faq": "Q: Convient-elle aux peaux grasses? R: Oui, elle régule le sébum.\nQ: Peut-on l'utiliser pure? R: Oui, elle est 100% pure.",
-      "scriptVente": "L'or liquide du Maroc! Cette huile précieuse nourrit intensément peau et cheveux. Riche en vitamine E et acides gras essentiels, elle répare et protège naturellement."
+      "scriptVente": "L'or liquide du Maroc! Cette huile précieuse nourrit intensément peau et cheveux. Riche en vitamine E et acides gras essentiels, elle répare et protège naturellement.",
+      "magasin": "Magasin Secondaire",
+      "business": "Commit"
     },
     {
       "id": "3",
@@ -282,7 +286,9 @@
       "modeEmploi": "Appliquer matin et soir sur visage et cou propres. Masser en mouvements circulaires jusqu'à absorption.",
       "utilisationsInterdites": "Ne pas utiliser en cas d'allergie à l'aloe vera. Éviter le contact avec les yeux.",
       "faq": "Q: Convient-elle aux peaux mixtes? R: Parfaitement, texture légère non grasse.\nQ: Peut-on l'utiliser sous le maquillage? R: Oui, excellente base.",
-      "scriptVente": "Hydratation 24h garantie! Cette crème onctueuse pénètre instantanément sans effet gras. Votre peau reste douce, souple et éclatante toute la journée."
+      "scriptVente": "Hydratation 24h garantie! Cette crème onctueuse pénètre instantanément sans effet gras. Votre peau reste douce, souple et éclatante toute la journée.",
+      "magasin": "Entrepôt A",
+      "business": "Herboclear"
     },
     {
       "id": "4",
@@ -303,7 +309,9 @@
       "modeEmploi": "Appliquer une couche épaisse sur visage propre en évitant le contour des yeux. Laisser poser 10-15 min. Rincer à l'eau tiède. Utiliser 1-2 fois par semaine.",
       "utilisationsInterdites": "Ne pas laisser sécher complètement sur la peau. Ne pas utiliser sur peau très sèche ou irritée. Éviter en cas d'eczéma actif.",
       "faq": "Q: Combien de fois par semaine? R: 1-2 fois maximum.\nQ: Peut-on l'utiliser sur le corps? R: Oui, idéal pour le dos.",
-      "scriptVente": "Le détox ultime pour votre peau! Ce masque absorbe l'excès de sébum, resserre les pores et élimine les impuretés. Résultat: peau nette et matifiée dès la première utilisation!"
+      "scriptVente": "Le détox ultime pour votre peau! Ce masque absorbe l'excès de sébum, resserre les pores et élimine les impuretés. Résultat: peau nette et matifiée dès la première utilisation!",
+      "magasin": "Entrepôt B",
+      "business": "Commit"
     }
   ],
   "productions": [
@@ -339,18 +347,23 @@
   "warehouses": [
     {
       "id": "1",
-      "name": "Magasin Central",
+      "name": "Magasin Principal",
       "location": "Casablanca Centre"
     },
     {
       "id": "2",
-      "name": "Dépôt A",
+      "name": "Magasin Secondaire",
       "location": "Ain Sebaa"
     },
     {
       "id": "3",
-      "name": "Dépôt B",
+      "name": "Entrepôt A",
       "location": "Sidi Moumen"
+    },
+    {
+      "id": "4",
+      "name": "Entrepôt B",
+      "location": "Derb Sultan"
     }
   ],
   "stockMovements": [
@@ -854,7 +867,7 @@
       "status": "In Progress",
       "dateCreated": "2025-12-06T10:00:00.000Z"
     },
-     {
+    {
       "id": "2",
       "employeeId": "2",
       "employeeName": "Sarah Idrissi",
