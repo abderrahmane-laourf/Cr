@@ -5,7 +5,11 @@ import {
   Camera, AlertCircle, CheckCircle, ChevronDown, Printer,
   AlertTriangle, ShoppingCart, Info
 } from 'lucide-react';
+<<<<<<< HEAD
 import { productAPI, settingsAPI } from '../../services/api';
+=======
+import { productAPI, warehouseAPI } from '../../services/api';
+>>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
 import Swal from 'sweetalert2';
 
 // ============================================
@@ -193,7 +197,11 @@ const Step2 = ({ formData, handleInputChange, isViewMode }) => (
   </div>
 );
 
+<<<<<<< HEAD
 const Step3 = ({ formData, handleInputChange, isViewMode, setFormData, settings }) => (
+=======
+const Step3 = ({ formData, handleInputChange, isViewMode, setFormData, warehouses = [] }) => (
+>>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
     <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 mb-6 flex items-start gap-3">
       <ShoppingCart className="text-orange-600 shrink-0 mt-0.5" size={18} />
@@ -203,6 +211,17 @@ const Step3 = ({ formData, handleInputChange, isViewMode, setFormData, settings 
       <InputField label="Magasin" type="select" options={settings?.stores || []} value={formData.magasin} onChange={(e) => handleInputChange('magasin', e)} disabled={isViewMode} />
       <InputField label="Quantité en Stock" type="number" value={formData.stock} onChange={(e) => handleInputChange('stock', e)} disabled={isViewMode} placeholder="0" />
       <InputField label="Alerte de Stock" type="number" value={formData.alerteStock} onChange={(e) => handleInputChange('alerteStock', e)} disabled={isViewMode} placeholder="10" />
+      <div className="md:col-span-2">
+        <InputField 
+          label="Entrepôt / Dépôt" 
+          type="select" 
+          options={['', ...warehouses.map(w => w.name)]} 
+          value={formData.warehouse} 
+          onChange={(e) => handleInputChange('warehouse', e)} 
+          disabled={isViewMode} 
+          required={false}
+        />
+      </div>
       <div className="md:col-span-2">
         <CheckboxField 
           label="Produit Fragile" 
@@ -363,7 +382,7 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
           </div>
 
           {/* Stock Info */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
               <p className="text-xs text-slate-500 font-bold uppercase mb-1">Stock Actuel</p>
               <p className="text-xl font-bold text-slate-700">{product.stock} {product.uniteCalcul}</p>
@@ -371,6 +390,10 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
               <p className="text-xs text-slate-500 font-bold uppercase mb-1">Alerte Stock</p>
               <p className="text-xl font-bold text-slate-700">{product.alerteStock} {product.uniteCalcul}</p>
+            </div>
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <p className="text-xs text-slate-500 font-bold uppercase mb-1">Entrepôt</p>
+              <p className="text-xl font-bold text-slate-700">{product.warehouse || 'Non défini'}</p>
             </div>
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
               <p className="text-xs text-slate-500 font-bold uppercase mb-1">Fragile</p>
@@ -397,16 +420,21 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
 // MAIN PRODUCT MODAL
 // ============================================
 
-const ProductModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
+const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses = [] }) => {
   const [step, setStep] = useState(1);
   
   const emptyForm = {
     nom: '', image: '', type: PRODUCT_TYPES[0], categorie: PRODUCT_CATEGORIES[0],
     uniteCalcul: UNITE_CALCUL[0], business: BUSINESS_OPTIONS[0], magasin: MAGASIN_OPTIONS[0],
     prixAchat: '', prix1: '', prix2: '', prix3: '',
+<<<<<<< HEAD
     fragile: false, stock: '', alerteStock: '',
     description: '', ingredients: '', modeEmploi: '', utilisationsInterdites: '', faq: '', scriptVente: '',
     detailsPDF: null
+=======
+    fragile: false, stock: '', alerteStock: '', warehouse: '',
+    description: '', ingredients: '', modeEmploi: '', utilisationsInterdites: '', faq: '', scriptVente: ''
+>>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
   };
 
   const [formData, setFormData] = useState(emptyForm);
@@ -465,6 +493,7 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
             <X size={20} />
           </button>
         </div>
+<<<<<<< HEAD
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
             <Stepper step={step} setStep={setStep} />
@@ -475,6 +504,21 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
                 {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} settings={settings} />}
                 {step === 4 && <Step4 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
             </div>
+=======
+        
+        <div className="p-8 overflow-y-auto flex-1 custom-scrollbar">
+          <Stepper step={step} setStep={setStep} />
+          {step === 1 && <Step1 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
+          {step === 2 && <Step2 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
+          {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} warehouses={warehouses} />}
+          {step === 4 && <Step4 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
+        </div>
+        
+        <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 rounded-b-3xl flex justify-between items-center">
+          {step > 1 ? (
+            <button onClick={() => setStep(step - 1)} className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-white border border-transparent hover:border-slate-200 flex items-center gap-2 transition-all"><ChevronLeft size={18} /> Précédent</button>
+          ) : <div />}
+>>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
           
             <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-100">
                 {step > 1 ? (
@@ -504,11 +548,79 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
 };
 
 export default function ProductsPage() {
+<<<<<<< HEAD
     const [products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [settings, setSettings] = useState({ 
         types: [], categories: [], units: [], stores: [], businesses: [] 
+=======
+  const [products, setProducts] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState('Tous');
+  const [categoryFilter, setCategoryFilter] = useState('Tous');
+  const [businessFilter, setBusinessFilter] = useState('Tous');
+  const [loading, setLoading] = useState(true);
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('add');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewProduct, setViewProduct] = useState(null);
+  
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const [productsData, warehousesData] = await Promise.all([
+        productAPI.getAll(),
+        warehouseAPI.getAll()
+      ]);
+      setProducts(productsData);
+      setWarehouses(warehousesData);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      showToast('Erreur de chargement des produits', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async (productData) => {
+    try {
+      if (modalMode === 'add') {
+        await productAPI.create(productData);
+        showToast("Produit ajouté avec succès !", "success");
+      } else if (modalMode === 'edit') {
+        await productAPI.update(selectedProduct.id, productData);
+        showToast("Modifications enregistrées !", "success");
+      }
+      setIsModalOpen(false);
+      loadProducts();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      showToast('Erreur lors de la sauvegarde', 'error');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: 'Êtes-vous sûr ?',
+      text: "Vous ne pourrez pas revenir en arrière !",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, supprimer !',
+      cancelButtonText: 'Annuler'
+>>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
     });
 
     // Modal States
@@ -627,6 +739,7 @@ export default function ProductsPage() {
     <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-900">
       <div className="max-w-[1600px] mx-auto space-y-8">
         
+<<<<<<< HEAD
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
             <div className="flex items-center gap-4">
@@ -646,6 +759,123 @@ export default function ProductsPage() {
                         )}
                     </div>
                 </div>
+=======
+        <div className="flex flex-col md:flex-row gap-4 mt-6">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+            <input type="text" placeholder="Rechercher par nom..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+          </div>
+          
+          <div className="relative">
+            <select 
+              value={typeFilter} 
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="Tous">Tous les types</option>
+              {PRODUCT_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+          </div>
+
+          <div className="relative">
+            <select 
+              value={categoryFilter} 
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="Tous">Toutes catégories</option>
+              {PRODUCT_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+          </div>
+
+          <div className="relative">
+            <select 
+              value={businessFilter} 
+              onChange={(e) => setBusinessFilter(e.target.value)}
+              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="Tous">Tous Business</option>
+              {BUSINESS_OPTIONS.map(biz => <option key={biz} value={biz}>{biz}</option>)}
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+          </div>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50 border-b border-slate-100">
+              <tr>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Image</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nom</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Catégorie</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Entrepôt</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Stock</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Achat</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Vente 1</th>
+                <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {filteredProducts.map((product, index) => {
+                const isLowStock = product.stock <= product.alerteStock;
+                return (
+                  <tr key={product.id} className="hover:bg-slate-50/80 transition-colors group">
+                    <td className="px-6 py-4 text-sm font-semibold text-slate-600">{index + 1}</td>
+                    <td className="px-6 py-4">
+                      <img src={product.image} alt={product.nom} className="w-12 h-12 rounded-lg object-cover shadow-sm ring-1 ring-slate-100" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div>
+                        <span className="block font-semibold text-slate-800">{product.nom}</span>
+                        <span className="text-xs text-slate-400">{product.type}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                        {product.categorie}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {product.warehouse ? (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                          {product.warehouse}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-slate-400">-</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-black text-slate-800">{product.stock || 0}</span>
+                        <span className="text-xs text-slate-400">{product.uniteCalcul}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-semibold text-slate-700">{product.prixAchat} MAD</td>
+                    <td className="px-6 py-4 text-sm font-semibold text-emerald-600">{product.prix1} MAD</td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => handleOpenView(product)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir"><Eye size={18} /></button>
+                        <button onClick={() => handleOpenEdit(product)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition" title="Modifier"><Edit2 size={18} /></button>
+                        <button onClick={() => handlePrint(product)} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition" title="Imprimer"><Printer size={18} /></button>
+                        <button onClick={() => handleDelete(product.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer"><Trash2 size={18} /></button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {filteredProducts.length === 0 && (
+            <div className="p-10 text-center text-slate-400 flex flex-col items-center">
+                <Package size={40} className="mb-2 opacity-20" />
+                <p>Aucun produit trouvé</p>
+>>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -760,7 +990,11 @@ export default function ProductsPage() {
         mode={modalMode}
         initialData={selectedProduct}
         onSave={handleSave}
+<<<<<<< HEAD
         settings={settings}
+=======
+        warehouses={warehouses}
+>>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
       />
 
       <ViewProductModal 

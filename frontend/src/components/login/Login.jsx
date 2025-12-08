@@ -12,6 +12,8 @@ export default function Login() {
   const users = [
     { id: 1, name: "abdelkrim", password: "ab1234$", role: "admin" },
     {id:2, name: "asim", password: "as1234$", role: "admin"},
+    {id:2, name: "khadija", password: "kh1234$", role: "employee"},
+    {id:2, name: "adil", password: "ad1234$", role: "employee"},
     { id: 3, name: "hakima", password: "ha1234$", role: "manager" },
   ]
 
@@ -83,16 +85,20 @@ export default function Login() {
       
       showToast(`Bienvenue ${user.name} !`, 'success')
       
-      // Navigate after toast based on role
+      // Navigate after toast based on role or specific employee name
       setTimeout(() => {
         if (user.role === 'admin') {
           navigate('/admin/dashboard')
         } else if (user.role === 'manager') {
           navigate('/manager')
+        } else if (user.name === 'khadija') {
+          navigate('/employee/confirmation/dashboard')
+        } else if (user.name === 'adil') {
+          navigate('/employee/packaging/queue')
         } else if (user.role === 'confirmation') {
-          navigate('/employee/confirmation')
+          navigate('/employee/confirmation/dashboard')
         } else if (user.role === 'packaging') {
-          navigate('/employee/packaging')
+          navigate('/employee/packaging/queue')
         } else {
           navigate('/employee')
         }

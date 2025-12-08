@@ -123,6 +123,10 @@ export default function App() {
       {/* Employee Routes (With Layout) */}
       <Route path="/employee" element={<Navigate to="/employee/confirmation/dashboard" replace />} />
       
+      {/* Convenience Routes for Employee Access */}
+      <Route path="/packaging" element={<Navigate to="/employee/packaging/queue" replace />} />
+      <Route path="/confirmation" element={<Navigate to="/employee/confirmation/dashboard" replace />} />
+      
       {/* Confirmation Role Routes */}
       <Route path="/employee/confirmation/dashboard" element={<EmployeeLayout mode="confirmation"><ConfirmationDashboard /></EmployeeLayout>} />
       <Route path="/employee/confirmation/clients" element={<EmployeeLayout mode="confirmation"><ConfirmationClients /></EmployeeLayout>} />
