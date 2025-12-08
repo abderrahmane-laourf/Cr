@@ -210,7 +210,7 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
           newWhatsapp: '', newTele: ''
         });
       } else {
-        setFormData({ date: defaultDate, employeeId: '', productIdsVendre: [], productIdActif: '', whatsappNumbers: [], teleNumbers: '', newWhatsapp: '', newTele: '' });
+        setFormData({ date: defaultDate, employeeId: '', productIdsVendre: [], productIdActif: '', whatsappNumbers: [], teleNumbers: [], newWhatsapp: '', newTele: '' });
       }
     }
   }, [isOpen, affectation]);

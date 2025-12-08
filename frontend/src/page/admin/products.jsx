@@ -5,49 +5,78 @@ import {
   Camera, AlertCircle, CheckCircle, ChevronDown, Printer,
   AlertTriangle, ShoppingCart, Info
 } from 'lucide-react';
-<<<<<<< HEAD
-import { productAPI, settingsAPI } from '../../services/api';
-=======
-import { productAPI, warehouseAPI } from '../../services/api';
->>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
-import Swal from 'sweetalert2';
 
 // ============================================
-// CONSTANTS & CONFIGURATION
+// MOCK API SERVICES
 // ============================================
+const productAPI = {
+  getAll: async () => {
+    return [
+      {
+        id: 1,
+        nom: 'Sérum Vitamine C',
+        image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=200&h=200&fit=crop',
+        type: 'Produit Pré',
+        categorie: 'Cosmétique',
+        uniteCalcul: 'ml',
+        business: 'Herboclear',
+        magasin: 'Magasin Principal',
+        prixAchat: 50,
+        prix1: 120,
+        prix2: 150,
+        prix3: 180,
+        stock: 45,
+        alerteStock: 10,
+        warehouse: 'Entrepôt A',
+        fragile: true,
+        description: 'Sérum anti-âge enrichi en vitamine C',
+        ingredients: 'Vitamine C, Acide Hyaluronique, Eau',
+        modeEmploi: 'Appliquer matin et soir sur peau propre',
+        utilisationsInterdites: 'Ne pas appliquer sur peau irritée',
+        faq: 'Q: Peut-on utiliser avec d\'autres produits? R: Oui',
+        scriptVente: 'Ce sérum révolutionnaire...'
+      }
+    ];
+  },
+  create: async (data) => ({ ...data, id: Date.now() }),
+  update: async (id, data) => ({ ...data, id }),
+  delete: async (id) => true
+};
 
-// Replaced by API calls
-// const PRODUCT_TYPES = ... 
-// const PRODUCT_CATEGORIES = ...
-// const UNITE_CALCUL = ...
-// const BUSINESS_OPTIONS = ...
-// const MAGASIN_OPTIONS = ...
-// We will now load these dynamically.
+const settingsAPI = {
+  getProductTypes: async () => ['Matière Première', 'Fabriqué', 'Produit Pré'],
+  getProductCategories: async () => ['Cosmétique', 'Alimentaire', 'Santé'],
+  getUnits: async () => ['ml', 'g', 'kg', 'L', 'pcs'],
+  getStores: async () => ['Magasin Principal', 'Magasin 2', 'Magasin 3'],
+  getBusinesses: async () => ['Herboclear', 'Commit']
+};
+
+const warehouseAPI = {
+  getAll: async () => [
+    { id: 1, name: 'Entrepôt A' },
+    { id: 2, name: 'Entrepôt B' },
+    { id: 3, name: 'Entrepôt C' }
+  ]
+};
+
+// Mock Swal (SweetAlert2 replacement for demo)
+const Swal = {
+  fire: (title, text, icon) => {
+    return new Promise((resolve) => {
+      if (typeof title === 'object') {
+        const confirmed = window.confirm(title.text);
+        resolve({ isConfirmed: confirmed });
+      } else {
+        alert(`${icon ? icon.toUpperCase() : 'INFO'}: ${title}\n${text || ''}`);
+        resolve({ isConfirmed: true });
+      }
+    });
+  }
+};
 
 // ============================================
 // UTILITY COMPONENTS
 // ============================================
-
-const Toast = ({ message, type = 'success', onClose }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => onClose(), 3000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
-
-  return (
-    <div className="fixed top-6 right-6 z-[60] animate-in slide-in-from-right-10 fade-in duration-300">
-      <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border backdrop-blur-md
-        ${type === 'success' ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800' : 'bg-red-50/90 border-red-200 text-red-800'}`}>
-        {type === 'success' ? <CheckCircle size={24} className="text-emerald-500" /> : <AlertCircle size={24} className="text-red-500" />}
-        <div>
-          <h4 className="font-bold text-sm">{type === 'success' ? 'Succès' : 'Erreur'}</h4>
-          <p className="text-xs opacity-90">{message}</p>
-        </div>
-        <button onClick={onClose} className="ml-4 opacity-50 hover:opacity-100"><X size={16}/></button>
-      </div>
-    </div>
-  );
-};
 
 const InputField = ({ label, type = "text", placeholder, options, value, onChange, disabled, required = true, textarea = false }) => (
   <div className="group">
@@ -63,9 +92,10 @@ const InputField = ({ label, type = "text", placeholder, options, value, onChang
             value={value}
             onChange={onChange}
           >
+            <option value="" disabled>Sélectionner...</option>
             {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
           </select>
-          {!disabled && <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400"><ChevronLeft className="rotate-[-90deg]" size={14} /></div>}
+          {!disabled && <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400"><ChevronDown size={14} /></div>}
         </div>
       ) : textarea ? (
         <textarea 
@@ -85,6 +115,7 @@ const InputField = ({ label, type = "text", placeholder, options, value, onChang
           value={value}
           onChange={onChange}
           step={type === 'number' ? '0.01' : undefined}
+          min={type === 'number' ? '0' : undefined}
         />
       )}
     </div>
@@ -133,6 +164,7 @@ const Stepper = ({ step, setStep }) => {
               <button 
                 key={s.id} 
                 onClick={() => setStep(s.id)}
+                type="button"
                 className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 z-10 cursor-pointer
                   ${isActive ? 'bg-blue-600 border-blue-600 text-white shadow-lg scale-110' : 'bg-white border-slate-200 text-slate-300 hover:border-blue-300'}`}
                 title={s.label}
@@ -150,7 +182,6 @@ const Stepper = ({ step, setStep }) => {
   );
 };
 
-// Update Step 1 to accept settings
 const Step1 = ({ formData, handleInputChange, isViewMode, setFormData, settings }) => (
   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
     <div className="flex justify-center mb-8">
@@ -159,10 +190,13 @@ const Step1 = ({ formData, handleInputChange, isViewMode, setFormData, settings 
            {formData.image ? <img src={formData.image} alt="Produit" className="w-full h-full object-cover" /> : <Package size={48} className="text-slate-300" />}
         </div>
         {!isViewMode && (
-          <label className="absolute bottom-1 right-1 bg-blue-600 p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-blue-700 transition-all">
+          <button 
+            type="button"
+            onClick={() => setFormData(p => ({...p, image: `https://images.unsplash.com/photo-${1556228720195 + Math.floor(Math.random()*1000)}?w=200&h=200&fit=crop`}))}
+            className="absolute bottom-1 right-1 bg-blue-600 p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-blue-700 transition-all border-none outline-none"
+          >
             <Camera size={16} />
-            <input type="button" className="hidden" onClick={() => setFormData(p => ({...p, image: `https://images.unsplash.com/photo-${1556228720195 + Math.floor(Math.random()*1000)}?w=200&h=200&fit=crop`}))} />
-          </label>
+          </button>
         )}
       </div>
     </div>
@@ -197,11 +231,7 @@ const Step2 = ({ formData, handleInputChange, isViewMode }) => (
   </div>
 );
 
-<<<<<<< HEAD
-const Step3 = ({ formData, handleInputChange, isViewMode, setFormData, settings }) => (
-=======
-const Step3 = ({ formData, handleInputChange, isViewMode, setFormData, warehouses = [] }) => (
->>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
+const Step3 = ({ formData, handleInputChange, isViewMode, setFormData, settings, warehouses = [] }) => (
   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
     <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 mb-6 flex items-start gap-3">
       <ShoppingCart className="text-orange-600 shrink-0 mt-0.5" size={18} />
@@ -235,7 +265,7 @@ const Step3 = ({ formData, handleInputChange, isViewMode, setFormData, warehouse
 );
 
 const Step4 = ({ formData, handleInputChange, isViewMode, setFormData }) => {
-  const [detailsType, setDetailsType] = useState('text'); // 'text' or 'pdf'
+  const [detailsType, setDetailsType] = useState('text');
   
   return (
     <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-5">
@@ -244,7 +274,6 @@ const Step4 = ({ formData, handleInputChange, isViewMode, setFormData }) => {
         <div><h4 className="text-sm font-bold text-purple-800">Informations Détaillées</h4><p className="text-xs text-purple-600 mt-1">Ajoutez toutes les informations produit pour vos clients.</p></div>
       </div>
       
-      {/* Choice: Text or PDF */}
       {!isViewMode && (
         <div className="flex gap-3">
           <button
@@ -274,7 +303,6 @@ const Step4 = ({ formData, handleInputChange, isViewMode, setFormData }) => {
         </div>
       )}
 
-      {/* Conditional Rendering based on choice */}
       {detailsType === 'text' ? (
         <>
           <InputField label="Description" textarea value={formData.description} onChange={(e) => handleInputChange('description', e)} disabled={isViewMode} placeholder="Description complète du produit..." required={false} />
@@ -310,7 +338,9 @@ const Step4 = ({ formData, handleInputChange, isViewMode, setFormData }) => {
           {formData.detailsPDF && (
             <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
               <CheckCircle size={18} className="text-emerald-600" />
-              <span className="text-sm font-semibold text-emerald-700">{formData.detailsPDF.name}</span>
+              <span className="text-sm font-semibold text-emerald-700">
+                {typeof formData.detailsPDF === 'string' ? 'Fichier existant' : formData.detailsPDF.name}
+              </span>
               <button 
                 type="button"
                 onClick={() => setFormData(prev => ({...prev, detailsPDF: null}))}
@@ -335,19 +365,25 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
 
   const InfoSection = ({ icon: Icon, title, content, color = "blue" }) => {
     if (!content) return null;
+    const bgClass = `bg-${color}-50`;
+    const borderClass = `border-${color}-100`;
+    const iconClass = `text-${color}-600`;
+    const titleClass = `text-${color}-800`;
+    const textClass = `text-${color}-700`;
+    
     return (
-      <div className={`bg-${color}-50 border border-${color}-100 rounded-xl p-4`}>
+      <div className={`${bgClass} ${borderClass} border rounded-xl p-4`}>
         <div className="flex items-center gap-2 mb-2">
-          <Icon size={18} className={`text-${color}-600`} />
-          <h4 className={`font-bold text-sm text-${color}-800`}>{title}</h4>
+          <Icon size={18} className={iconClass} />
+          <h4 className={`font-bold text-sm ${titleClass}`}>{title}</h4>
         </div>
-        <p className={`text-sm text-${color}-700 whitespace-pre-line`}>{content}</p>
+        <p className={`text-sm ${textClass} whitespace-pre-line`}>{content}</p>
       </div>
     );
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
           <div className="flex items-center gap-4">
@@ -360,8 +396,7 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
           <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors"><X size={24} /></button>
         </div>
         
-        <div className="p-8 overflow-y-auto flex-1 custom-scrollbar space-y-6">
-          {/* Pricing Grid */}
+        <div className="p-8 overflow-y-auto flex-1 space-y-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-4 rounded-xl border border-emerald-200">
               <p className="text-xs text-emerald-600 font-bold uppercase mb-1">Prix d'Achat</p>
@@ -381,7 +416,6 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
             </div>
           </div>
 
-          {/* Stock Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
               <p className="text-xs text-slate-500 font-bold uppercase mb-1">Stock Actuel</p>
@@ -401,10 +435,9 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
             </div>
           </div>
 
-          {/* Detailed Info */}
           <div className="space-y-4">
             <InfoSection icon={FileText} title="Description" content={product.description} color="slate" />
-            <InfoSection icon={Package} title="🥣 Ingrédients" content={product.ingredients} color="green" />
+            <InfoSection icon={Package} title="🥣 Ingrédients" content={product.ingredients} color="emerald" />
             <InfoSection icon={Info} title="📖 Mode d'Emploi" content={product.modeEmploi} color="blue" />
             <InfoSection icon={AlertTriangle} title="⛔ Utilisations Interdites" content={product.utilisationsInterdites} color="red" />
             <InfoSection icon={FileText} title="❓ FAQ" content={product.faq} color="purple" />
@@ -420,21 +453,16 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
 // MAIN PRODUCT MODAL
 // ============================================
 
-const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses = [] }) => {
+const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses = [], settings }) => {
   const [step, setStep] = useState(1);
   
   const emptyForm = {
-    nom: '', image: '', type: PRODUCT_TYPES[0], categorie: PRODUCT_CATEGORIES[0],
-    uniteCalcul: UNITE_CALCUL[0], business: BUSINESS_OPTIONS[0], magasin: MAGASIN_OPTIONS[0],
+    nom: '', image: '', type: settings?.types?.[0] || '', categorie: settings?.categories?.[0] || '',
+    uniteCalcul: settings?.units?.[0] || '', business: settings?.businesses?.[0] || '', magasin: settings?.stores?.[0] || '',
     prixAchat: '', prix1: '', prix2: '', prix3: '',
-<<<<<<< HEAD
-    fragile: false, stock: '', alerteStock: '',
+    fragile: false, stock: '', alerteStock: '', warehouse: '',
     description: '', ingredients: '', modeEmploi: '', utilisationsInterdites: '', faq: '', scriptVente: '',
     detailsPDF: null
-=======
-    fragile: false, stock: '', alerteStock: '', warehouse: '',
-    description: '', ingredients: '', modeEmploi: '', utilisationsInterdites: '', faq: '', scriptVente: ''
->>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
   };
 
   const [formData, setFormData] = useState(emptyForm);
@@ -445,9 +473,17 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses =
       if ((mode === 'edit' || mode === 'view') && initialData) {
         setFormData({ ...emptyForm, ...initialData });
       } else {
-        setFormData(emptyForm);
+        setFormData({
+            ...emptyForm, 
+            type: settings?.types?.[0] || '', 
+            categorie: settings?.categories?.[0] || '',
+            uniteCalcul: settings?.units?.[0] || '',
+            business: settings?.businesses?.[0] || '',
+            magasin: settings?.stores?.[0] || ''
+        });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, mode, initialData]);
 
   if (!isOpen) return null;
@@ -456,18 +492,16 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses =
   const modalTitle = mode === 'add' ? 'Ajouter un Produit' : mode === 'edit' ? 'Modifier le Produit' : 'Détails du Produit';
 
   const handleInputChange = (field, e) => {
-    const value = e.target.type === 'number' ? e.target.value : e.target.value;
+    const value = e.target.value;
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = () => {
-    // Validation
     if (!formData.nom.trim()) {
       Swal.fire('Erreur', 'Le nom du produit est requis', 'error');
       return;
     }
     
-    // Convert string numbers to actual numbers before saving
     const dataToSave = {
       ...formData,
       prixAchat: parseFloat(formData.prixAchat) || 0,
@@ -482,65 +516,46 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses =
   };
 
   return (
-    <div className={`fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+    <div className={`fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
       <div className={`bg-white rounded-3xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh] transition-all duration-300 ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
           <div>
-              <h2 className="text-2xl font-bold text-slate-800">{modalTitle}</h2>
-              <p className="text-slate-500 text-sm mt-1">Gérez les détails de votre produit.</p>
+            <h2 className="text-2xl font-bold text-slate-800">{modalTitle}</h2>
+            <p className="text-slate-500 text-sm mt-1">Gérez les détails de votre produit.</p>
           </div>
           <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors">
             <X size={20} />
           </button>
         </div>
-<<<<<<< HEAD
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
-            <Stepper step={step} setStep={setStep} />
-            
-            <div className="mt-6">
-                {step === 1 && <Step1 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} settings={settings} />}
-                {step === 2 && <Step2 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
-                {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} settings={settings} />}
-                {step === 4 && <Step4 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
-            </div>
-=======
-        
-        <div className="p-8 overflow-y-auto flex-1 custom-scrollbar">
+        <div className="p-8 overflow-y-auto flex-1">
           <Stepper step={step} setStep={setStep} />
-          {step === 1 && <Step1 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
+          {step === 1 && <Step1 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} settings={settings} />}
           {step === 2 && <Step2 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
-          {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} warehouses={warehouses} />}
-          {step === 4 && <Step4 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
+          {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} settings={settings} warehouses={warehouses} />}
+          {step === 4 && <Step4 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
         </div>
         
         <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 rounded-b-3xl flex justify-between items-center">
           {step > 1 ? (
-            <button onClick={() => setStep(step - 1)} className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-white border border-transparent hover:border-slate-200 flex items-center gap-2 transition-all"><ChevronLeft size={18} /> Précédent</button>
+            <button onClick={() => setStep(step - 1)} className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-white border border-transparent hover:border-slate-200 flex items-center gap-2 transition-all">
+              <ChevronLeft size={18} /> Précédent
+            </button>
           ) : <div />}
->>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
           
-            <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-100">
-                {step > 1 ? (
-                    <button onClick={() => setStep(s => s - 1)} className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 border border-slate-200 transition-all flex items-center gap-2">
-                        <ChevronLeft size={18} /> Précédent
-                    </button>
-                ) : <div></div>}
-
-                <div className="flex gap-3">
-                    {step < 4 ? (
-                        <button onClick={() => setStep(s => s + 1)} className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold shadow-lg shadow-blue-500/30 transition-all flex items-center gap-2">
-                            Suivant <ChevronRight size={18} />
-                        </button>
-                    ) : (
-                        !isViewMode && (
-                            <button onClick={handleSubmit} className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-semibold shadow-lg shadow-emerald-500/30 transition-all flex items-center gap-2">
-                                <Check size={18} /> Enregistrer
-                            </button>
-                        )
-                    )}
-                </div>
-            </div>
+          <div className="flex gap-3">
+            {step < 4 ? (
+              <button onClick={() => setStep(s => s + 1)} className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold shadow-lg shadow-blue-500/30 transition-all flex items-center gap-2">
+                Suivant <ChevronRight size={18} />
+              </button>
+            ) : (
+              !isViewMode && (
+                <button onClick={handleSubmit} className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-semibold shadow-lg shadow-emerald-500/30 transition-all flex items-center gap-2">
+                  <Check size={18} /> Enregistrer
+                </button>
+              )
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -548,224 +563,180 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses =
 };
 
 export default function ProductsPage() {
-<<<<<<< HEAD
-    const [products, setProducts] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [settings, setSettings] = useState({ 
-        types: [], categories: [], units: [], stores: [], businesses: [] 
-=======
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [warehouses, setWarehouses] = useState([]);
+  const [settings, setSettings] = useState({ 
+    types: [], categories: [], units: [], stores: [], businesses: [] 
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('Tous');
   const [categoryFilter, setCategoryFilter] = useState('Tous');
   const [businessFilter, setBusinessFilter] = useState('Tous');
-  const [loading, setLoading] = useState(true);
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [selectedProduct, setSelectedProduct] = useState(null);
-  
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [viewProduct, setViewProduct] = useState(null);
-  
-  const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    loadProducts();
+    loadData();
   }, []);
 
-  const loadProducts = async () => {
+  const loadData = async () => {
     try {
-      setLoading(true);
-      const [productsData, warehousesData] = await Promise.all([
+      setIsLoading(true);
+      const [productsData, types, categories, units, stores, businesses, warehousesData] = await Promise.all([
         productAPI.getAll(),
-        warehouseAPI.getAll()
+        settingsAPI.getProductTypes(),
+        settingsAPI.getProductCategories(),
+        settingsAPI.getUnits(),
+        settingsAPI.getStores(),
+        settingsAPI.getBusinesses(),
+        warehouseAPI.getAll().catch(() => [])
       ]);
+      
       setProducts(productsData);
+      setSettings({ types, categories, units, stores, businesses });
       setWarehouses(warehousesData);
     } catch (error) {
-      console.error('Error loading products:', error);
-      showToast('Erreur de chargement des produits', 'error');
+      console.error("Error loading data:", error);
+      setSettings({
+        types: ['Matière Première', 'Fabriqué', 'Produit Pré'],
+        categories: ['Cosmétique', 'Alimentaire'],
+        units: ['ml', 'g', 'kg'],
+        stores: ['Magasin Principal'],
+        businesses: ['Herboclear', 'Commit']
+      });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   const handleSave = async (productData) => {
     try {
       if (modalMode === 'add') {
-        await productAPI.create(productData);
-        showToast("Produit ajouté avec succès !", "success");
-      } else if (modalMode === 'edit') {
-        await productAPI.update(selectedProduct.id, productData);
-        showToast("Modifications enregistrées !", "success");
+        const newProduct = await productAPI.create(productData);
+        setProducts([...products, newProduct]);
+        Swal.fire('Succès', 'Produit ajouté avec succès', 'success');
+      } else {
+        const updated = await productAPI.update(selectedProduct.id, productData);
+        setProducts(products.map(p => p.id === updated.id ? updated : p));
+        Swal.fire('Succès', 'Produit mis à jour', 'success');
       }
       setIsModalOpen(false);
-      loadProducts();
     } catch (error) {
-      console.error('Error saving product:', error);
-      showToast('Erreur lors de la sauvegarde', 'error');
+      console.error("Error saving product:", error);
+      Swal.fire('Erreur', 'Impossible d\'enregistrer le produit', 'error');
     }
   };
 
   const handleDelete = async (id) => {
-    const result = await Swal.fire({
-      title: 'Êtes-vous sûr ?',
-      text: "Vous ne pourrez pas revenir en arrière !",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Oui, supprimer !',
-      cancelButtonText: 'Annuler'
->>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
-    });
+    try {
+      const result = await Swal.fire({
+        title: { text: "Êtes-vous sûr ? Cette action est irréversible !" },
+        text: "Cette action est irréversible !",
+        icon: 'warning',
+      });
 
-    // Modal States
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalMode, setModalMode] = useState('add'); // 'add', 'edit', 'view'
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-    const [viewProduct, setViewProduct] = useState(null);
+      if (result.isConfirmed) {
+        await productAPI.delete(id);
+        setProducts(products.filter(p => p.id !== id));
+        Swal.fire('Supprimé !', 'Le produit a été supprimé.', 'success');
+      }
+    } catch (error) {
+      Swal.fire('Erreur', 'Erreur lors de la suppression', 'error');
+    }
+  };
 
-    useEffect(() => {
-        loadData();
-    }, []);
+  const handleOpenAdd = () => {
+    setModalMode('add');
+    setSelectedProduct(null);
+    setIsModalOpen(true);
+  };
 
-    const loadData = async () => {
-        try {
-            setIsLoading(true);
-            const [productsData, 
-                   types, categories, units, stores, businesses
-            ] = await Promise.all([
-                productAPI.getAll(),
-                settingsAPI.getProductTypes(),
-                settingsAPI.getProductCategories(),
-                settingsAPI.getUnits(),
-                settingsAPI.getStores(),
-                settingsAPI.getBusinesses()
-            ]);
-            
-            setProducts(productsData);
-            setSettings({ types, categories, units, stores, businesses });
-        } catch (error) {
-            console.error("Error loading data:", error);
-            // Fallback defaults if API fails
-            setSettings({
-                types: ['Matière Première', 'Fabriqué', 'Produit Pré'],
-                categories: ['Cosmétique', 'Alimentaire'],
-                units: ['ml', 'g', 'kg'],
-                stores: ['Magasin Principal'],
-                businesses: ['Herboclear', 'Commit']
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const handleOpenEdit = (product) => {
+    setModalMode('edit');
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+  
+  const handleOpenView = (product) => {
+    setViewProduct(product);
+    setIsViewModalOpen(true);
+  };
 
-    const handleSave = async (productData) => {
-        try {
-            if (modalMode === 'add') {
-                const newProduct = await productAPI.create(productData);
-                setProducts([...products, newProduct]);
-                Swal.fire('Succès', 'Produit ajouté avec succès', 'success');
-            } else {
-                const updated = await productAPI.update(selectedProduct.id, productData);
-                setProducts(products.map(p => p.id === updated.id ? updated : p));
-                Swal.fire('Succès', 'Produit mis à jour', 'success');
-            }
-            setIsModalOpen(false);
-        } catch (error) {
-            console.error("Error saving product:", error);
-            Swal.fire('Erreur', 'Impossible d\'enregistrer le produit', 'error');
-        }
-    };
+  const handlePrint = () => {
+    window.print();
+  };
 
-    const handleDelete = async (id) => {
-        try {
-            const result = await Swal.fire({
-                title: 'Êtes-vous sûr ?',
-                text: "Cette action est irréversible !",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Oui, supprimer !'
-            });
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = p.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         p.categorie?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = typeFilter === 'Tous' || p.type === typeFilter;
+    const matchesCategory = categoryFilter === 'Tous' || p.categorie === categoryFilter;
+    const matchesBusiness = businessFilter === 'Tous' || p.business === businessFilter;
+    return matchesSearch && matchesType && matchesCategory && matchesBusiness;
+  });
 
-            if (result.isConfirmed) {
-                await productAPI.delete(id);
-                setProducts(products.filter(p => p.id !== id));
-                Swal.fire('Supprimé !', 'Le produit a été supprimé.', 'success');
-            }
-        } catch (error) {
-            Swal.fire('Erreur', 'Erreur lors de la suppression', 'error');
-        }
-    };
-
-    const handleOpenAdd = () => {
-        setModalMode('add');
-        setSelectedProduct(null);
-        setIsModalOpen(true);
-    };
-
-    const handleOpenEdit = (product) => {
-        setModalMode('edit');
-        setSelectedProduct(product);
-        setIsModalOpen(true);
-    };
-    
-    const handleOpenView = (product) => {
-        setViewProduct(product);
-        setIsViewModalOpen(true);
-    };
-
-    const handlePrint = (product) => {
-        // Placeholder print
-        window.print();
-    };
-
-    // Filter
-    const filteredProducts = products.filter(p => 
-        p.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.categorie?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const lowStockCount = products.filter(p => parseFloat(p.stock) <= parseFloat(p.alerteStock || 10)).length;
+  const lowStockCount = products.filter(p => parseFloat(p.stock) <= parseFloat(p.alerteStock || 10)).length;
 
   return (
     <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-900">
       <div className="max-w-[1600px] mx-auto space-y-8">
         
-<<<<<<< HEAD
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-            <div className="flex items-center gap-4">
-                <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg shadow-blue-500/20 text-white">
-                    <Package size={32} strokeWidth={1.5} />
-                </div>
-                <div>
-                    <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Catalogue Produits</h1>
-                    <div className="flex items-center gap-3 mt-1.5">
-                        <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100">
-                            {products.length} références
-                        </span>
-                        {lowStockCount > 0 && (
-                             <span className="px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-700 text-xs font-bold border border-orange-100 flex items-center gap-1">
-                                <AlertTriangle size={12} /> {lowStockCount} stock faible
-                             </span>
-                        )}
-                    </div>
-                </div>
-=======
-        <div className="flex flex-col md:flex-row gap-4 mt-6">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-            <input type="text" placeholder="Rechercher par nom..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+        {/* Header Section - Hidden when printing */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 print:hidden">
+          <div>
+            <h1 className="text-4xl font-black text-slate-800 mb-2">Gestion des Produits</h1>
+            <p className="text-slate-500 font-medium">Gérez votre catalogue de produits</p>
           </div>
           
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="relative group flex-1 sm:flex-none">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
+              <input 
+                type="text" 
+                placeholder="Rechercher..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full sm:w-72 pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-700 font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-400"
+              />
+            </div>
+            <button 
+              onClick={handleOpenAdd}
+              className="px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-xl shadow-blue-600/20 border border-blue-500/50 transition-all active:scale-95 flex items-center justify-center gap-2"
+            >
+              <Plus size={20} strokeWidth={2.5} />
+              <span>Nouveau Produit</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Cards - Hidden when printing */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 print:hidden">
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-2xl text-white shadow-xl">
+            <Package className="mb-3" size={32} />
+            <h3 className="text-3xl font-black">{products.length}</h3>
+            <p className="text-blue-100 font-medium">Produits Total</p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 rounded-2xl text-white shadow-xl">
+            <CheckCircle className="mb-3" size={32} />
+            <h3 className="text-3xl font-black">{products.length - lowStockCount}</h3>
+            <p className="text-emerald-100 font-medium">En Stock</p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 rounded-2xl text-white shadow-xl">
+            <AlertTriangle className="mb-3" size={32} />
+            <h3 className="text-3xl font-black">{lowStockCount}</h3>
+            <p className="text-orange-100 font-medium">Alerte Stock</p>
+          </div>
+        </div>
+
+        {/* Filters - Hidden when printing */}
+        <div className="flex flex-col md:flex-row gap-4 print:hidden">
           <div className="relative">
             <select 
               value={typeFilter} 
@@ -773,7 +744,7 @@ export default function ProductsPage() {
               className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
             >
               <option value="Tous">Tous les types</option>
-              {PRODUCT_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+              {settings.types.map(type => <option key={type} value={type}>{type}</option>)}
             </select>
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
           </div>
@@ -785,7 +756,7 @@ export default function ProductsPage() {
               className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
             >
               <option value="Tous">Toutes catégories</option>
-              {PRODUCT_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              {settings.categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
             </select>
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
           </div>
@@ -797,190 +768,102 @@ export default function ProductsPage() {
               className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
             >
               <option value="Tous">Tous Business</option>
-              {BUSINESS_OPTIONS.map(biz => <option key={biz} value={biz}>{biz}</option>)}
+              {settings.businesses.map(biz => <option key={biz} value={biz}>{biz}</option>)}
             </select>
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
           </div>
         </div>
-      </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-100">
-              <tr>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Image</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nom</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Catégorie</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Entrepôt</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Stock</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Achat</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Vente 1</th>
-                <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {filteredProducts.map((product, index) => {
-                const isLowStock = product.stock <= product.alerteStock;
-                return (
-                  <tr key={product.id} className="hover:bg-slate-50/80 transition-colors group">
-                    <td className="px-6 py-4 text-sm font-semibold text-slate-600">{index + 1}</td>
-                    <td className="px-6 py-4">
-                      <img src={product.image} alt={product.nom} className="w-12 h-12 rounded-lg object-cover shadow-sm ring-1 ring-slate-100" />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <span className="block font-semibold text-slate-800">{product.nom}</span>
-                        <span className="text-xs text-slate-400">{product.type}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
-                        {product.categorie}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      {product.warehouse ? (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
-                          {product.warehouse}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-slate-400">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-black text-slate-800">{product.stock || 0}</span>
-                        <span className="text-xs text-slate-400">{product.uniteCalcul}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm font-semibold text-slate-700">{product.prixAchat} MAD</td>
-                    <td className="px-6 py-4 text-sm font-semibold text-emerald-600">{product.prix1} MAD</td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => handleOpenView(product)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir"><Eye size={18} /></button>
-                        <button onClick={() => handleOpenEdit(product)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition" title="Modifier"><Edit2 size={18} /></button>
-                        <button onClick={() => handlePrint(product)} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition" title="Imprimer"><Printer size={18} /></button>
-                        <button onClick={() => handleDelete(product.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer"><Trash2 size={18} /></button>
+        {/* Products Table */}
+        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden print:shadow-none print:border-none">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-slate-50/80 border-b border-slate-200">
+                  <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Produit</th>
+                  <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Catégorie</th>
+                  <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Prix Unitaire</th>
+                  <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Business</th>
+                  <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Stock</th>
+                  <th className="px-6 py-5 text-right text-xs font-bold text-slate-500 uppercase tracking-wider print:hidden">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {isLoading ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-12 text-center text-slate-400">Chargement...</td>
+                  </tr>
+                ) : filteredProducts.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-12 text-center">
+                       <div className="flex flex-col items-center justify-center text-slate-400">
+                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                          <Package size={40} className="opacity-20 text-slate-600" />
+                        </div>
+                        <h3 className="font-bold text-lg text-slate-700">Aucun produit trouvé</h3>
                       </div>
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          {filteredProducts.length === 0 && (
-            <div className="p-10 text-center text-slate-400 flex flex-col items-center">
-                <Package size={40} className="mb-2 opacity-20" />
-                <p>Aucun produit trouvé</p>
->>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <div className="relative group flex-1 sm:flex-none">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
-                    <input 
-                        type="text" 
-                        placeholder="Rechercher un produit..." 
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full sm:w-72 pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-700 font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-400"
-                    />
-                </div>
-                <button 
-                    onClick={handleOpenAdd}
-                    className="px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-xl shadow-blue-600/20 border border-blue-500/50 transition-all active:scale-95 flex items-center justify-center gap-2"
-                >
-                    <Plus size={20} strokeWidth={2.5} />
-                    <span>Nouveau Produit</span>
-                </button>
-            </div>
-        </div>
-
-        {/* Product Table */}
-        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-             <div className="overflow-x-auto">
-                <table className="w-full">
-                    <thead>
-                        <tr className="bg-slate-50/80 border-b border-slate-200">
-                            <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Produit</th>
-                            <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Catégorie</th>
-                            <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Prix Unitaire</th>
-                            <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Business</th>
-                            <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Stock</th>
-                            <th className="px-6 py-5 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {filteredProducts.map(product => {
-                             const isLowStock = parseFloat(product.stock) <= parseFloat(product.alerteStock || 10);
-                             return (
-                                <tr key={product.id} className="hover:bg-slate-50/80 transition-colors group">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
-                                                {product.image ? (
-                                                    <img src={product.image} alt="" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <Package className="text-slate-300" size={20} />
-                                                )}
-                                            </div>
-                                            <div>
-                                                <div className="font-bold text-slate-800">{product.nom}</div>
-                                                <div className="text-xs text-slate-500">{product.type}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
-                                            {product.categorie}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="font-bold text-slate-700">{product.prix1} MAD</div>
-                                        <div className="text-xs text-slate-400">Achat: {product.prixAchat}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                         <div className="text-sm text-slate-600 font-medium">{product.business}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                         {isLowStock ? (
-                                             <div className="flex items-center gap-1.5 text-orange-600 bg-orange-50 px-3 py-1 rounded-lg w-fit border border-orange-100">
-                                                 <AlertTriangle size={14} />
-                                                 <span className="text-xs font-bold">{product.stock} {product.uniteCalcul}</span>
-                                             </div>
-                                         ) : (
-                                             <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg w-fit border border-emerald-100">
-                                                 <CheckCircle size={14} />
-                                                 <span className="text-xs font-bold">{product.stock} {product.uniteCalcul}</span>
-                                             </div>
-                                         )}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => handleOpenView(product)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Voir"><Eye size={18} /></button>
-                                            <button onClick={() => handleOpenEdit(product)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors" title="Modifier"><Edit2 size={18} /></button>
-                                            <button onClick={() => handlePrint(product)} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Imprimer"><Printer size={18} /></button>
-                                            <button onClick={() => handleDelete(product.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Supprimer"><Trash2 size={18} /></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                             );
-                        })}
-                    </tbody>
-                </table>
-                {filteredProducts.length === 0 && (
-                     <div className="p-12 text-center text-slate-400 flex flex-col items-center justify-center">
-                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                             <Package size={40} className="opacity-20 text-slate-600" />
-                        </div>
-                        <h3 className="font-bold text-lg text-slate-700">Aucun produit trouvé</h3>
-                        <p className="text-slate-500 max-w-xs mx-auto mt-1">Essayez de modifier vos filtres ou ajoutez un nouveau produit.</p>
-                     </div>
+                ) : (
+                  filteredProducts.map(product => {
+                    const isLowStock = parseFloat(product.stock) <= parseFloat(product.alerteStock || 10);
+                    return (
+                      <tr key={product.id} className="hover:bg-slate-50/80 transition-colors group">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+                              {product.image ? (
+                                <img src={product.image} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <Package className="text-slate-300" size={20} />
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-bold text-slate-800">{product.nom}</div>
+                              <div className="text-xs text-slate-500">{product.type}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
+                            {product.categorie}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="font-bold text-slate-700">{product.prix1} MAD</div>
+                          <div className="text-xs text-slate-400">Achat: {product.prixAchat}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-slate-600 font-medium">{product.business}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {isLowStock ? (
+                            <div className="flex items-center gap-1.5 text-orange-600 bg-orange-50 px-3 py-1 rounded-lg w-fit border border-orange-100">
+                              <AlertTriangle size={14} />
+                              <span className="text-xs font-bold">{product.stock} {product.uniteCalcul}</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg w-fit border border-emerald-100">
+                              <CheckCircle size={14} />
+                              <span className="text-xs font-bold">{product.stock} {product.uniteCalcul}</span>
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right print:hidden">
+                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => handleOpenView(product)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Voir"><Eye size={18} /></button>
+                            <button onClick={() => handleOpenEdit(product)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors" title="Modifier"><Edit2 size={18} /></button>
+                            <button onClick={handlePrint} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Imprimer"><Printer size={18} /></button>
+                            <button onClick={() => handleDelete(product.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Supprimer"><Trash2 size={18} /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
-             </div>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -990,11 +873,8 @@ export default function ProductsPage() {
         mode={modalMode}
         initialData={selectedProduct}
         onSave={handleSave}
-<<<<<<< HEAD
         settings={settings}
-=======
         warehouses={warehouses}
->>>>>>> e4cbcd4fd3451a0c861cec1ae84f94243bc617db
       />
 
       <ViewProductModal 

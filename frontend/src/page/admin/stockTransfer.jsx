@@ -156,22 +156,6 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses, isSaving
               </div>
             </div>
 
-            {/* Quantity */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-500 uppercase ml-1">
-                Quantité <span className="text-red-400">*</span>
-              </label>
-              <input 
-                type="number" 
-                min="1"
-                placeholder="Ex: 10" 
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                value={formData.quantity}
-                onChange={e => handleFieldChange('quantity', e.target.value)}
-                required
-              />
-            </div>
-
             {/* Source */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase ml-1">
@@ -198,6 +182,22 @@ const TransferModal = ({ isOpen, onClose, onSave, products, warehouses, isSaving
                   </span>
                 </div>
               )}
+            </div>
+
+            {/* Quantity */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase ml-1">
+                Quantité <span className="text-red-400">*</span>
+              </label>
+              <input 
+                type="number" 
+                min="1"
+                placeholder="Ex: 10" 
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                value={formData.quantity}
+                onChange={e => handleFieldChange('quantity', e.target.value)}
+                required
+              />
             </div>
 
             {/* Destination */}

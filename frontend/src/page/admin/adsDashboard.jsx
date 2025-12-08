@@ -202,55 +202,118 @@ export default function AdsDashboard() {
         </div>
       </div>
 
-      {/* Main Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-2xl p-6 border border-orange-200 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-xs font-bold text-orange-600 uppercase tracking-wider">Dépenses Totales</p>
-              <p className="text-3xl font-extrabold text-orange-900 mt-2">{totalSpent.toFixed(2)} MAD</p>
-            </div>
-            <div className="w-14 h-14 bg-orange-500 rounded-xl flex items-center justify-center text-white shadow-lg">
-              <DollarSign size={28} />
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-orange-700">
-            <TrendingUp size={14} />
-            <span className="font-medium">Basé sur {filteredAds.length} campagnes</span>
-          </div>
-        </div>
+      {/* 3 Categories Dashboard: Estimation, Goal, Data & Success */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-6 border border-blue-200 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">Total Commandes</p>
-              <p className="text-3xl font-extrabold text-blue-900 mt-2">{totalOrders}</p>
-            </div>
-            <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center text-white shadow-lg">
-              <ShoppingCart size={28} />
-            </div>
+        {/* 1. ESTIMATION */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-full -mr-4 -mt-4" />
+          <div className="flex items-center gap-2 mb-6 relative">
+            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><Calendar size={20} /></div>
+            <h3 className="font-bold text-slate-700">Estimations</h3>
           </div>
-          <div className="flex items-center gap-2 text-xs text-blue-700">
-            <TrendingUp size={14} />
-            <span className="font-medium">Toutes plateformes confondues</span>
+          
+          <div className="space-y-6 relative flex-1">
+             <div>
+                <p className="text-xs text-slate-400 font-bold uppercase mb-1">Budget Estimé / Jour</p>
+                <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-black text-slate-800">
+                        {(filteredAds.length > 0 ? (filteredAds.reduce((sum, ad) => sum + (parseFloat(ad.dailyBudget) || 0), 0) / filteredAds.length) : 0).toFixed(0)} 
+                    </span>
+                    <span className="text-sm font-bold text-slate-500">MAD</span>
+                </div>
+             </div>
+
+             <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-bold text-blue-700">Projection Commandes</span>
+                    <TrendingUp size={16} className="text-blue-500" />
+                </div>
+                <p className="text-3xl font-black text-blue-800">
+                    {totalSpent > 0 ? ((totalSpent * 1.2 / (parseFloat(averageCPO) || 1))).toFixed(0) : 0}
+                </p>
+                <p className="text-[10px] text-blue-500 mt-1 font-medium opacity-80">Basé sur une augmentation de 20%</p>
+             </div>
           </div>
         </div>
-        
-        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-2xl p-6 border border-emerald-200 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">CPO Moyen</p>
-              <p className="text-3xl font-extrabold text-emerald-900 mt-2">{averageCPO} MAD</p>
-            </div>
-            <div className="w-14 h-14 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg">
-              <Target size={28} />
-            </div>
+
+        {/* 2. GOAL (OBJECTIFS) */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-purple-50 rounded-bl-full -mr-4 -mt-4" />
+          <div className="flex items-center gap-2 mb-6 relative">
+            <div className="p-2 bg-purple-100 text-purple-600 rounded-lg"><Target size={20} /></div>
+            <h3 className="font-bold text-slate-700">Objectifs (Goals)</h3>
           </div>
-          <div className="flex items-center gap-2 text-xs text-emerald-700">
-            <Target size={14} />
-            <span className="font-medium">Target: {targetCPO} MAD</span>
+          
+          <div className="space-y-6 relative flex-1">
+             <div>
+                <div className="flex justify-between items-center mb-1">
+                    <p className="text-xs text-slate-400 font-bold uppercase">Target CPO</p>
+                    <button className="text-[10px] font-bold text-purple-600 hover:underline">Modifier</button>
+                </div>
+                <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-black text-purple-800">{targetCPO}</span>
+                    <span className="text-sm font-bold text-slate-500">MAD</span>
+                </div>
+                <input 
+                    type="range" min="5" max="100" value={targetCPO} 
+                    onChange={(e) => { setTargetCPO(e.target.value); localStorage.setItem('adsSettings', JSON.stringify({ targetCPO: e.target.value })); }}
+                    className="w-full mt-2 h-2 bg-purple-100 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                />
+             </div>
+
+             <div className="grid grid-cols-2 gap-3">
+                 <div className="p-3 bg-purple-50 rounded-xl border border-purple-100">
+                    <p className="text-[10px] font-bold text-purple-500 uppercase">Target ROAS</p>
+                    <p className="text-xl font-black text-purple-800">3.5</p>
+                 </div>
+                 <div className="p-3 bg-purple-50 rounded-xl border border-purple-100">
+                    <p className="text-[10px] font-bold text-purple-500 uppercase">Min Orders</p>
+                    <p className="text-xl font-black text-purple-800">50/j</p>
+                 </div>
+             </div>
           </div>
         </div>
+
+        {/* 3. DATA & SUCCESS (RÉUSSITE) */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-50 rounded-bl-full -mr-4 -mt-4" />
+          <div className="flex items-center gap-2 mb-6 relative">
+            <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg"><DollarSign size={20} /></div>
+            <h3 className="font-bold text-slate-700">Data & Réussite</h3>
+          </div>
+          
+          <div className="space-y-4 relative flex-1">
+             <div className="flex justify-between items-end pb-3 border-b border-slate-50">
+                <div>
+                   <p className="text-xs text-slate-400 font-bold uppercase">Dépenses (Actual)</p>
+                   <p className="text-xl font-black text-slate-800">{totalSpent.toFixed(0)} <span className="text-sm text-slate-400 font-bold">DH</span></p>
+                </div>
+                <div className="text-right">
+                   <p className="text-xs text-slate-400 font-bold uppercase">Commandes</p>
+                   <p className="text-xl font-black text-slate-800">{totalOrders}</p>
+                </div>
+             </div>
+
+             <div>
+                <p className="text-xs text-slate-400 font-bold uppercase mb-2">KPI Réussite (CPO Actual vs Goal)</p>
+                <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <div>
+                        <span className={`text-2xl font-black ${parseFloat(averageCPO) <= targetCPO ? 'text-emerald-500' : 'text-red-500'}`}>
+                            {averageCPO}
+                        </span>
+                        <span className="text-xs font-bold text-slate-400 ml-1">MAD</span>
+                    </div>
+                    
+                    <div className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${parseFloat(averageCPO) <= targetCPO ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                        {parseFloat(averageCPO) <= targetCPO ? <TrendingUp size={14}/> : <TrendingDown size={14}/>}
+                        {parseFloat(averageCPO) <= targetCPO ? 'Succès' : 'Échec'}
+                    </div>
+                </div>
+             </div>
+          </div>
+        </div>
+
       </div>
 
       {/* Platform Performance & Top Campaigns */}

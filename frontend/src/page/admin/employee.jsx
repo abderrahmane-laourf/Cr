@@ -120,8 +120,7 @@ const Stepper = ({ step, setStep }) => {
   const steps = [ 
     { id: 1, label: "Infos", icon: User }, 
     { id: 2, label: "Docs", icon: FileText }, 
-    { id: 3, label: "Accès", icon: Shield },
-    { id: 4, label: "Perms", icon: Lock } // Nouvelle étape
+    { id: 3, label: "Accès", icon: Shield }
   ];
   
   const progress = ((step - 1) / (steps.length - 1)) * 100;
@@ -174,14 +173,13 @@ const Step1 = ({ formData, handleInputChange, isViewMode, setFormData }) => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
       <InputField label="Prénom" value={formData.firstName} onChange={(e) => handleInputChange('firstName', e)} disabled={isViewMode} />
       <InputField label="Nom" value={formData.lastName} onChange={(e) => handleInputChange('lastName', e)} disabled={isViewMode} />
-      <InputField label="Téléphone" value={formData.phone} onChange={(e) => handleInputChange('phone', e)} disabled={isViewMode} />
+      <InputField label="Téléphone Personnelle" value={formData.phone} onChange={(e) => handleInputChange('phone', e)} disabled={isViewMode} />
       <InputField label="CIN" value={formData.cin} onChange={(e) => handleInputChange('cin', e)} disabled={isViewMode} />
       <InputField label="N° CNSS" value={formData.cnss} onChange={(e) => handleInputChange('cnss', e)} disabled={isViewMode} />
       <InputField label="Salaire (MAD)" type="number" value={formData.salary} onChange={(e) => handleInputChange('salary', e)} disabled={isViewMode} />
       <InputField label="Banque" type="select" options={["CIH", "Attijari", "BMCE"]} value={formData.bank} onChange={(e) => handleInputChange('bank', e)} disabled={isViewMode} />
       <InputField label="RIB" value={formData.rib} onChange={(e) => handleInputChange('rib', e)} disabled={isViewMode} />
-      <InputField label="Projet" type="select" options={["Alpha", "Beta"]} value={formData.project} onChange={(e) => handleInputChange('project', e)} disabled={isViewMode} />
-      <InputField label="Business" value={formData.business} onChange={(e) => handleInputChange('business', e)} disabled={isViewMode} />
+      <InputField label="Business" type="select" options={["Herboclear", "Commit"]} value={formData.business} onChange={(e) => handleInputChange('business', e)} disabled={isViewMode} />
     </div>
   </div>
 );
@@ -193,7 +191,7 @@ const Step2 = ({ isViewMode }) => (
       <div><h4 className="text-sm font-bold text-blue-800">Documents</h4><p className="text-xs text-blue-600 mt-1">Gérer les documents ici (CIN, Contrat, Diplôme).</p></div>
     </div>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {['cin', 'contract', 'diploma'].map(key => (
+      {['cin', 'contract', 'diploma', 'non_concurrence'].map(key => (
           <div key={key} className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center ${isViewMode ? 'opacity-70 bg-gray-50' : 'hover:border-blue-400 cursor-pointer bg-white group'}`}>
               <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><Upload size={20}/></div>
               <h4 className="text-sm font-bold text-slate-700 capitalize">{key}</h4>
@@ -379,8 +377,7 @@ const EmployeeModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
           <Stepper step={step} setStep={setStep} />
           {step === 1 && <Step1 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} />}
           {step === 2 && <Step2 isViewMode={isViewMode} />}
-          {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} showPassword={showPassword} setShowPassword={setShowPassword} />}
-          {step === 4 && <Step4 formData={formData} toggleCategory={toggleCategory} togglePermission={togglePermission} isViewMode={isViewMode} />} 
+          {step === 3 && <Step3 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} showPassword={showPassword} setShowPassword={setShowPassword} />} 
         </div>
         
         <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 rounded-b-3xl flex justify-between items-center">
@@ -388,7 +385,7 @@ const EmployeeModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
             <button onClick={() => setStep(step - 1)} className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-white border border-transparent hover:border-slate-200 flex items-center gap-2 transition-all"><ChevronLeft size={18} /> Précédent</button>
           ) : <div />}
           
-          {step < 4 ? (
+          {step < 3 ? (
              <button onClick={() => setStep(step + 1)} className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all">Suivant <ChevronRight size={18} /></button>
           ) : (
              !isViewMode && (

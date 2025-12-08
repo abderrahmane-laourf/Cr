@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Settings, Save, Plus, Trash2, Edit2, RotateCw, CheckCircle, AlertCircle, 
   Layers, Package, Database, Briefcase, Tag, Ruler
 } from 'lucide-react';
-import { settingsAPI } from '../../services/api';
+import { settingsAPI, businessAPI } from '../../services/api';
 
 const Toast = ({ message, type = 'success', onClose }) => {
   if (!message) return null;
@@ -123,6 +124,7 @@ const ListManager = ({ title, icon: Icon, dataKey, fetcher, placeholder = "Nouve
 };
 
 const SettingsPage = () => {
+    const navigate = useNavigate();
     return (
          <div className="min-h-screen bg-slate-50/50 p-8 font-sans">
             <div className="max-w-7xl mx-auto space-y-8">
@@ -168,14 +170,37 @@ const SettingsPage = () => {
                         fetcher={settingsAPI.getStores}
                     />
 
-                    {/* SECTION: GENERAL */}
-                    <ListManager 
-                        title="Business Units" 
-                        icon={Briefcase} 
-                        dataKey="settings_businesses"
-                        fetcher={settingsAPI.getBusinesses}
-                        placeholder="Ex: Herboclear..."
-                    />
+                    {/* SECTION: BUSINESS UNITS (Table View) */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden h-full flex flex-col md:col-span-2 lg:col-span-3">
+                        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <div className="flex items-center gap-2">
+                                <div className="p-2 bg-blue-100/50 text-blue-600 rounded-lg">
+                                    <Briefcase size={18} />
+                                </div>
+                                <h3 className="font-bold text-slate-800">Business Units (Détails API)</h3>
+                            </div>
+                            <button 
+                                onClick={() => navigate('/admin/business')}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm"
+                            >
+                                <Plus size={14} /> Ajouter
+                            </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm">
+                                <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-xs">
+                                    <tr>
+                                        <th className="px-6 py-3">Business</th>
+                                        <th className="px-6 py-3">API ID</th>
+                                        <th className="px-6 py-3">Token</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    <BusinessListRow /> 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
                 </div>
             </div>
@@ -185,5 +210,41 @@ const SettingsPage = () => {
 
 // Simple Icon Wrapper if Lucide doesn't have 'Tag' exported as 'TagsIcon' or similar naming conflict
 const TagsIcon = (props) => <Tag {...props} />;
+
+
+
+const BusinessListRow = () => {
+    const [businesses, setBusinesses] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                const data = await businessAPI.getAll();
+                setBusinesses(data);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, []);
+
+    if (loading) return <tr><td colSpan="3" className="p-4 text-center text-slate-400">Chargement...</td></tr>;
+    if (businesses.length === 0) return <tr><td colSpan="3" className="p-4 text-center text-slate-400">Aucun business configuré</td></tr>;
+
+    return (
+        <>
+            {businesses.map((b) => (
+                <tr key={b.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-3 font-semibold text-slate-700">{b.name}</td>
+                    <td className="px-6 py-3 font-mono text-xs text-slate-500 bg-slate-50 rounded mx-2">{b.apiId || '-'}</td>
+                    <td className="px-6 py-3 font-mono text-xs text-slate-400">{b.apiToken ? '••••••••' + b.apiToken.slice(-4) : '-'}</td>
+                </tr>
+            ))}
+        </>
+    );
+};
 
 export default SettingsPage;

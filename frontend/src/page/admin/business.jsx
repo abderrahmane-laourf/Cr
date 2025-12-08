@@ -306,9 +306,8 @@ export default function BusinessPage() {
           <table className="w-full">
             <thead className="bg-slate-50 border-b border-slate-100">
               <tr>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-24">ID</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">API ID</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nom</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Key</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Token</th>
                 <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -316,14 +315,6 @@ export default function BusinessPage() {
             <tbody className="divide-y divide-slate-50">
               {filteredBusinesses.map((business) => (
                 <tr key={business.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="px-6 py-4 text-sm text-slate-400 font-mono">
-                    #{business.id}
-                  </td>
-                  <td className="px-6 py-4">
-                     <span className="text-sm font-mono bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200">
-                        {business.apiId || '-'}
-                     </span>
-                  </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                        <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs ring-1 ring-blue-100">
@@ -331,6 +322,11 @@ export default function BusinessPage() {
                        </div>
                        <span className="font-semibold text-slate-800">{business.name}</span>
                     </div>
+                  </td>
+                  <td className="px-6 py-4">
+                     <span className="text-sm font-mono bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200">
+                        {business.apiId || '-'}
+                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-400 font-mono">
                     {business.apiToken ? '••••••••••••••••' : '-'}
