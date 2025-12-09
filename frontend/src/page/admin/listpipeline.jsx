@@ -338,20 +338,29 @@ export default function ColisManagement() {
               <h1 className="text-2xl font-bold text-slate-900">Gestion des Colis</h1>
             </div>
             <div className="flex gap-2 flex-wrap">
-               <select value={selectedEmployee} onChange={e => setSelectedEmployee(e.target.value)} className="px-4 py-2 bg-slate-50 border rounded-xl">
+               {/* Pipeline Selector */}
+               <select 
+                 value={selectedPipeline?.id || ''} 
+                 onChange={e => handlePipelineChange(e.target.value)} 
+                 className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+               >
+                 {pipelines.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+               </select>
+               
+               <select value={selectedEmployee} onChange={e => setSelectedEmployee(e.target.value)} className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm">
                  <option value="all">Tous les employés</option>
                  {EMPLOYEES.map(e => <option key={e} value={e}>{e}</option>)}
                </select>
-               <button onClick={handleRefresh} className="px-4 py-2 bg-slate-50 border rounded-xl hover:bg-slate-100"><RotateCw size={18} /></button>
-               <button onClick={() => setShowAddModal(true)} className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 flex items-center gap-2"><Plus size={18} /> Ajouter</button>
+               <button onClick={handleRefresh} className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors"><RotateCw size={18} /></button>
+               <button onClick={() => setShowAddModal(true)} className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"><Plus size={18} /> Ajouter</button>
             </div>
           </div>
           <div className="mt-4 flex gap-3">
              <div className="relative flex-1">
-               <input type="text" value={searchText} onChange={e => setSearchText(e.target.value)} placeholder="Rechercher..." className="w-full pl-10 pr-4 py-2 border rounded-xl" />
+               <input type="text" value={searchText} onChange={e => setSearchText(e.target.value)} placeholder="Rechercher par nom, téléphone, produit..." className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
                <SearchIcon className="absolute left-3 top-2.5 text-slate-400" size={18} />
              </div>
-             <input type="date" value={searchDate} onChange={e => setSearchDate(e.target.value)} className="px-4 py-2 border rounded-xl" />
+             <input type="date" value={searchDate} onChange={e => setSearchDate(e.target.value)} className="px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
           </div>
         </div>
 

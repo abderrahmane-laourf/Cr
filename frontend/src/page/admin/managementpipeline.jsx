@@ -20,13 +20,14 @@ const INITIAL_PIPELINES = [
     id: 1,
     name: 'Pipeline Principal',
     color: 'bg-blue-600',
+    isDefault: true, // Marquer comme pipeline par défaut
     stages: [
       { id: 1, name: 'Reporter', color: 'bg-slate-500', active: true, status: 'pending', locked: true },
       { id: 2, name: 'Confirmé', color: 'bg-purple-500', active: true, status: 'confirmed', locked: true },
-      { id: 3, name: 'Packaging', color: 'bg-orange-500', active: true, status: 'packaging' },
-      { id: 4, name: 'Out for Delivery', color: 'bg-blue-500', active: true, status: 'out_for_delivery' },
-      { id: 5, name: 'Livré', color: 'bg-green-500', active: true, status: 'delivered' },
-      { id: 6, name: 'Annulé', color: 'bg-red-500', active: true, status: 'cancelled' }
+      { id: 3, name: 'Packaging', color: 'bg-orange-500', active: true, status: 'packaging', locked: true },
+      { id: 4, name: 'Out for Delivery', color: 'bg-blue-500', active: true, status: 'out_for_delivery', locked: true },
+      { id: 5, name: 'Livré', color: 'bg-green-500', active: true, status: 'delivered', locked: true },
+      { id: 6, name: 'Annulé', color: 'bg-red-500', active: true, status: 'cancelled', locked: true }
     ]
   }
 ];
@@ -114,6 +115,14 @@ export default function PipelineSettings() {
   };
 
   const handleDeletePipeline = (pipelineId) => {
+    const pipeline = pipelines.find(p => p.id === pipelineId);
+    
+    // Empêcher la suppression du pipeline par défaut
+    if (pipeline?.isDefault) {
+      alert('Le pipeline principal ne peut pas être supprimé car il est protégé.');
+      return;
+    }
+    
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce pipeline et toutes ses étapes ?')) {
       setPipelines(prev => prev.filter(p => p.id !== pipelineId));
     }
@@ -214,16 +223,21 @@ export default function PipelineSettings() {
                 {pipeline.name.substring(0, 2).toUpperCase()}
               </div>
               <div className="flex-1">
-                <h2 className="text-white font-semibold text-lg">{pipeline.name}</h2>
+                <h2 className="text-white font-semibold text-lg flex items-center gap-2">
+                  {pipeline.name}
+                  {pipeline.isDefault && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">🔒 Protégé</span>}
+                </h2>
                 <p className="text-white/80 text-sm">{pipeline.stages.length} étapes</p>
               </div>
-              <button
-                onClick={() => handleDeletePipeline(pipeline.id)}
-                className="p-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all backdrop-blur-sm"
-                title="Supprimer le pipeline"
-              >
-                <Trash2 size={20} />
-              </button>
+              {!pipeline.isDefault && (
+                <button
+                  onClick={() => handleDeletePipeline(pipeline.id)}
+                  className="p-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all backdrop-blur-sm"
+                  title="Supprimer le pipeline"
+                >
+                  <Trash2 size={20} />
+                </button>
+              )}
             </div>
 
             {/* Stages List */}

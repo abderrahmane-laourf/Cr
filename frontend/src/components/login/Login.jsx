@@ -15,6 +15,7 @@ export default function Login() {
     {id:2, name: "khadija", password: "kh1234$", role: "employee"},
     {id:2, name: "adil", password: "ad1234$", role: "employee"},
     { id: 3, name: "hakima", password: "ha1234$", role: "manager" },
+    { id: 4, name: "gerant", password: "123", role: "confirmation_manager" },
   ]
 
   // Toast function
@@ -95,6 +96,8 @@ export default function Login() {
           navigate('/employee/confirmation/dashboard')
         } else if (user.name === 'adil') {
           navigate('/employee/packaging/queue')
+        } else if (user.role === 'confirmation_manager') {
+          navigate('/employee/confirmation-manager/dashboard')
         } else if (user.role === 'confirmation') {
           navigate('/employee/confirmation/dashboard')
         } else if (user.role === 'packaging') {

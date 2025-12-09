@@ -1,0 +1,657 @@
+import React, { useState, useEffect } from 'react';
+import {
+  DollarSign, TrendingUp, TrendingDown, Package, Users, ShoppingCart,
+  MessageCircle, CheckCircle, Truck, RefreshCw, AlertCircle, Award,
+  BarChart3, Activity, Megaphone, Box, CreditCard, ArrowUp, ArrowDown
+} from 'lucide-react';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  LineChart, Line, PieChart, Pie, Cell, Legend, LabelList
+} from 'recharts';
+import { productAPI, employeeAPI, adsAPI } from '../../services/api';
+
+const GlobalDashboard = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    generateDashboardData();
+  }, []);
+
+  const generateDashboardData = async () => {
+    setLoading(true);
+    
+    try {
+      // 1. Récupération des données brutes
+      const colisData = JSON.parse(localStorage.getItem('colis') || '[]');
+      const productsData = await productAPI.getAll() || [];
+      const employeesData = await employeeAPI.getAll() || [];
+      const adsData = await adsAPI.getAll() || [];
+      
+      // 2. Calculs Marketing (Ads)
+      // On suppose que chaque ad a un 'amount' ou 'cost'
+      const adSpend = adsData.reduce((sum, ad) => sum + (parseFloat(ad.amount || ad.cost || 0)), 0);
+      const totalMessages = adsData.reduce((sum, ad) => sum + (parseInt(ad.messages || 0)), 0) || 1; // Avoid div by 0
+      const costPerMessage = totalMessages > 0 ? adSpend / totalMessages : 0;
+      
+      // 3. Calculs Pipeline (Colis)
+      const totalLeads = colisData.length;
+      const confirmedCols = colisData.filter(c => ['Confirmé', 'Expédié', 'En livraison', 'Livré'].includes(c.stage));
+      const confirmedCount = confirmedCols.length;
+      
+      const deliveredCols = colisData.filter(c => c.stage === 'Livré');
+      const deliveredCount = deliveredCols.length;
+      
+      const confRate = totalLeads > 0 ? (confirmedCount / totalLeads) * 100 : 0;
+      const delRate = confirmedCount > 0 ? (deliveredCount / confirmedCount) * 100 : 0;
+      
+      const cpa = confirmedCount > 0 ? adSpend / confirmedCount : 0;
+      const cpl = deliveredCount > 0 ? adSpend / deliveredCount : 0;
+      
+      // 4. Calculs Stock & Produits
+      const initialStock = productsData.reduce((sum, p) => sum + (parseInt(p.initialStock || 0)), 0); // Champ hypothétique
+      const currentStock = productsData.reduce((sum, p) => sum + (parseInt(p.stock || 0)), 0);
+      const stockFix = currentStock + deliveredCount; // Approximation de ce qui était là
+      const stockRest = currentStock;
+      
+      const returnsCount = colisData.filter(c => ['Retourné', 'Annulé', 'Échec livraison'].includes(c.stage)).length;
+      const pendingCount = colisData.filter(c => ['En attente', 'Reporter', 'Packaging'].includes(c.stage)).length;
+      
+      // 5. Calculs Livraison & Revenus
+      const revenue = deliveredCols.reduce((sum, c) => sum + (parseFloat(c.prix || 0)), 0);
+      const totalPieces = deliveredCols.reduce((sum, c) => sum + (parseInt(c.nbPiece || 1)), 0);
+      const avgParcelPrice = deliveredCount > 0 ? revenue / deliveredCount : 0;
+      const avgPiecePrice = totalPieces > 0 ? revenue / totalPieces : 0;
+      const avgCart = avgParcelPrice; // Panier moyen ~ prix moyen colis ici
+      
+      // 6. Recharges (Si disponible dans une collection 'recharges', sinon placeholder ou localStorage)
+      // Pour l'instant on garde une simulation car pas de module recharge visible immédiat, ou on cherche 'recharges'
+      const rechargesData = JSON.parse(localStorage.getItem('recharges') || '[]');
+      const rechUSD = rechargesData.reduce((sum, r) => sum + (parseFloat(r.amountUSD || 0)), 0);
+      const exchRate = 10.5; // Taux fixe ou config
+      const rechDH = rechUSD * exchRate; // Ou somme directe si en DH
+      const rechCount = rechargesData.length;
+      
+      // 7. Financier
+      const salaries = employeesData.reduce((sum, e) => sum + (parseFloat(e.salary || 0)), 0);
+      // Calcul commissions réel basé sur les ventes des employés ?
+      // Pour simplifier on prend une approx ou 0 si pas de module paie lié
+      const commissions = confirmedCols.reduce((sum, c) => sum + (parseFloat(c.commission || 0)), 0); 
+      const fixedCosts = 5000; // À récupérer des settings
+      const stockCost = 0; // À calculer (Prix d'achat * Nb vendus) -> nécessite Prix Achat dans produit
+      
+      const netProfit = revenue - salaries - commissions - adSpend - rechDH - fixedCosts - stockCost;
+      
+      // 8. Aggregation par Produit
+      const productStats = {};
+      colisData.forEach(c => {
+        if (!c.productId) return;
+        if (!productStats[c.productId]) {
+          const p = productsData.find(prod => prod.id == c.productId);
+          productStats[c.productId] = { 
+            name: p ? p.nom : 'Inconnu', 
+            sales: 0, 
+            revenue: 0, 
+            confirmed: 0, 
+            delivered: 0, 
+            total: 0 
+          };
+        }
+        const stats = productStats[c.productId];
+        stats.total++;
+        if (['Confirmé', 'Livré', 'Expédié'].includes(c.stage)) stats.confirmed++;
+        if (c.stage === 'Livré') {
+          stats.delivered++;
+          stats.sales++;
+          stats.revenue += parseFloat(c.prix || 0);
+        }
+      });
+      
+      const productsList = Object.values(productStats).map(p => ({
+        ...p,
+        confRate: p.total > 0 ? (p.confirmed / p.total) * 100 : 0,
+        delRate: p.confirmed > 0 ? (p.delivered / p.confirmed) * 100 : 0
+      }));
+      
+      // Si vide (pas de données), mettre des placeholders pour éviter crash UI
+      if (productsList.length === 0) productsList.push({ name: 'Aucun', sales: 0, revenue: 0, confRate: 0, delRate: 0 });
+
+      // 9. Aggregation par Employé
+      const employeeStats = {};
+      colisData.forEach(c => {
+        const empName = c.employee || 'Inconnu';
+        if (!employeeStats[empName]) {
+            employeeStats[empName] = { name: empName, sales: 0, confirmed: 0, delivered: 0, total: 0, parcels: 0 };
+        }
+        const stats = employeeStats[empName];
+        stats.total++;
+        if (['Confirmé', 'Livré', 'Expédié'].includes(c.stage)) stats.confirmed++;
+        if (c.stage === 'Livré') {
+            stats.delivered++;
+            stats.sales++; // Ventes validées
+        }
+        // Parcels sent = confirmed
+        if (['Confirmé', 'Livré', 'Expédié', 'En livraison'].includes(c.stage)) stats.parcels++;
+      });
+      
+      const employeesList = Object.values(employeeStats).map(e => ({
+        ...e,
+        confRate: e.total > 0 ? (e.confirmed / e.total) * 100 : 0,
+        delRate: e.confirmed > 0 ? (e.delivered / e.confirmed) * 100 : 0
+      }));
+        
+      if (employeesList.length === 0) employeesList.push({ name: 'Aucun', sales: 0, confRate: 0, delRate: 0, parcels: 0 });
+
+      setData({
+        marketing: { adSpend, totalMessages, costPerMessage, cpa, cpl },
+        confirmation: { confirmed: confirmedCount, totalLeads, confRate, delivered: deliveredCount, delRate },
+        stock: { stockFix, stockRest, delivered: deliveredCount, returns: returnsCount, pending: pendingCount, avgSend: 0, avgRet: 0 },
+        delivery: { totalParcels: deliveredCount, totalPieces, avgParcelPrice, avgPiecePrice, avgCart, revenue },
+        recharge: { rechUSD, exchRate, rechDH, rechCount },
+        financial: { revenue, salaries, commissions, adSpend, rechDH, fixedCosts, stockCost, netProfit },
+        logistics: { parcelsSent: confirmedCount, parcelsDelivered: deliveredCount, rate: delRate },
+        products: productsList,
+        employees: employeesList
+      });
+      
+    } catch (error) {
+        console.error("Erreur calcul dashboard:", error);
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  const fmt = (n) => parseFloat(n).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const num = (n) => parseInt(n).toLocaleString('fr-FR');
+
+  if (loading || !data) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const topProduct = [...data.products].sort((a, b) => b.sales - a.sales)[0];
+  const flopProduct = [...data.products].sort((a, b) => a.sales - b.sales)[0];
+  const topEmployee = [...data.employees].sort((a, b) => b.sales - a.sales)[0];
+  const flopEmployee = [...data.employees].sort((a, b) => a.sales - b.sales)[0];
+
+  const chartDataLogistics = [
+    { name: 'Livré', value: data.logistics.parcelsDelivered, fill: '#10b981' },
+    { name: 'Retourné', value: data.stock.returns, fill: '#ef4444' },
+    { name: 'En cours', value: Math.max(0, data.logistics.parcelsSent - data.logistics.parcelsDelivered), fill: '#3b82f6' }
+  ];
+
+  const chartDataFinancial = [
+    { name: 'Salaires', value: data.financial.salaries },
+    { name: 'Marketing', value: data.financial.adSpend },
+    { name: 'Logistique', value: data.financial.rechDH },
+    { name: 'Autres', value: data.financial.commissions + data.financial.fixedCosts + data.financial.stockCost }
+  ].filter(item => item.value > 0);
+
+  const COLORS_FIN = ['#8b5cf6', '#f59e0b', '#ef4444', '#64748b'];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
+                  <Activity className="text-white" size={24} />
+                </div>
+                Tableau de Bord Global
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">Analyses complètes de l'activité en temps réel</p>
+            </div>
+            <button 
+              onClick={generateDashboardData}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+            >
+              <RefreshCw size={18} />
+              Actualiser
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        {/* 1. Marketing Section */}
+        <Section title="📢 Marketing" subtitle="Analyses Marketing">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <KPICard 
+              label="Dépenses Marketing" 
+              value={`${fmt(data.marketing.adSpend)} DH`}
+              color="blue"
+              icon={<Megaphone size={20} />}
+            />
+            <KPICard 
+              label="Messages Envoyés" 
+              value={num(data.marketing.totalMessages)}
+              color="blue"
+              icon={<MessageCircle size={20} />}
+            />
+            <KPICard 
+              label="Coût par Message" 
+              value={`${fmt(data.marketing.costPerMessage)} DH`}
+              color="purple"
+            />
+            <KPICard 
+              label="Coût par Acquisition (CPA)" 
+              value={`${fmt(data.marketing.cpa)} DH`}
+              color="purple"
+            />
+            <KPICard 
+              label="Coût par Livraison (CPL)" 
+              value={`${fmt(data.marketing.cpl)} DH`}
+              color="purple"
+            />
+          </div>
+        </Section>
+
+        {/* 2. Confirmation Section */}
+        <Section title="✅ Confirmation" subtitle="Suivi des Confirmations">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <KPICard 
+              label="Commandes Confirmées" 
+              value={num(data.confirmation.confirmed)}
+              color="green"
+              icon={<CheckCircle size={20} />}
+            />
+            <KPICard 
+              label="Taux de Confirmation" 
+              value={`${fmt(data.confirmation.confRate)}%`}
+              color="green"
+              trend="up"
+            />
+            <KPICard 
+              label="Commandes Livrées" 
+              value={num(data.confirmation.delivered)}
+              color="green"
+              icon={<Truck size={20} />}
+            />
+            <KPICard 
+              label="Taux de Livraison" 
+              value={`${fmt(data.confirmation.delRate)}%`}
+              color="green"
+              trend="up"
+            />
+          </div>
+        </Section>
+
+        {/* 3. Stock Section */}
+        <Section title="📦 Stock" subtitle="Gestion des Stocks">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <KPICard 
+              label="Stock Total" 
+              value={num(data.stock.stockFix)}
+              color="orange"
+              icon={<Box size={20} />}
+            />
+            <KPICard 
+              label="Stock Restant" 
+              value={num(data.stock.stockRest)}
+              color="orange"
+            />
+            <KPICard 
+              label="Total Livré" 
+              value={num(data.stock.delivered)}
+              color="green"
+            />
+            <KPICard 
+              label="Retours" 
+              value={num(data.stock.returns)}
+              color="red"
+              trend="down"
+            />
+            <KPICard 
+              label="En Traitement" 
+              value={num(data.stock.pending)}
+              color="blue"
+            />
+            <KPICard 
+              label="Moyenne Envoi/Jour" 
+              value={num(data.stock.avgSend)}
+              color="blue"
+            />
+          </div>
+        </Section>
+
+        {/* 4. Delivery Section */}
+        <Section title="🚚 Livraison" subtitle="Métriques de Livraison">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <KPICard 
+              label="Colis Livrés" 
+              value={num(data.delivery.totalParcels)}
+              color="green"
+            />
+            <KPICard 
+              label="Pièces Livrées" 
+              value={num(data.delivery.totalPieces)}
+              color="green"
+            />
+            <KPICard 
+              label="Prix Moyen Colis" 
+              value={`${fmt(data.delivery.avgParcelPrice)} DH`}
+              color="blue"
+            />
+            <KPICard 
+              label="Prix Moyen Pièce" 
+              value={`${fmt(data.delivery.avgPiecePrice)} DH`}
+              color="blue"
+            />
+            <KPICard 
+              label="Panier Moyen" 
+              value={`${fmt(data.delivery.avgCart)} DH`}
+              color="purple"
+            />
+            <KPICard 
+              label="Chiffre d'Affaires" 
+              value={`${fmt(data.delivery.revenue)} DH`}
+              color="green"
+              icon={<DollarSign size={20} />}
+            />
+          </div>
+        </Section>
+
+        {/* 5. Recharge Section */}
+        <Section title="💳 Recharges & Frais" subtitle="Recharges & Expédition">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <KPICard 
+              label="Achat Solde ($)" 
+              value={`${fmt(data.recharge.rechUSD)} $`}
+              color="red"
+              icon={<CreditCard size={20} />}
+            />
+            <KPICard 
+              label="Taux de Change" 
+              value={fmt(data.recharge.exchRate)}
+              color="orange"
+            />
+            <KPICard 
+              label="Achat Solde (DH)" 
+              value={`${fmt(data.recharge.rechDH)} DH`}
+              color="red"
+            />
+            <KPICard 
+              label="Nombre de Recharges" 
+              value={num(data.recharge.rechCount)}
+              color="blue"
+            />
+            <KPICard 
+              label="Total Recharges" 
+              value={`${fmt(data.recharge.rechDH)} DH`}
+              color="red"
+            />
+          </div>
+        </Section>
+
+        {/* 6. Top vs Flop Section */}
+        <Section title="🏆 Performance" subtitle="Analyse des Performances">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <TopFlopCard 
+              title="Produit (Ventes)"
+              topName={topProduct.name}
+              topValue={num(topProduct.sales)}
+              flopName={flopProduct.name}
+              flopValue={num(flopProduct.sales)}
+            />
+            <TopFlopCard 
+              title="Produit (Revenus)"
+              topName={topProduct.name}
+              topValue={`${fmt(topProduct.revenue)} DH`}
+              flopName={flopProduct.name}
+              flopValue={`${fmt(flopProduct.revenue)} DH`}
+            />
+            <TopFlopCard 
+              title="Produit (Taux Conf.)"
+              topName={[...data.products].sort((a, b) => b.confRate - a.confRate)[0].name}
+              topValue={`${fmt([...data.products].sort((a, b) => b.confRate - a.confRate)[0].confRate)}%`}
+              flopName={[...data.products].sort((a, b) => a.confRate - b.confRate)[0].name}
+              flopValue={`${fmt([...data.products].sort((a, b) => a.confRate - b.confRate)[0].confRate)}%`}
+            />
+            <TopFlopCard 
+              title="Produit (Taux Livr.)"
+              topName={[...data.products].sort((a, b) => b.delRate - a.delRate)[0].name}
+              topValue={`${fmt([...data.products].sort((a, b) => b.delRate - a.delRate)[0].delRate)}%`}
+              flopName={[...data.products].sort((a, b) => a.delRate - b.delRate)[0].name}
+              flopValue={`${fmt([...data.products].sort((a, b) => a.delRate - b.delRate)[0].delRate)}%`}
+            />
+            <TopFlopCard 
+              title="Employé (Ventes)"
+              topName={topEmployee.name}
+              topValue={num(topEmployee.sales)}
+              flopName={flopEmployee.name}
+              flopValue={num(flopEmployee.sales)}
+            />
+            <TopFlopCard 
+              title="Employé (Taux Conf.)"
+              topName={[...data.employees].sort((a, b) => b.confRate - a.confRate)[0].name}
+              topValue={`${fmt([...data.employees].sort((a, b) => b.confRate - a.confRate)[0].confRate)}%`}
+              flopName={[...data.employees].sort((a, b) => a.confRate - b.confRate)[0].name}
+              flopValue={`${fmt([...data.employees].sort((a, b) => a.confRate - b.confRate)[0].confRate)}%`}
+            />
+            <TopFlopCard 
+              title="Employé (Taux Livr.)"
+              topName={[...data.employees].sort((a, b) => b.delRate - a.delRate)[0].name}
+              topValue={`${fmt([...data.employees].sort((a, b) => b.delRate - a.delRate)[0].delRate)}%`}
+              flopName={[...data.employees].sort((a, b) => a.delRate - b.delRate)[0].name}
+              flopValue={`${fmt([...data.employees].sort((a, b) => a.delRate - b.delRate)[0].delRate)}%`}
+            />
+            <TopFlopCard 
+              title="Employé (Colis)"
+              topName={[...data.employees].sort((a, b) => b.parcels - a.parcels)[0].name}
+              topValue={num([...data.employees].sort((a, b) => b.parcels - a.parcels)[0].parcels)}
+              flopName={[...data.employees].sort((a, b) => a.parcels - b.parcels)[0].name}
+              flopValue={num([...data.employees].sort((a, b) => a.parcels - b.parcels)[0].parcels)}
+            />
+          </div>
+        </Section>
+
+        {/* 7. Final Calculation */}
+        <Section title="🧮 Bilan & Logistique" subtitle="Performance Financière et Opérationnelle">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* Financial Block */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col">
+              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-2 border-b border-gray-100">
+                <BarChart3 size={20} className="text-blue-600" />
+                Détails Financiers
+              </h3>
+              
+              <div className="flex flex-col xl:flex-row gap-6 h-full">
+                {/* Table */}
+                <div className="flex-1 space-y-3">
+                  <div className="space-y-1">
+                    <FinancialRow label="Chiffre d'Affaires" value={`${fmt(data.financial.revenue)} DH`} type="plus" />
+                  </div>
+                  <div className="space-y-1 bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Dépenses</p>
+                    <FinancialRow label="Salaires" value={`${fmt(data.financial.salaries)} DH`} type="minus" />
+                    <FinancialRow label="Marketing" value={`${fmt(data.financial.adSpend)} DH`} type="minus" />
+                    <FinancialRow label="Logistique" value={`${fmt(data.financial.rechDH)} DH`} type="minus" />
+                    <FinancialRow label="Autres Frais" value={`${fmt(data.financial.fixedCosts + data.financial.commissions)} DH`} type="minus" />
+                  </div>
+                  <div className="pt-3 mt-auto border-t-2 border-gray-100">
+                    <FinancialRow 
+                      label="Bénéfice Net" 
+                      value={`${fmt(data.financial.netProfit)} DH`} 
+                      type={data.financial.netProfit >= 0 ? 'profit' : 'loss'}
+                      isTotal
+                    />
+                  </div>
+                </div>
+
+                {/* Donut Chart */}
+                <div className="w-full xl:w-1/2 min-h-[220px] flex items-center justify-center relative">
+                   <ResponsiveContainer width="100%" height={220}>
+                     <PieChart>
+                       <Pie
+                         data={chartDataFinancial}
+                         cx="50%"
+                         cy="50%"
+                         innerRadius={50}
+                         outerRadius={70}
+                         paddingAngle={5}
+                         dataKey="value"
+                       >
+                         {chartDataFinancial.map((entry, index) => (
+                           <Cell key={`cell-${index}`} fill={COLORS_FIN[index % COLORS_FIN.length]} />
+                         ))}
+                       </Pie>
+                       <Tooltip formatter={(val) => `${fmt(val)} DH`} />
+                       <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{fontSize: '11px'}} />
+                     </PieChart>
+                   </ResponsiveContainer>
+                   {chartDataFinancial.length === 0 && <p className="absolute text-xs text-gray-400">Aucune donnée</p>}
+                </div>
+              </div>
+            </div>
+
+            {/* Logistics Block */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col">
+              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-2 border-b border-gray-100">
+                <Activity size={20} className="text-green-600" />
+                Performance Logistique
+              </h3>
+
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                 <div className="p-4 bg-blue-50 rounded-xl text-center">
+                    <div className="text-2xl font-bold text-blue-700">{num(data.logistics.parcelsSent)}</div>
+                    <div className="text-xs font-bold text-blue-400 uppercase mt-1">Total Actif</div>
+                 </div>
+                 <div className="p-4 bg-green-50 rounded-xl text-center">
+                    <div className="text-2xl font-bold text-green-700">{num(data.logistics.parcelsDelivered)}</div>
+                    <div className="text-xs font-bold text-green-400 uppercase mt-1">Livrés</div>
+                 </div>
+                 <div className="p-4 bg-purple-50 rounded-xl text-center">
+                    <div className="text-2xl font-bold text-purple-700">{fmt(data.logistics.rate)}%</div>
+                    <div className="text-xs font-bold text-purple-400 uppercase mt-1">Taux</div>
+                 </div>
+              </div>
+
+              <div className="flex-1 min-h-[200px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartDataLogistics} layout="vertical" margin={{top: 5, right: 30, left: 20, bottom: 5}}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f3f4f6" />
+                    <XAxis type="number" hide />
+                    <YAxis dataKey="name" type="category" tick={{fontSize: 12, fontWeight: 500}} width={70} />
+                    <Tooltip cursor={{fill: '#f9fafb'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                    <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={24} animationDuration={1000}>
+                       <LabelList dataKey="value" position="right" fontSize={12} fontWeight="bold" formatter={(val) => num(val)} />
+                       {chartDataLogistics.map((entry, index) => (
+                           <Cell key={`cell-${index}`} fill={entry.fill} />
+                       ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+          </div>
+        </Section>
+      </div>
+    </div>
+  );
+};
+
+// Section Component
+const Section = ({ title, subtitle, children }) => (
+  <div className="space-y-4">
+    <div className="flex items-center justify-between">
+      <div>
+        <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+        <p className="text-sm text-gray-500">{subtitle}</p>
+      </div>
+    </div>
+    {children}
+  </div>
+);
+
+// KPI Card Component
+const KPICard = ({ label, value, color, icon, trend }) => {
+  const colors = {
+    blue: 'border-blue-500 bg-blue-50',
+    purple: 'border-purple-500 bg-purple-50',
+    green: 'border-green-500 bg-green-50',
+    orange: 'border-orange-500 bg-orange-50',
+    red: 'border-red-500 bg-red-50'
+  };
+
+  const iconColors = {
+    blue: 'text-blue-600',
+    purple: 'text-purple-600',
+    green: 'text-green-600',
+    orange: 'text-orange-600',
+    red: 'text-red-600'
+  };
+
+  return (
+    <div className={`bg-white rounded-lg p-5 border-t-4 ${colors[color]} shadow-sm hover:shadow-md transition-shadow duration-200`}>
+      <div className="flex items-start justify-between mb-2">
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</div>
+        {icon && <div className={iconColors[color]}>{icon}</div>}
+        {trend === 'up' && <ArrowUp size={16} className="text-green-600" />}
+        {trend === 'down' && <ArrowDown size={16} className="text-red-600" />}
+      </div>
+      <div className="text-2xl font-bold text-gray-900">{value}</div>
+    </div>
+  );
+};
+
+// Top vs Flop Card Component
+const TopFlopCard = ({ title, topName, topValue, flopName, flopValue }) => (
+  <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+    <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">{title}</div>
+    <div className="grid grid-cols-2 gap-2">
+      {/* Top */}
+      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+        <div className="text-xs font-bold px-2 py-1 bg-green-600 text-white rounded mb-2 inline-block">
+          Top
+        </div>
+        <div className="text-xs font-medium text-gray-700 truncate mb-1">{topName || '--'}</div>
+        <div className="text-sm font-bold text-green-700">{topValue}</div>
+      </div>
+      
+      {/* Flop */}
+      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+        <div className="text-xs font-bold px-2 py-1 bg-red-600 text-white rounded mb-2 inline-block">
+          Flop
+        </div>
+        <div className="text-xs font-medium text-gray-700 truncate mb-1">{flopName || '--'}</div>
+        <div className="text-sm font-bold text-red-700">{flopValue}</div>
+      </div>
+    </div>
+  </div>
+);
+
+// Financial Row Component
+const FinancialRow = ({ label, value, type, isTotal }) => {
+  const getColor = () => {
+    if (type === 'plus') return 'text-green-600';
+    if (type === 'minus') return 'text-red-600';
+    if (type === 'profit') return 'text-green-600';
+    if (type === 'loss') return 'text-red-600';
+    return 'text-gray-700';
+  };
+
+  return (
+    <div className={`flex items-center justify-between py-2 ${isTotal ? 'font-bold' : ''}`}>
+      <span className={`${isTotal ? 'text-lg text-gray-900' : 'text-sm text-gray-600'}`}>
+        {label}
+      </span>
+      <span className={`${isTotal ? 'text-xl' : 'text-sm font-medium'} ${getColor()}`}>
+        {value}
+      </span>
+    </div>
+  );
+};
+
+export default GlobalDashboard;

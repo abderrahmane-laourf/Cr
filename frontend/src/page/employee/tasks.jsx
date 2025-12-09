@@ -7,7 +7,11 @@ import {
   MessageSquare,
   Check,
   Layout,
-  AlertCircle
+  AlertCircle,
+  X,
+  UploadCloud,
+  FileText,
+  Image as ImageIcon
 } from 'lucide-react';
 
 // --- DONNÉES DE DÉMONSTRATION ---
@@ -18,6 +22,7 @@ const DEMO_DATA = [
     description: "Le client a demandé un changement d'adresse de dernière minute. Merci de valider avant expédition.",
     status: "En attente", 
     dateCreated: new Date().toISOString(),
+    proof: null // Nouveau champ pour stocker la preuve
   },
   {
     id: 102,
@@ -25,6 +30,7 @@ const DEMO_DATA = [
     description: "Veuillez compter les cartons restants dans la zone B.",
     status: "En attente",
     dateCreated: new Date(Date.now() - 86400000).toISOString(),
+    proof: null
   },
   {
     id: 103,
@@ -32,6 +38,7 @@ const DEMO_DATA = [
     description: "Colis fragile, ajouter double protection bulles.",
     status: "En cours",
     dateCreated: new Date().toISOString(),
+    proof: null
   },
   {
     id: 104,
@@ -39,12 +46,142 @@ const DEMO_DATA = [
     description: "Briefing sur les objectifs de la semaine.",
     status: "Terminé",
     dateCreated: new Date(Date.now() - 172800000).toISOString(),
+    proof: "Présence confirmée et notes prises."
   }
 ];
 
+// --- COMPOSANT MODALE DE PREUVE (NOUVEAU) ---
+const ProofModal = ({ isOpen, onClose, onSubmit, taskTitle }) => {
+  const [proofText, setProofText] = useState("");
+  const [fileAttached, setFileAttached] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = () => {
+    if (!proofText.trim()) return;
+    onSubmit(proofText, fileAttached);
+    setProofText("");
+    setFileAttached(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+        
+        {/* En-tête Modale */}
+        <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+          <div>
+            <h3 className="font-bold text-slate-800 text-lg">Valider la mission</h3>
+            <p className="text-xs text-slate-500 truncate max-w-[250px]">{taskTitle}</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full text-slate-400 transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Corps Modale */}
+        <div className="p-6 space-y-4">
+          
+          {/* Zone de texte */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+              Rapport / Note <span className="text-red-400">*</span>
+            </label>
+            <textarea 
+              value={proofText}
+              onChange={(e) => setProofText(e.target.value)}
+              placeholder="Expliquez brièvement comment la tâche a été réalisée..."
+              className="w-full h-32 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none resize-none transition-all placeholder:text-slate-400 text-slate-700"
+            />
+          </div>
+
+          {/* Zone Fichier (Simulation) */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+              Pièce jointe (Photo, PDF)
+            </label>
+            <div 
+              onClick={() => setFileAttached(!fileAttached)}
+              className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group
+                ${fileAttached ? 'border-emerald-400 bg-emerald-50' : 'border-slate-200 hover:border-blue-400 hover:bg-slate-50'}`}
+            >
+              {fileAttached ? (
+                <div className="flex items-center gap-3 text-emerald-600">
+                  <CheckCircle2 size={24} />
+                  <span className="font-medium text-sm">Fichier "photo_preuve.jpg" ajouté</span>
+                </div>
+              ) : (
+                <>
+                  <div className="w-10 h-10 bg-slate-100 group-hover:bg-blue-100 rounded-full flex items-center justify-center mb-2 transition-colors">
+                    <UploadCloud size={20} className="text-slate-400 group-hover:text-blue-500" />
+                  </div>
+                  <p className="text-sm text-slate-500 font-medium">Cliquez pour ajouter une preuve</p>
+                  <p className="text-xs text-slate-400 mt-1">JPG, PNG ou PDF</p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Pied Modale */}
+        <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+          <button 
+            onClick={onClose}
+            className="px-5 py-2.5 text-slate-500 font-bold text-sm hover:bg-slate-200 rounded-xl transition-colors"
+          >
+            Annuler
+          </button>
+          <button 
+            onClick={handleSubmit}
+            disabled={!proofText.trim()}
+            className="px-6 py-2.5 bg-blue-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <CheckCircle2 size={18} />
+            Confirmer la fin
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- PAGE PRINCIPALE ---
 export default function EmployeeTaskPage() {
   const [tasks, setTasks] = useState(DEMO_DATA);
   const [activeTab, setActiveTab] = useState('new');
+  
+  // États pour la modale
+  const [isProofModalOpen, setProofModalOpen] = useState(false);
+  const [selectedTaskForProof, setSelectedTaskForProof] = useState(null);
+
+  // 1. Ouvrir la modale quand on clique sur "Terminer"
+  const initiateFinishTask = (task) => {
+    setSelectedTaskForProof(task);
+    setProofModalOpen(true);
+  };
+
+  // 2. Valider la tâche avec la preuve
+  const handleConfirmProof = (proofText, hasFile) => {
+    const finalProof = hasFile 
+      ? `${proofText} (Pièce jointe incluse)` 
+      : proofText;
+
+    setTasks(prevTasks => prevTasks.map(task => {
+      if (task.id === selectedTaskForProof.id) {
+        return { 
+          ...task, 
+          status: 'Terminé', 
+          proof: finalProof,
+          dateFinished: new Date().toISOString()
+        };
+      }
+      return task;
+    }));
+    
+    setProofModalOpen(false);
+    setSelectedTaskForProof(null);
+    setActiveTab('done'); // Rediriger vers l'onglet terminé
+  };
 
   const handleTaskAction = (taskId, action) => {
     setTasks(prevTasks => prevTasks.map(task => {
@@ -52,9 +189,6 @@ export default function EmployeeTaskPage() {
         if (action === 'accept') {
           setActiveTab('todo');
           return { ...task, status: 'En cours' };
-        }
-        if (action === 'finish') {
-          return { ...task, status: 'Terminé' };
         }
       }
       return task;
@@ -74,6 +208,14 @@ export default function EmployeeTaskPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-20 font-sans">
       
+      {/* MODALE */}
+      <ProofModal 
+        isOpen={isProofModalOpen}
+        onClose={() => setProofModalOpen(false)}
+        onSubmit={handleConfirmProof}
+        taskTitle={selectedTaskForProof?.title}
+      />
+
       {/* HEADER & STATS */}
       <div>
         <h1 className="text-2xl font-bold text-slate-800 mb-2">Mes Missions</h1>
@@ -148,7 +290,6 @@ export default function EmployeeTaskPage() {
                         </div>
                         <div>
                           <h3 className="text-lg font-bold text-slate-800">{task.title}</h3>
-                          {/* PRIORITÉ SUPPRIMÉE ICI */}
                           <p className="text-sm text-slate-400 mt-1">
                             Reçu le {new Date(task.dateCreated).toLocaleDateString()}
                           </p>
@@ -179,7 +320,7 @@ export default function EmployeeTaskPage() {
           </div>
         )}
 
-        {/* ONGLET 2 : EN COURS */}
+        {/* ONGLET 2 : EN COURS (MODIFIÉ POUR LA PREUVE) */}
         {activeTab === 'todo' && (
           <div className="grid md:grid-cols-2 gap-4 animate-in slide-in-from-right-4 duration-300">
             {inProgressTasks.length === 0 ? (
@@ -205,8 +346,9 @@ export default function EmployeeTaskPage() {
                     </p>
                   </div>
 
+                  {/* Bouton modifié pour ouvrir la modale */}
                   <button 
-                    onClick={() => handleTaskAction(task.id, 'finish')}
+                    onClick={() => initiateFinishTask(task)}
                     className="relative z-10 w-full py-3 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
                   >
                     <CheckCircle2 size={18} />
@@ -225,16 +367,28 @@ export default function EmployeeTaskPage() {
                <EmptyState message="Historique vide." />
             ) : (
               doneTasks.map(task => (
-                <div key={task.id} className="bg-white/60 p-4 rounded-xl border border-slate-100 flex items-center justify-between group hover:bg-white transition-colors">
-                   <div className="flex items-center gap-4">
-                     <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
-                       <Check size={20} />
-                     </div>
-                     <div>
-                       <h4 className="font-bold text-slate-700 line-through decoration-slate-300 decoration-2">{task.title}</h4>
-                       <p className="text-xs text-slate-400">Clôturé aujourd'hui</p>
+                <div key={task.id} className="bg-white/60 p-5 rounded-xl border border-slate-100 flex flex-col gap-3 group hover:bg-white transition-colors">
+                   <div className="flex items-center justify-between">
+                     <div className="flex items-center gap-4">
+                       <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
+                         <Check size={20} />
+                       </div>
+                       <div>
+                         <h4 className="font-bold text-slate-700 line-through decoration-slate-300 decoration-2">{task.title}</h4>
+                         <p className="text-xs text-slate-400">Clôturé le {new Date().toLocaleDateString()}</p>
+                       </div>
                      </div>
                    </div>
+
+                   {/* Affichage de la preuve si existante */}
+                   {task.proof && (
+                     <div className="ml-14 bg-emerald-50/50 p-3 rounded-lg border border-emerald-100/50 flex items-start gap-2">
+                        <FileText size={16} className="text-emerald-500 mt-0.5 shrink-0" />
+                        <p className="text-sm text-emerald-800 italic">
+                          "{task.proof}"
+                        </p>
+                     </div>
+                   )}
                 </div>
               ))
             )}

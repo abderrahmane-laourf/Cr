@@ -11,7 +11,7 @@ import BusinessPage from './page/admin/business';
 import Paiement from './page/admin/paiement';
 import AttendancePage from './page/admin/presence';
 import EmployeeDashboard from './page/admin/employeeDashboard';
-import GeneralDashboard from './page/admin/generalDashboard';
+import GlobalDashboard from './page/admin/globalDashboard';
 import StockListPage from './page/admin/stock';
 import StockMovementsPage from './page/admin/stockMovements';
 import StockTransferPage from './page/admin/stockTransfer';
@@ -37,6 +37,7 @@ import ComingSoon from './components/comingSoon';
 import SettingsPage from './page/admin/settings';
 import AffectationsPage from './page/admin/affectations';
 import PermissionsPage from './page/admin/permissions';
+import CommissionsPage from './page/admin/commissions';
 
 // Employee Pages
 import { EmployeeLayout } from './components/layout/employeeLayout';
@@ -44,6 +45,7 @@ import ConfirmationDashboard from './page/employee/confirmation/dashboard';
 import ConfirmationClients from './page/employee/confirmation/clients';
 import Leaderboard from './page/employee/confirmation/leaderboard';
 import PackagingQueue from './page/employee/packaging/queue';
+import PackagingDashboard from './page/employee/packaging/dashboard';
 import EmployeeTaskPage from './page/employee/tasks';
 
 export default function App() {
@@ -60,7 +62,7 @@ export default function App() {
       
       {/* Admin Routes with Layout */}
       {/* Employee Management Routes */}
-      <Route path="/admin/dashboard" element={<AdminLayout><GeneralDashboard /></AdminLayout>} />
+      <Route path="/admin/dashboard" element={<AdminLayout><GlobalDashboard /></AdminLayout>} />
       <Route path="/admin/employees" element={<AdminLayout><EmployeesPage /></AdminLayout>} />
       <Route path="/admin/employees/dashboard" element={<AdminLayout><EmployeeDashboard /></AdminLayout>} />
       <Route path="/admin/business" element={<AdminLayout><BusinessPage /></AdminLayout>} />
@@ -69,6 +71,7 @@ export default function App() {
       <Route path="/admin/presence" element={<AdminLayout><AttendancePage /></AdminLayout>} />
       <Route path="/admin/affectations" element={<AdminLayout><AffectationsPage /></AdminLayout>} />
       <Route path="/admin/permissions" element={<AdminLayout><PermissionsPage /></AdminLayout>} />
+      <Route path="/admin/commissions" element={<AdminLayout><CommissionsPage /></AdminLayout>} />
       
       
       {/* Stock Management Routes */}
@@ -134,8 +137,14 @@ export default function App() {
       <Route path="/employee/confirmation/leaderboard" element={<EmployeeLayout mode="confirmation"><Leaderboard /></EmployeeLayout>} />
 
       {/* Packaging Role Routes */}
+      <Route path="/employee/packaging/dashboard" element={<EmployeeLayout mode="packaging"><PackagingDashboard /></EmployeeLayout>} />
       <Route path="/employee/packaging/queue" element={<EmployeeLayout mode="packaging"><PackagingQueue /></EmployeeLayout>} />
       <Route path="/employee/packaging/tasks" element={<EmployeeLayout mode="packaging"><EmployeeTaskPage /></EmployeeLayout>} />
+
+      {/* Confirmation Manager Role Routes */}
+      <Route path="/employee/confirmation-manager/dashboard" element={<EmployeeLayout mode="confirmation_manager"><ConfirmationDashboard /></EmployeeLayout>} />
+      <Route path="/employee/confirmation-manager/clients" element={<EmployeeLayout mode="confirmation_manager"><ListPipeline /></EmployeeLayout>} />
+      <Route path="/employee/confirmation-manager/tasks" element={<EmployeeLayout mode="confirmation_manager"><EmployeeTaskPage /></EmployeeLayout>} />
 
     </Routes>
   );
