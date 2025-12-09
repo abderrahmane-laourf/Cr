@@ -247,7 +247,11 @@ const Header = ({ isSidebarOpen, setSidebarOpen, pageTitle, notifications, onAcc
           >
             <div className="text-right hidden md:block">
               <div className="text-sm font-bold text-slate-700">{user.name || 'Employé'}</div>
-              <div className="text-[10px] text-slate-500 font-medium uppercase tracking-wide">{user.role || 'Staff'}</div>
+              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wide bg-slate-100 px-2 py-0.5 rounded-full mt-0.5 inline-block text-center">
+                {['admin', 'manager', 'employee', 'confirmation_manager'].includes(user.role) 
+                  ? (user.role === 'confirmation_manager' ? 'Gérant' : user.role) 
+                  : 'Staff'}
+              </div>
             </div>
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 border-2 border-blue-100 overflow-hidden flex items-center justify-center">
               {user.avatar ? (
