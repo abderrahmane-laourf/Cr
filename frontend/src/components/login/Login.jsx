@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import loginImage from '../../assets/ChatGPT Image 10 déc. 2025, 19_09_49.png'
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
@@ -314,9 +315,15 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Right Side: Gradient Background */}
+      {/* Right Side: Image Background */}
       <div className="hidden lg:flex w-1/2 p-4 h-screen">
-        <div className="w-full h-full rounded-3xl bg-gradient-to-br from-[#4e65ff] via-[#6085cf] to-[#bfa8d1] shadow-2xl"></div>
+        <div className="w-full h-full rounded-3xl shadow-2xl overflow-hidden">
+          <img 
+            src={loginImage} 
+            alt="Login illustration" 
+            className="w-full h-full object-cover"
+          />
+        </div>
       </div>
 
     </div>
