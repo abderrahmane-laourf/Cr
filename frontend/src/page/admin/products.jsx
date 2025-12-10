@@ -9,70 +9,8 @@ import {
 // ============================================
 // MOCK API SERVICES
 // ============================================
-const productAPI = {
-  getAll: async () => {
-    return [
-      {
-        id: 1,
-        nom: 'Sérum Vitamine C',
-        image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=200&h=200&fit=crop',
-        type: 'Produit Pré',
-        categorie: 'Cosmétique',
-        uniteCalcul: 'ml',
-        business: 'Herboclear',
-        magasin: 'Magasin Principal',
-        prixAchat: 50,
-        prix1: 120,
-        prix2: 150,
-        prix3: 180,
-        stock: 45,
-        alerteStock: 10,
-        warehouse: 'Entrepôt A',
-        fragile: true,
-        description: 'Sérum anti-âge enrichi en vitamine C',
-        ingredients: 'Vitamine C, Acide Hyaluronique, Eau',
-        modeEmploi: 'Appliquer matin et soir sur peau propre',
-        utilisationsInterdites: 'Ne pas appliquer sur peau irritée',
-        faq: 'Q: Peut-on utiliser avec d\'autres produits? R: Oui',
-        scriptVente: 'Ce sérum révolutionnaire...'
-      }
-    ];
-  },
-  create: async (data) => ({ ...data, id: Date.now() }),
-  update: async (id, data) => ({ ...data, id }),
-  delete: async (id) => true
-};
-
-const settingsAPI = {
-  getProductTypes: async () => ['Matière Première', 'Fabriqué', 'Produit Pré'],
-  getProductCategories: async () => ['Cosmétique', 'Alimentaire', 'Santé'],
-  getUnits: async () => ['ml', 'g', 'kg', 'L', 'pcs'],
-  getStores: async () => ['Magasin Principal', 'Magasin 2', 'Magasin 3'],
-  getBusinesses: async () => ['Herboclear', 'Commit']
-};
-
-const warehouseAPI = {
-  getAll: async () => [
-    { id: 1, name: 'Entrepôt A' },
-    { id: 2, name: 'Entrepôt B' },
-    { id: 3, name: 'Entrepôt C' }
-  ]
-};
-
-// Mock Swal (SweetAlert2 replacement for demo)
-const Swal = {
-  fire: (title, text, icon) => {
-    return new Promise((resolve) => {
-      if (typeof title === 'object') {
-        const confirmed = window.confirm(title.text);
-        resolve({ isConfirmed: confirmed });
-      } else {
-        alert(`${icon ? icon.toUpperCase() : 'INFO'}: ${title}\n${text || ''}`);
-        resolve({ isConfirmed: true });
-      }
-    });
-  }
-};
+import { productAPI, settingsAPI, warehouseAPI } from '../../services/api';
+import Swal from 'sweetalert2';
 
 // ============================================
 // UTILITY COMPONENTS
@@ -684,98 +622,77 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-900">
-      <div className="max-w-[1600px] mx-auto space-y-8">
+      <div className="max-w-[1600px] mx-auto">
         
-        {/* Header Section - Hidden when printing */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 print:hidden">
-          <div>
-            <h1 className="text-4xl font-black text-slate-800 mb-2">Gestion des Produits</h1>
-            <p className="text-slate-500 font-medium">Gérez votre catalogue de produits</p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <div className="relative group flex-1 sm:flex-none">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
-              <input 
-                type="text" 
-                placeholder="Rechercher..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full sm:w-72 pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-700 font-medium focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-400"
-              />
+        {/* Header Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 print:hidden">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestion des Produits</h1>
+              <p className="text-slate-500 mt-1 font-medium">Gérez votre catalogue de produits efficacement.</p>
             </div>
+            
             <button 
               onClick={handleOpenAdd}
-              className="px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-xl shadow-blue-600/20 border border-blue-500/50 transition-all active:scale-95 flex items-center justify-center gap-2"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
             >
               <Plus size={20} strokeWidth={2.5} />
               <span>Nouveau Produit</span>
             </button>
           </div>
-        </div>
 
-        {/* Stats Cards - Hidden when printing */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 print:hidden">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-2xl text-white shadow-xl">
-            <Package className="mb-3" size={32} />
-            <h3 className="text-3xl font-black">{products.length}</h3>
-            <p className="text-blue-100 font-medium">Produits Total</p>
-          </div>
-          
-          <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 rounded-2xl text-white shadow-xl">
-            <CheckCircle className="mb-3" size={32} />
-            <h3 className="text-3xl font-black">{products.length - lowStockCount}</h3>
-            <p className="text-emerald-100 font-medium">En Stock</p>
-          </div>
-          
-          <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 rounded-2xl text-white shadow-xl">
-            <AlertTriangle className="mb-3" size={32} />
-            <h3 className="text-3xl font-black">{lowStockCount}</h3>
-            <p className="text-orange-100 font-medium">Alerte Stock</p>
-          </div>
-        </div>
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+              <input 
+                type="text" 
+                placeholder="Rechercher par nom..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              />
+            </div>
 
-        {/* Filters - Hidden when printing */}
-        <div className="flex flex-col md:flex-row gap-4 print:hidden">
-          <div className="relative">
-            <select 
-              value={typeFilter} 
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="Tous">Tous les types</option>
-              {settings.types.map(type => <option key={type} value={type}>{type}</option>)}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-          </div>
+            <div className="relative">
+              <select 
+                value={typeFilter} 
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+              >
+                <option value="Tous">Tous les types</option>
+                {settings.types.map(type => <option key={type} value={type}>{type}</option>)}
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+            </div>
 
-          <div className="relative">
-            <select 
-              value={categoryFilter} 
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="Tous">Toutes catégories</option>
-              {settings.categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-          </div>
+            <div className="relative">
+              <select 
+                value={categoryFilter} 
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+              >
+                <option value="Tous">Toutes catégories</option>
+                {settings.categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+            </div>
 
-          <div className="relative">
-            <select 
-              value={businessFilter} 
-              onChange={(e) => setBusinessFilter(e.target.value)}
-              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="Tous">Tous Business</option>
-              {settings.businesses.map(biz => <option key={biz} value={biz}>{biz}</option>)}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+            <div className="relative">
+              <select 
+                value={businessFilter} 
+                onChange={(e) => setBusinessFilter(e.target.value)}
+                className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+              >
+                <option value="Tous">Tous Business</option>
+                {settings.businesses.map(biz => <option key={biz} value={biz}>{biz}</option>)}
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+            </div>
           </div>
         </div>
 
         {/* Products Table */}
-        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden print:shadow-none print:border-none">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden print:shadow-none print:border-none">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -850,7 +767,7 @@ export default function ProductsPage() {
                           )}
                         </td>
                         <td className="px-6 py-4 text-right print:hidden">
-                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center justify-end gap-2">
                             <button onClick={() => handleOpenView(product)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Voir"><Eye size={18} /></button>
                             <button onClick={() => handleOpenEdit(product)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors" title="Modifier"><Edit2 size={18} /></button>
                             <button onClick={handlePrint} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Imprimer"><Printer size={18} /></button>

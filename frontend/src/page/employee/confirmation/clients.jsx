@@ -1,157 +1,78 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Plus, 
-  RotateCw, 
-  X, 
-  Bell, 
-  Package, 
-  AlertTriangle, 
-  Eye, 
-  Calendar, 
-  CheckCircle 
+  Plus, RotateCw, X, Package, AlertTriangle, Eye, Calendar, 
+  CheckCircle, Search as SearchIcon, Printer, MapPin, User, Truck, Phone, Clock, Zap, ArrowRight
 } from 'lucide-react';
 import { productAPI, villeAPI, quartierAPI } from '../../../services/api';
 
 const EMPLOYEES = ['Mohamed', 'Fatima', 'Youssef', 'Amina', 'Hassan', 'Khadija'];
-const BUSINESSES = ['Commit', 'Herboclear', 'Other'];
 
-// Add animation style
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slide-up {
-    from {
-      transform: translateY(100px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+// Default Pipelines (Backup)
+const DEFAULT_PIPELINES = [
+  {
+    id: 1,
+    name: 'Livraison Ammex',
+    stages: [
+      { id: 'Reporter', name: 'Reporter', color: 'bg-amber-500', active: true },
+      { id: 'Confirmé', name: 'Confirmé', color: 'bg-purple-500', active: true },
+      { id: 'Packaging', name: 'Packaging', color: 'bg-orange-500', active: true },
+      { id: 'Out for Delivery', name: 'Out for Delivery', color: 'bg-blue-500', active: true },
+      { id: 'Livré', name: 'Livré', color: 'bg-green-500', active: true },
+      { id: 'Annulé', name: 'Annulé', color: 'bg-red-500', active: true }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Livreur Agadir',
+    stages: [
+      { id: 'Reporter-AG', name: 'Reporter', color: 'bg-amber-500', active: true },
+      { id: 'Confirmé-AG', name: 'Confirmé', color: 'bg-purple-500', active: true },
+      { id: 'Packaging-AG', name: 'Packaging', color: 'bg-orange-500', active: true },
+      { id: 'Out for Delivery-AG', name: 'Out for Delivery', color: 'bg-blue-500', active: true },
+      { id: 'Livré-AG', name: 'Livré', color: 'bg-green-500', active: true },
+      { id: 'Annulé-AG', name: 'Annulé', color: 'bg-red-500', active: true }
+    ]
   }
-  .animate-slide-up {
-    animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-`;
-document.head.appendChild(style);
-
-// Default Pipeline matching Management Settings
-const DEFAULT_PIPELINE = {
-  id: 1, // Must match Management Pipeline ID
-  name: 'Pipeline Principal', // Must match Management Pipeline Name
-  color: 'bg-blue-600',
-  stages: [
-    { id: 1, name: 'Reporter', color: 'bg-slate-500', active: true, status: 'pending', locked: true },
-    { id: 2, name: 'Confirmé', color: 'bg-purple-500', active: true, status: 'confirmed', locked: true },
-    { id: 3, name: 'Packaging', color: 'bg-orange-500', active: true, status: 'packaging' },
-    { id: 4, name: 'Out for Delivery', color: 'bg-blue-500', active: true, status: 'out_for_delivery' },
-    { id: 5, name: 'Livré', color: 'bg-green-500', active: true, status: 'delivered' },
-    { id: 6, name: 'Annulé', color: 'bg-red-500', active: true, status: 'cancelled' }
-  ]
-};
+];
 
 export default function ConfirmationClients() {
-  const [colis, setColis] = useState(() => {
-    const saved = localStorage.getItem('colis');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
+  const [colis, setColis] = useState([]);
   const [products, setProducts] = useState([]);
   const [villes, setVilles] = useState([]);
   const [quartiers, setQuartiers] = useState([]);
   
-  // Initialize Pipelines from LocalStorage
-  const [pipelines, setPipelines] = useState(() => {
-    const saved = localStorage.getItem('pipelines');
-    const parsed = saved ? JSON.parse(saved) : [];
-    return parsed.length > 0 ? parsed : [DEFAULT_PIPELINE];
-  });
-
-  const [selectedPipeline, setSelectedPipeline] = useState(() => {
-     // Default to first pipeline
-     return pipelines.length > 0 ? pipelines[0] : DEFAULT_PIPELINE;
-  });
-
-  // Initialize Stages based on initial pipeline
-  const [stages, setStages] = useState(() => {
-    const initialPipeline = pipelines.length > 0 ? pipelines[0] : DEFAULT_PIPELINE;
-    return initialPipeline.stages
-      .filter(s => s.active)
-      .map(s => ({
-        id: s.name,
-        title: s.name,
-        color: s.color.replace('bg-', 'border-'),
-        bgColor: s.color.replace('bg-', 'bg-').replace('-500', '-50')
-      }));
-  });
-
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [stages, setStages] = useState([]);
+  const [pipelines, setPipelines] = useState([]);
+  const [selectedPipeline, setSelectedPipeline] = useState(null);
   
+  // Modals
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showMoveModal, setShowMoveModal] = useState(false);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+  
+  const [colisToMove, setColisToMove] = useState(null);
+  const [selectedColisForTracking, setSelectedColisForTracking] = useState(null);
+  
+  const [searchText, setSearchText] = useState('');
+
   // Get Current User
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-  
-  // Toast State
+
+  // Toast
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState({ title: '', description: '', type: 'success' });
-  
-  const [showMoveModal, setShowMoveModal] = useState(false);
-  const [colisToMove, setColisToMove] = useState(null);
-  const [showTrackingModal, setShowTrackingModal] = useState(false);
-  const [selectedColisForTracking, setSelectedColisForTracking] = useState(null);
-  const [searchText, setSearchText] = useState('');
-  const [searchDate, setSearchDate] = useState('');
 
-  // Load data on mount (products, villes, etc) - Pipelines already loaded
+  // --- INITIALIZATION ---
   useEffect(() => {
     loadData();
-    // We can still call this to ensure we have the very latest if something changed immediately
-    loadPipelineStages(); 
-  }, []);
-
-  // Save colis to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('colis', JSON.stringify(colis));
-  }, [colis]);
-
-  // Listen for changes in localStorage (e.g. from Admin tab) and auto-sync
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === 'pipelines') {
-        loadPipelineStages();
-      }
-      if (e.key === 'colis') {
-        const saved = localStorage.getItem('colis');
-        if (saved) setColis(JSON.parse(saved));
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    // Custom event for same-tab updates (optional but good practice)
-    window.addEventListener('pipelines-updated', loadPipelineStages);
+    loadPipelineStages();
     
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('pipelines-updated', loadPipelineStages);
-    };
-  }, []);
-
-  // Auto-transition colis from Reporter to Confirmé when date arrives
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      setColis(prevColis => 
-        prevColis.map(c => {
-          if (c.stage === 'Reporter' && c.dateReport) {
-            const reportDate = new Date(c.dateReport);
-            if (now >= reportDate) {
-              return { ...c, stage: 'Confirmé', prix: '' };
-            }
-          }
-          return c;
-        })
-      );
-    }, 60000);
-
-    return () => clearInterval(interval);
+    // Auto-refresh when localStorage changes
+    const handleStorageChange = () => loadData();
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => window.removeEventListener('storage', handleStorageChange);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadData = async () => {
@@ -165,6 +86,11 @@ export default function ConfirmationClients() {
       setProducts(productsData);
       setVilles(villesData);
       setQuartiers(quartiersData);
+
+      const savedColis = localStorage.getItem('colis');
+      if (savedColis) {
+        setColis(JSON.parse(savedColis));
+      }
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -172,235 +98,161 @@ export default function ConfirmationClients() {
 
   const loadPipelineStages = () => {
     const saved = localStorage.getItem('pipelines');
-    let allPipelines = [];
-
-    if (saved) {
-      allPipelines = JSON.parse(saved);
-    }
+    let allPipelines = saved ? JSON.parse(saved) : [];
     
-    // Check if we have pipelines, otherwise use default
-    if (allPipelines.length === 0) {
-      allPipelines = [DEFAULT_PIPELINE];
+    // If no saved pipelines or old format, use defaults
+    if (!allPipelines || allPipelines.length === 0 || !allPipelines[0].stages) {
+      allPipelines = DEFAULT_PIPELINES;
+      localStorage.setItem('pipelines', JSON.stringify(DEFAULT_PIPELINES));
     }
     
     setPipelines(allPipelines);
-    
-    // Find the currently selected pipeline in the new data, or default to the first one
-    let pipelineToUse = allPipelines[0];
-    if (selectedPipeline) {
-      const found = allPipelines.find(p => p.id === selectedPipeline.id);
-      if (found) pipelineToUse = found;
-    }
-    
+    const pipelineToUse = selectedPipeline || allPipelines[0];
     setSelectedPipeline(pipelineToUse);
-    
-    const activeStages = pipelineToUse.stages
+    updateStagesFromPipeline(pipelineToUse);
+  };
+
+  const updateStagesFromPipeline = (pipeline) => {
+    if (!pipeline) return;
+    const activeStages = pipeline.stages
       .filter(s => s.active)
       .map(s => ({
-        id: s.name,
+        id: s.name, // Use name as ID to match colis.stage
         title: s.name,
         color: s.color.replace('bg-', 'border-'),
-        bgColor: s.color.replace('bg-', 'bg-').replace('-500', '-50')
+        bgColor: s.color.replace('bg-', 'bg-').replace('-500', '-50').replace('-600', '-50')
       }));
     setStages(activeStages);
   };
 
   const handlePipelineChange = (pipelineId) => {
     const pipeline = pipelines.find(p => p.id === parseInt(pipelineId));
-    if (pipeline) {
-      setSelectedPipeline(pipeline);
-      const activeStages = pipeline.stages
-        .filter(s => s.active)
-        .map(s => ({
-          id: s.name,
-          title: s.name,
-          color: s.color.replace('bg-', 'border-'),
-          bgColor: s.color.replace('bg-', 'bg-').replace('-500', '-50')
-        }));
-      setStages(activeStages);
-    }
-  };
+    if (!pipeline) return;
 
-  const getAlerts = (colisItem) => {
-    if (colisItem.stage !== 'Reporter' || !colisItem.dateReport) return null;
-    
-    const now = new Date();
-    const reportDate = new Date(colisItem.dateReport);
-    const hoursDiff = (reportDate - now) / (1000 * 60 * 60);
-    
-    if (hoursDiff <= 0) {
-      return { type: 'danger', message: 'Date dépassée!' };
-    } else if (hoursDiff <= 4) {
-      return { type: 'warning', message: 'Bientôt!' };
-    }
-    return null;
-  };
-
-  // --- DRAG AND DROP HANDLERS ---
-  const handleDragStart = (e, colisItem) => {
-    e.dataTransfer.setData('colisId', colisItem.id);
-    document.body.classList.add('dragging-active');
-  };
-
-  const handleDrop = async (e, targetStage) => {
-    e.preventDefault();
-    document.body.classList.remove('dragging-active');
-    
-    // RESTRICTION: Employees can only move to Reporter or Confirmé
-    if (!['Reporter', 'Confirmé'].includes(targetStage)) {
-       setToastMessage({
-         title: 'Action non autorisée',
-         description: 'Vous ne pouvez déplacer des clients que vers "Reporter" ou "Confirmé".',
-         type: 'warning'
-       });
-       setShowToast(true);
-       setTimeout(() => setShowToast(false), 3000);
-       return;
-    }
-
-    const colisId = e.dataTransfer.getData('colisId');
-    
-    const colisToUpdate = colis.find(c => c.id === colisId);
-
-    if (!colisToUpdate || colisToUpdate.stage === targetStage) return;
-
-    let updatedColisData = null;
-
-    setColis(prevColis => 
-      prevColis.map(c => {
-        if (c.id === colisId) {
-          const newColis = { ...c, stage: targetStage };
-          
-          if (targetStage === 'Confirmé') {
-            newColis.prix = '';
-          }
-          
-          if (!['Reporter', 'Confirmé'].includes(targetStage)) {
-            if (!newColis.status) {
-              newColis.status = 'Nouveau colis';
-            }
-          }
-          updatedColisData = newColis;
-          return newColis;
-        }
-        return c;
-      })
-    );
-
-    setToastMessage({
-       title: 'Mise à jour réussie',
-       description: `Le colis de ${colisToUpdate.clientName} est passé à ${targetStage}`,
-       type: 'success'
-    });
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-    
-    if (updatedColisData) {
-      try {
-        await fetch(`http://localhost:3000/colis/${colisId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            stage: targetStage,
-            prix: updatedColisData.prix,
-            status: updatedColisData.status
-          }),
-        });
-      } catch (error) {
-        console.error('Error updating colis:', error);
-      }
-    }
-  };
-
-  const handleAddColis = (newColis) => {
-    setColis([...colis, { 
-      ...newColis, 
-      id: Date.now().toString(),
-      dateCreated: new Date().toISOString()
-    }]);
-    setShowAddModal(false);
-    setToastMessage({
-      title: 'Client ajouté avec succès!',
-      description: 'Le colis a été créé dans le pipeline',
-      type: 'success'
-    });
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+    setSelectedPipeline(pipeline);
+    updateStagesFromPipeline(pipeline);
   };
 
   const handleRefresh = () => {
     loadData();
-    loadPipelineStages();
-    setToastMessage({
-      title: 'Données actualisées!',
-      description: 'Les informations ont été mises à jour',
-      type: 'success'
-    });
+    setToastMessage({ title: 'Actualisé', description: 'Données rechargées', type: 'success' });
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  const handleMoveColis = async (targetStage) => {
-    if (!colisToMove) return;
-
-    // RESTRICTION: Employees can only move to Reporter or Confirmé
-    if (!['Reporter', 'Confirmé'].includes(targetStage)) {
-      setToastMessage({
-        title: 'Action non autorisée',
-        description: 'Vous ne pouvez déplacer des clients que vers "Reporter" ou "Confirmé".',
-        type: 'warning'
-      });
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-      return;
-   }
+  const handleAddColis = (newColis) => {
+    const pipelineId = selectedPipeline?.id;
+    const colisWithId = { 
+      ...newColis, 
+      id: Date.now().toString(),
+      dateCreated: new Date().toISOString(),
+      pipelineId: pipelineId,
+      // Force assign to current employee if adding
+      employee: currentUser.name || newColis.employee
+    };
     
-    setColis(prevColis => 
-      prevColis.map(c => {
-        if (c.id === colisToMove.id) {
-          const newColis = { ...c, stage: targetStage };
-          if (targetStage === 'Confirmé') newColis.prix = '';
-          if (!['Reporter', 'Confirmé'].includes(targetStage) && !newColis.status) {
-            newColis.status = 'Nouveau colis';
-          }
-          return newColis;
-        }
-        return c;
-      })
-    );
+    const updatedList = [...colis, colisWithId];
+    setColis(updatedList);
+    localStorage.setItem('colis', JSON.stringify(updatedList));
     
-    setToastMessage({
-      title: 'Client déplacé avec succès!',
-      description: `${colisToMove.clientName} → ${targetStage}`,
-      type: 'success'
-    });
+    setShowAddModal(false);
+    
+    setToastMessage({ title: 'Succès', description: 'Colis ajouté avec succès', type: 'success' });
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
-    
-    setShowMoveModal(false);
+  };
 
-    try {
-      const updateData = { stage: targetStage };
-      if (targetStage === 'Confirmé') updateData.prix = '';
-      if (!['Reporter', 'Confirmé'].includes(targetStage) && !colisToMove.status) {
-        updateData.status = 'Nouveau colis';
-      }
-      
-      await fetch(`http://localhost:3000/colis/${colisToMove.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData),
-      });
-    } catch (error) {
-      console.error('Error updating colis:', error);
+  // --- DRAG AND DROP ---
+  const handleDragStart = (e, colisItem) => {
+    e.dataTransfer.setData('colisId', colisItem.id);
+  };
+
+  const handleDrop = (e, targetStageId) => {
+    e.preventDefault();
+    const colisId = e.dataTransfer.getData('colisId');
+    const colisItem = colis.find(c => c.id === colisId);
+    
+    if (!colisItem) return;
+
+    // RESTRICTION: Employee can only move between 'Reporter' and 'Confirmé'
+    // Normalize names to check
+    const isReporterOrConfirmedTarget = ['reporter', 'confirmed', 'confirmer', 'confirmé'].some(s => targetStageId.toLowerCase().includes(s));
+    const isReporterOrConfirmedSource = ['reporter', 'confirmed', 'confirmer', 'confirmé'].some(s => colisItem.stage.toLowerCase().includes(s));
+
+    // Actually, sticking to strict stage names from the pipeline might be safer, but let's use the normalized check logic or just simplified check
+    // The stages in 'stages' state have IDs like 'Reporter', 'Confirmé', 'Packaging' etc.
+    if (!['Reporter', 'Confirmé'].includes(targetStageId)) {
+        setToastMessage({ 
+            title: 'Action refusée', 
+            description: 'Vous ne pouvez déplacer que vers Reporter ou Confirmé.', 
+            type: 'warning' 
+        });
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+        return;
     }
-    setColisToMove(null);
+
+    const updatedList = colis.map(c => {
+      if (c.id === colisId) {
+        return { 
+          ...c, 
+          stage: targetStageId,
+          // Clear price if moving to confirmed? Admin logic had this.
+          // prix: targetStageId === 'Confirmé' ? '' : c.prix 
+          // User didn't explicitly ask to clear price, but usually confirmation involves price check. keeping it simple.
+        };
+      }
+      return c;
+    });
+
+    setColis(updatedList);
+    localStorage.setItem('colis', JSON.stringify(updatedList));
+    
+    setToastMessage({ title: 'Succès', description: 'Colis déplacé', type: 'success' });
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
-  const filteredColis = colis.filter(c => {
-    // Filter by Current Employee (ONLY if logged in)
-    if (currentUser.name && c.employee !== currentUser.name) return false;
+  const handleMoveColis = (targetStageId) => {
+    if (!colisToMove) return;
     
+    // Check permission (same as drag and drop)
+    if (!['Reporter', 'Confirmé'].includes(targetStageId)) {
+        setToastMessage({ 
+            title: 'Action refusée', 
+            description: 'Vous ne pouvez déplacer que vers Reporter ou Confirmé.', 
+            type: 'warning' 
+        });
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+        return;
+    }
+
+    const updatedList = colis.map(c => {
+      if (c.id === colisToMove.id) {
+         return { ...c, stage: targetStageId };
+      }
+      return c;
+    });
+    setColis(updatedList);
+    localStorage.setItem('colis', JSON.stringify(updatedList));
+    setShowMoveModal(false);
+    setColisToMove(null);
+    
+    setToastMessage({ title: 'Déplacé', description: 'Colis déplacé avec succès', type: 'success' });
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
+  // --- FILTERING ---
+  const filteredColis = colis.filter(c => {
+    // 1. Pipeline Filter
+    if (c.pipelineId && selectedPipeline && c.pipelineId !== selectedPipeline.id) return false;
+    
+    // 2. Employee Filter (STRICT: Only show my colis)
+    if (currentUser.name && c.employee !== currentUser.name) return false;
+
+    // 3. Search
     if (searchText) {
       const searchLower = searchText.toLowerCase();
       const matchesName = c.clientName?.toLowerCase().includes(searchLower);
@@ -408,386 +260,430 @@ export default function ConfirmationClients() {
       const matchesProduct = c.productName?.toLowerCase().includes(searchLower);
       if (!matchesName && !matchesPhone && !matchesProduct) return false;
     }
-    if (searchDate) {
-      const colisDate = c.dateCreated ? new Date(c.dateCreated).toISOString().split('T')[0] : null;
-      if (colisDate !== searchDate) return false;
-    }
+
     return true;
   });
 
-  const sortedColis = [...filteredColis].sort((a, b) => {
-    const alertA = getAlerts(a);
-    const alertB = getAlerts(b);
-    if (alertA && !alertB) return -1;
-    if (!alertA && alertB) return 1;
-    return 0;
-  });
+  const getColisByStage = (stageName) => {
+    return filteredColis.filter(c => {
+      if (!c.stage) return false;
+      
+      // Normalize both stage names for comparison
+      const normalizeStage = (name) => {
+        let normalized = name
+          .toLowerCase()
+          .replace(/-ag$/i, '')
+          .replace(/é/g, 'e')
+          .replace(/è/g, 'e')
+          .replace(/ê/g, 'e')
+          .trim();
+        
+        const mappings = {
+          'confirme': 'confirmer',
+          'confirmed': 'confirmer',
+          'livre': 'livre',
+          'delivered': 'livre',
+          'annule': 'annuler',
+          'cancelled': 'annuler',
+          'canceled': 'annuler',
+          'en cours': 'packaging',
+          'nouveau': 'reporter',
+          'out of delivery': 'out for delivery',
+          'out of delevry': 'out for delivery'
+        };
+        
+        return mappings[normalized] || normalized;
+      };
+      
+      const normalizedColisStage = normalizeStage(c.stage);
+      const normalizedStageName = normalizeStage(stageName);
+      
+      return normalizedColisStage === normalizedStageName;
+    });
 
-  const getColisByStage = (stageId) => {
-    return sortedColis.filter(c => c.stage === stageId);
   };
 
+  // --- STATS CALCULATION ---
+  const calculateDailyStats = () => {
+    const today = new Date().toDateString();
+    const myColis = filteredColis; 
+    
+    const confirmedToday = myColis.filter(c => 
+       (c.stage === 'Confirmé' || c.stage === 'Confirmé-AG' || c.stage === 'Livré' || c.stage === 'Livré-AG') && 
+       new Date(c.dateCreated).toDateString() === today 
+    );
+
+    const countToday = confirmedToday.length;
+
+    // TIERED COMMISSION LOGIC
+    // "3 prix par produit donc 3 comitions"
+    const calculateCommission = (colisItem) => {
+        const product = products.find(p => p.id === colisItem.productId);
+        if (!product) return 10; // Default base
+
+        // Example Logic: Deduce commission tier based on selling price
+        // You can adjust these rules or use specific fields from 'product' if available
+        const price = parseFloat(colisItem.prix);
+        
+        // Tier 1 (High Price)
+        if (price >= (product.prixVente * 1.5)) return 25; 
+        // Tier 2 (Standard Price)
+        if (price >= product.prixVente) return 15;
+        // Tier 3 (Low/Discount Price)
+        return 10;
+    };
+
+    const estimatedEarnings = confirmedToday.reduce((total, c) => total + calculateCommission(c), 0);
+
+    return { 
+        confirmedToday: countToday, 
+        totalActive: myColis.length, 
+        estimatedEarnings 
+    };
+  };
+
+  const stats = calculateDailyStats();
+
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8">
-      <div className="max-w-[1600px] mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
-                <Package className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Liste des Clients</h1>
-                <p className="text-slate-500 mt-1 font-medium text-sm md:text-base">Gestion des clients et commandes</p>
-              </div>
-            </div>
-            
-            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-              {pipelines.length > 0 && (
-                <select
-                  value={selectedPipeline?.id || ''}
-                  onChange={(e) => handlePipelineChange(e.target.value)}
-                  className="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white border-2 border-blue-500 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all shadow-lg w-full md:w-auto"
-                >
-                  {pipelines.map(pipeline => (
-                    <option key={pipeline.id} value={pipeline.id} className="bg-white text-slate-800">
-                      {pipeline.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-
-              <div className="flex gap-2">
-                <button
-                  onClick={handleRefresh}
-                  className="flex-1 md:flex-none justify-center px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 flex items-center gap-2 text-slate-700 font-semibold transition-all"
-                >
-                  <RotateCw className="w-4 h-4" />
-                  <span className="md:hidden lg:inline">Actualiser</span>
-                </button>
-
-                <button
-                  onClick={() => setShowAddModal(true)}
-                  className="flex-1 md:flex-none justify-center flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="whitespace-nowrap">Ajouter</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 mt-4 pt-4 border-t border-slate-200">
-            <div className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  placeholder="Rechercher..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-                <SearchIcon className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              </div>
-            </div>
-            
-            <div className="w-full md:w-64">
-              <div className="relative">
-                <input
-                  type="date"
-                  value={searchDate}
-                  onChange={(e) => setSearchDate(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-                <Calendar className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              </div>
-            </div>
-
-            {(searchText || searchDate) && (
-              <button
-                onClick={() => {
-                  setSearchText('');
-                  setSearchDate('');
-                }}
-                className="px-4 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 text-sm font-semibold transition-all flex items-center justify-center gap-2"
-              >
-                <X className="w-4 h-4" />
-                Effacer
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Kanban Board - Responsive: Horizontal Scroll on Mobile */}
-        <div className="flex flex-row gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-200px)] snap-x snap-mandatory md:snap-none px-1 md:px-0">
-          {stages.map((stage) => {
-            const stageColis = getColisByStage(stage.id);
-            
-            return (
-              <div
-                key={stage.id}
-                className="flex-shrink-0 w-[85vw] md:w-80 snap-center first:pl-0"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => handleDrop(e, stage.id)}
-              >
-                <div className={`bg-white rounded-t-xl border-t-4 ${stage.color} p-3 shadow-sm`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-slate-800 text-sm whitespace-nowrap">{stage.title}</span>
-                      <span className="bg-slate-100 text-xs px-2 py-0.5 rounded-full font-medium text-slate-600">
-                        {stageColis.length}
-                      </span>
+    <div className="min-h-screen bg-slate-50/50 p-4 font-sans">
+      <div className="w-full mx-auto max-w-[1800px]">
+        
+        {/* GAMIFIED DASHBOARD HEADER */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 animate-in slide-in-from-top duration-500">
+            {/* Card 1: Productivity (High Energy) */}
+            <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-[2rem] p-6 text-white shadow-xl shadow-purple-500/20 relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><Zap size={100} /></div>
+                <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm"><Zap size={20} className="text-yellow-300 fill-yellow-300" /></div>
+                        <h3 className="font-bold text-lg">Productivité Fort ⚡</h3>
                     </div>
-                  </div>
+                    <div className="flex items-end gap-2">
+                        <span className="text-5xl font-black tracking-tight">{stats.confirmedToday}</span>
+                        <span className="mb-2 font-medium text-purple-200">validations jour</span>
+                    </div>
+                    <div className="mt-4 bg-black/20 rounded-full h-2 w-full overflow-hidden">
+                        <div className="bg-yellow-400 h-full rounded-full" style={{ width: `${Math.min(stats.confirmedToday * 10, 100)}%` }}></div>
+                    </div>
+                    <p className="text-xs mt-2 text-purple-200">Objectif: 10 🔥 - Keep Pushing!</p>
+                </div>
+            </div>
+
+            {/* Card 2: Motivational Commission (Cagnotte) */}
+            <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/50 relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                 <div className="absolute -right-6 -top-6 w-32 h-32 bg-emerald-50 rounded-full group-hover:bg-emerald-100 transition-colors"></div>
+                 <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600"><Truck size={20} /></div>
+                        <h3 className="font-bold text-lg text-slate-800">Ma Cagnotte 💰</h3>
+                    </div>
+                    <div className="flex items-end gap-2">
+                        <span className="text-5xl font-black tracking-tight text-emerald-600">{stats.estimatedEarnings}</span>
+                        <span className="mb-2 font-bold text-emerald-600 text-xl">DH</span>
+                    </div>
+                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 text-xs mt-3">
+                        <p className="font-bold text-slate-400 uppercase tracking-widest mb-2 text-[10px]">Structure Commission</p>
+                        <div className="space-y-1.5 font-medium">
+                            <div className="flex justify-between items-center text-slate-500">
+                                <span>Prix 1</span>
+                                <span className="font-bold">Commission 1</span>
+                            </div>
+                            <div className="flex justify-between items-center text-slate-600">
+                                <span>Prix 2</span>
+                                <span className="font-bold">Commission 2</span>
+                            </div>
+                            <div className="flex justify-between items-center text-emerald-600">
+                                <span>Prix 3</span>
+                                <span className="font-bold">Commission 3</span>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+            {/* Card 3: Actions & Filters */}
+            <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/50 flex flex-col justify-between">
+                <div>
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center border-2 border-white shadow-sm overflow-hidden">
+                             <User size={20} className="text-slate-400" />
+                        </div>
+                        <div>
+                            <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Bonjour,</p>
+                            <h3 className="font-bold text-slate-800 leading-tight">{currentUser.name || 'Champion'} 👋</h3>
+                        </div>
+                    </div>
+                    
+                    {/* Pipeline Selector Improved */}
+                    <div className="bg-slate-50 p-1.5 rounded-xl flex border border-slate-200 mb-4">
+                        {pipelines.map(p => (
+                            <button 
+                                key={p.id}
+                                onClick={() => handlePipelineChange(p.id)}
+                                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all ${selectedPipeline?.id === p.id ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                {p.name}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                <div className={`${stage.bgColor} rounded-b-xl p-2 min-h-[600px] space-y-2 border-x border-b border-slate-200 transition-colors`}>
+                <div className="flex gap-2">
+                   <div className="relative flex-1">
+                       <SearchIcon className="absolute left-3 top-2.5 text-slate-400" size={16} />
+                       <input 
+                         type="text" 
+                         value={searchText} 
+                         onChange={e => setSearchText(e.target.value)} 
+                         placeholder="Chercher..." 
+                         className="w-full pl-9 pr-3 py-2 bg-slate-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400" 
+                       />
+                   </div>
+                   <button 
+                     onClick={() => setShowAddModal(true)} 
+                     className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg transition-transform hover:scale-105 active:scale-95 ${
+                         selectedPipeline?.id === 2 ? 'bg-emerald-500 shadow-emerald-500/30' : 'bg-blue-600 shadow-blue-500/30'
+                     }`}
+                   >
+                     <Plus size={20} />
+                   </button>
+                </div>
+            </div>
+        </div>
+
+        {/* KANBAN BOARD */}
+        <div className="flex flex-row gap-2 overflow-x-auto pb-4 px-1 min-h-[calc(100vh-250px)]">
+          {stages
+            .map((stage) => {
+            const stageColis = getColisByStage(stage.id);
+            const isReporterOrConfirmed = ['Reporter', 'Confirmé'].includes(stage.id);
+            const canDrag = isReporterOrConfirmed; // Can only drag from these stages
+
+            // Priority Logic: Check urgency helper
+            const checkUrgency = (item) => {
+               if (stage.id !== 'Reporter' || !item.dateReport) return false;
+               const reportDate = new Date(item.dateReport);
+               const now = new Date();
+               const hoursUntil = (reportDate - now) / (1000 * 60 * 60);
+               // Urgent if: less than 24h remaining OR date is passed (negative hours)
+               return hoursUntil <= 24; 
+            };
+
+            // Enhanced logic: "no 1day for confirmation" -> If report date was > 24h ago?
+            // User request: "allert for comande have no 1day for conirmation"
+            // Let's assume urgency is simply if the dateReport is today, tomorrow, or PASED.
+            // If the date passed more than 1 day ago, it is VERY urgent.
+
+            // Sort logic for Reporter: Urgent items first
+            if (stage.id === 'Reporter') {
+               stageColis.sort((a, b) => {
+                  const urgentA = checkUrgency(a);
+                  const urgentB = checkUrgency(b);
+                  if (urgentA && !urgentB) return -1;
+                  if (!urgentA && urgentB) return 1;
+                  // Secondary sort by date (ascending - oldest/closest dates first)
+                  return new Date(a.dateReport) - new Date(b.dateReport);
+               });
+            }
+
+            return (
+              <div key={stage.id} className="flex-1 min-w-[240px]" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, stage.id)}>
+                <div className={`bg-white rounded-t-xl border-t-4 ${stage.color} p-3 shadow-sm flex justify-between`}>
+                  <span className="font-bold text-slate-700">{stage.title}</span>
+                  <span className="bg-slate-100 text-xs px-2 py-1 rounded-full font-bold">{stageColis.length}</span>
+                </div>
+                <div className={`${stage.bgColor} rounded-b-xl p-2 min-h-[500px] space-y-2 border-x border-b border-slate-200`}>
                   {stageColis.map((colisItem) => {
-                    const alert = getAlerts(colisItem);
-                    const isReportOrConfirmed = ['Reporter', 'Confirmé'].includes(stage.id);
                     const product = products.find(p => p.id === colisItem.productId);
                     const ville = villes.find(v => v.id === colisItem.ville);
                     
-                    return (
-                      <div
-                        key={colisItem.id}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, colisItem)}
-                        className="bg-white rounded-lg p-2 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-move border border-slate-200 relative flex gap-3 group active:cursor-grabbing active:scale-95"
-                      >
-                        <div className="shrink-0 relative">
-                          {product?.image ? (
-                            <img src={product.image} alt={product.nom} className="w-16 h-16 object-cover rounded-lg" />
-                          ) : (
-                            <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
-                              <Package className="w-6 h-6 text-blue-600" />
+                    // Logic for Reporter Date Alert using the same helper check
+                    const hasDateAlert = checkUrgency(colisItem);
+                    
+                    // Design A: Reporter & Confirmé
+                    if (isReporterOrConfirmed) {
+                      return (
+                        <div 
+                          key={colisItem.id} 
+                          draggable={canDrag}
+                          onDragStart={e => handleDragStart(e, colisItem)} 
+                          className={`bg-white rounded-lg p-2.5 shadow-sm hover:shadow-md cursor-move border-2 transition-all ${
+                            hasDateAlert ? 'border-red-500 animate-pulse bg-red-50/10' : 'border-slate-200'
+                          }`}
+                        >
+                          <div className="flex gap-2 items-center">
+                            <div className="w-10 h-10 rounded-full bg-slate-100 shrink-0 overflow-hidden border-2 border-white shadow-sm">
+                              {product?.image ? (
+                                <img src={product.image} className="w-full h-full object-cover" alt={product.nom} />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center"><Package size={16} className="text-slate-400" /></div>
+                              )}
                             </div>
-                          )}
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-xs truncate text-slate-800">{product?.nom || colisItem.productName}</h4>
+                              <p className="text-[10px] text-slate-600 font-medium truncate">{colisItem.clientName}</p>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-[9px] text-slate-500 truncate flex items-center gap-0.5"><MapPin size={8} /> {ville?.name || colisItem.ville}</span>
+                                <span className="text-[9px] text-slate-500">•</span>
+                                <span className="text-[9px] text-slate-500">{colisItem.tel}</span>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs font-bold text-emerald-600 whitespace-nowrap">{colisItem.prix} DH</p>
+                              {hasDateAlert && <span className="text-[9px] text-red-600 font-bold flex items-center gap-0.5 mt-0.5"><AlertTriangle size={10} /> Urgent</span>}
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); setColisToMove(colisItem); setShowMoveModal(true); }}
+                                className="md:hidden mt-2 p-1.5 bg-blue-50 text-blue-600 rounded-lg shadow-sm border border-blue-100"
+                                title="Déplacer"
+                              >
+                                <ArrowRight size={14} />
+                              </button>
+                            </div>
+                          </div>
                           
-                          {alert && (
-                            <div className={`absolute -top-1 -right-1 w-4 h-4 ${
-                              alert.type === 'danger' ? 'bg-red-500' : 'bg-orange-500'
-                            } rounded-full flex items-center justify-center border-2 border-white`}>
-                              <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                          {stage.id === 'Reporter' && colisItem.dateReport && (
+                            <div className={`mt-2 pt-2 border-t ${hasDateAlert ? 'border-red-200' : 'border-slate-100'}`}>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-slate-500 flex items-center gap-1"><Calendar size={10} /> Relance:</span>
+                                <span className={`text-[10px] font-bold ${hasDateAlert ? 'text-red-600' : 'text-slate-700'}`}>
+                                  {new Date(colisItem.dateReport).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
                             </div>
                           )}
                         </div>
-
-                        <div className="flex-1 min-w-0 flex flex-col justify-between">
-                          <div>
-                            <div className="flex justify-between items-start pr-6">
-                              <h3 className="font-bold text-slate-800 text-xs truncate" title={product?.nom || colisItem.productName}>
-                                {product?.nom || colisItem.productName}
-                              </h3>
-                            </div>
-                            
-                            <div className="text-[10px] text-slate-500 leading-tight mt-0.5 space-y-0.5">
-                              <p className="truncate"><span className="font-semibold text-slate-700">{colisItem.clientName}</span></p>
-                              <p className="truncate">{colisItem.tel} • {ville?.name}</p>
-                              
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className={`font-bold ${(colisItem.prix || colisItem.price) ? 'text-emerald-600' : 'text-slate-400'}`}>
-                                  {(colisItem.prix || colisItem.price) ? `${colisItem.prix || colisItem.price} DH` : 'Prix: --'}
-                                </span>
-                                {stage.id === 'Reporter' && colisItem.dateReport && (
-                                  <span className="flex items-center gap-0.5 text-orange-600 font-medium">
-                                    <Calendar className="w-2.5 h-2.5" />
-                                    {new Date(colisItem.dateReport).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
-                                  </span>
-                                )}
-                              </div>
-
-                              {!isReportOrConfirmed && colisItem.status && (
-                                <span className="inline-block px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] font-medium mt-0.5">
-                                  {colisItem.status}
-                                </span>
-                              )}
-                            </div>
+                      );
+                    }
+                    
+                    // Design B: Other Stages (Read Only mostly for employee)
+                    return (
+                      <div 
+                        key={colisItem.id} 
+                        className="bg-white rounded-lg p-2.5 shadow-sm border border-slate-200 opacity-90"
+                      >
+                        <div className="flex gap-2 items-start">
+                          <div className="w-10 h-10 rounded-full bg-slate-100 shrink-0 overflow-hidden border-2 border-white shadow-sm">
+                            {product?.image ? <img src={product.image} className="w-full h-full object-cover" alt={product.nom} /> : <div className="w-full h-full flex items-center justify-center"><Package size={16} className="text-slate-400" /></div>}
                           </div>
-
-                          <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-slate-100">
-                            <span className="text-[9px] text-slate-400 truncate max-w-[60px]" title={colisItem.employee}>
-                              {colisItem.employee}
-                            </span>
-                            
-                            {!isReportOrConfirmed && (
-                              <div className="flex gap-1">
-                                <button 
-                                  onClick={() => {
-                                    setSelectedColisForTracking(colisItem);
-                                    setShowTrackingModal(true);
-                                  }}
-                                  className="p-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
-                                  title="Suivi"
-                                >
-                                  <Eye className="w-3 h-3" />
-                                </button>
-                                <button 
-                                  onClick={() => console.log('Export ticket:', colisItem.id)}
-                                  className="p-1 bg-slate-100 text-slate-600 rounded hover:bg-slate-200 transition-colors"
-                                  title="Ticket"
-                                >
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                  </svg>
-                                </button>
-                              </div>
-                            )}
-                            
-                            <button 
-                              onClick={() => {
-                                setColisToMove(colisItem);
-                                setShowMoveModal(true);
-                              }}
-                              className="p-1 bg-emerald-100 text-emerald-600 rounded hover:bg-emerald-200 transition-colors md:hidden"
-                              title="Déplacer"
-                            >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                              </svg>
-                            </button>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-xs truncate text-slate-800">{product?.nom || colisItem.productName}</h4>
+                            <p className="text-[10px] text-slate-600 font-medium truncate">{colisItem.clientName}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-[9px] text-slate-500 truncate flex items-center gap-0.5"><MapPin size={8} /> {ville?.name || colisItem.ville}</span>
+                                <span className="text-[9px] text-slate-500">{colisItem.tel}</span>
+                            </div>
+                            <p className="text-xs font-bold text-emerald-600 mt-1">{colisItem.prix} DH</p>
                           </div>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
+                           <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[9px] font-bold"><Truck size={10} /> {colisItem.status || 'En cours'}</span>
+                           <button 
+                             onClick={() => { setSelectedColisForTracking(colisItem); setShowTrackingModal(true); }}
+                             className="px-2 py-1 border border-blue-300 text-blue-600 hover:bg-blue-50 rounded text-[9px] font-bold transition-colors"
+                           >
+                             <Eye size={12} />
+                           </button>
                         </div>
                       </div>
                     );
                   })}
-                  
-                  {stageColis.length === 0 && (
-                    <div className="text-center p-8 text-slate-400 italic">
-                      Aucun colis
-                    </div>
-                  )}
+                  {stageColis.length === 0 && <div className="text-center p-8 text-slate-400 text-sm">Vide</div>}
                 </div>
               </div>
             );
           })}
         </div>
+        
+        {/* Modals */}
+        {showAddModal && (
+          <AddClientModal 
+             onClose={() => setShowAddModal(false)}
+             onAdd={handleAddColis}
+             employees={EMPLOYEES}
+             currentUser={currentUser}
+             products={products}
+             villes={villes}
+             quartiers={quartiers}
+             isLogistics={selectedPipeline?.id === 2}
+          />
+        )}
+        
+        {showMoveModal && (
+            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-2xl shadow-xl w-full max-w-xs p-4">
+                <h3 className="font-bold text-lg mb-3">Déplacer vers...</h3>
+                <div className="space-y-2">
+                  {stages
+                    .filter(s => ['Reporter', 'Confirmé'].includes(s.id)) // Only show allowed stages for employee
+                    .map(s => (
+                    <button key={s.id} onClick={() => handleMoveColis(s.id)} className="w-full text-left p-3 rounded-lg bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-sm font-medium transition-colors">
+                      {s.title}
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => setShowMoveModal(false)} className="mt-4 w-full py-2 text-slate-400 hover:text-slate-600">Annuler</button>
+              </div>
+            </div>
+        )}
+        
+        {showTrackingModal && selectedColisForTracking && (
+          <TrackingModal 
+             colis={selectedColisForTracking} 
+             onClose={() => setShowTrackingModal(false)}
+             products={products}
+             villes={villes}
+             quartiers={quartiers}
+          />
+        )}
+
+        {showToast && (
+          <div className="fixed bottom-8 right-8 z-50 animate-bounce">
+            <div className={`px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 text-white ${toastMessage.type === 'warning' ? 'bg-amber-500' : 'bg-emerald-600'}`}>
+              {toastMessage.type === 'warning' ? <AlertTriangle /> : <CheckCircle />}
+              <div>
+                <p className="font-bold">{toastMessage.title}</p>
+                <p className="text-sm">{toastMessage.description}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Add Client Modal */}
-      {showAddModal && (
-        <AddClientModal
-          onClose={() => setShowAddModal(false)}
-          onAdd={handleAddColis}
-          employees={EMPLOYEES}
-          currentUser={currentUser}
-          products={products}
-          villes={villes}
-          quartiers={quartiers}
-        />
-      )}
-
-      {/* NEW IMPROVED SUCCESS TOAST */}
-      {showToast && (
-        <div className="fixed bottom-8 right-8 z-50 animate-slide-up">
-          <div className={`px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 border ${
-            toastMessage.type === 'warning' 
-              ? 'bg-amber-500 text-white border-amber-600' 
-              : 'bg-emerald-600 text-white border-emerald-700'
-          }`}>
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-              {toastMessage.type === 'warning' ? (
-                <AlertTriangle className="w-6 h-6 text-white" />
-              ) : (
-                <CheckCircle className="w-6 h-6 text-white" />
-              )}
-            </div>
-            <div className="flex-1">
-              <p className="font-bold text-lg leading-tight">{toastMessage.title}</p>
-              <p className="text-sm text-white/90 font-medium">{toastMessage.description}</p>
-            </div>
-            <button 
-              onClick={() => setShowToast(false)}
-              className="p-1 hover:bg-white/20 rounded-full transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Move Client Modal */}
-      {showMoveModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-slate-800">Déplacer le colis</h3>
-              <button onClick={() => setShowMoveModal(false)} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="space-y-2">
-              {stages.map(stage => (
-                <button
-                  key={stage.id}
-                  onClick={() => handleMoveColis(stage.id)}
-                  className={`w-full p-3 rounded-xl text-left font-medium transition-all flex items-center justify-between ${
-                    colisToMove?.stage === stage.id 
-                      ? 'bg-blue-50 text-blue-600 border border-blue-200' 
-                      : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-transparent'
-                  }`}
-                >
-                  {stage.title}
-                  {colisToMove?.stage === stage.id && <div className="w-2 h-2 bg-blue-600 rounded-full" />}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tracking Modal */}
-      {showTrackingModal && selectedColisForTracking && (
-        <TrackingModal
-          colis={selectedColisForTracking}
-          onClose={() => {
-            setShowTrackingModal(false);
-            setSelectedColisForTracking(null);
-          }}
-          products={products}
-          villes={villes}
-          quartiers={quartiers}
-        />
-      )}
     </div>
   );
 }
 
-// AddClientModal and TrackingModal components
-function SearchIcon(props) {
-  return (
-    <svg 
-      {...props} 
-      fill="none" 
-      stroke="currentColor" 
-      viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-    </svg>
-  );
-}
+// Subcomponents
+// Custom Input Component defined OUTSIDE to prevent focus loss
+const InputGroup = ({ icon: Icon, children }) => (
+  <div className="relative group">
+     <div className="absolute left-3 top-3 text-slate-400 group-focus-within:text-pink-500 transition-colors pointer-events-none">
+       <Icon size={18} />
+     </div>
+     {children}
+  </div>
+);
 
-function AddClientModal({ onClose, onAdd, employees, currentUser, products, villes, quartiers }) {
+function AddClientModal({ onClose, onAdd, employees, currentUser, products, villes, quartiers, isLogistics }) {
   const [formData, setFormData] = useState({
     productId: '',
     productName: '',
     clientName: '',
-    ville: '',
+    ville: isLogistics ? 'Agadir' : '',
     quartier: '',
     tel: '',
     prix: '',
-    employee: currentUser.name || employees[0],
+    employee: currentUser.name || '',
     business: 'Commit',
-    stage: 'Reporter',
+    stage: isLogistics ? 'Confirmé-AG' : 'Reporter',
     commentaire: '',
     nbPiece: '1',
     dateReport: ''
   });
 
-  const [isReporter, setIsReporter] = useState(true);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [dateRequired, setDateRequired] = useState(!isLogistics); 
   const [filteredQuartiers, setFilteredQuartiers] = useState([]);
+  
+  const BUSINESSES = ['Commit', 'Herboclear', 'Other'];
 
   useEffect(() => {
     if (formData.ville) {
@@ -797,410 +693,250 @@ function AddClientModal({ onClose, onAdd, employees, currentUser, products, vill
     }
   }, [formData.ville, quartiers]);
 
-  const handleProductChange = (e) => {
-    const productId = e.target.value;
-    const product = products.find(p => p.id === productId);
-    setFormData({
-      ...formData,
-      productId,
-      productName: product?.nom || '',
-      prix: product?.prix1 || ''
-    });
-  };
-
-  const handleReporterChange = (checked) => {
-    setIsReporter(checked);
-    if (checked) {
-      setIsConfirmed(false);
-      setFormData({ ...formData, stage: 'Reporter' });
-    }
-  };
-
-  const handleConfirmedChange = (checked) => {
-    setIsConfirmed(checked);
-    if (checked) {
-      setIsReporter(false);
-      setFormData({ ...formData, stage: 'Confirmé', dateReport: '' });
-    }
-  };
-
-  const handleSubmit = () => {
-    if (!formData.clientName || !formData.tel || !formData.productId) {
-      alert('Veuillez remplir les champs obligatoires');
-      return;
-    }
-    
-    if (isReporter && !formData.dateReport) {
-      alert('Veuillez sélectionner une date de confirmation');
-      return;
-    }
-    
+  const handleSubmit = (e) => {
+    e.preventDefault();
     onAdd(formData);
   };
 
+  // Removed internal InputGroup definition from here to fix focus loss bug
+
+  const inputClasses = "w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-pink-400 transition-all font-medium text-slate-700 placeholder:text-slate-400";
+
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-slate-200">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Plus className="w-6 h-6 text-white" />
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+      <div className="bg-white rounded-[2rem] w-full max-w-lg p-8 shadow-2xl shadow-purple-500/20 max-h-[90vh] overflow-y-auto scrollbar-hide">
+        
+        {/* Header Friendly */}
+        <div className="text-center mb-8">
+            <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 shadow-lg ${isLogistics ? 'bg-emerald-100 text-emerald-600' : 'bg-pink-100 text-pink-600'}`}>
+                {isLogistics ? <Truck size={32} /> : <User size={32} />}
             </div>
-            <h2 className="text-xl font-bold text-slate-800">Ajouter un Client</h2>
-          </div>
-          <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
-            <X className="w-6 h-6" />
-          </button>
+            <h2 className="text-2xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                {isLogistics ? 'Nouveau Colis Agadir' : 'Nouveau Colis'}
+            </h2>
+            <p className="text-slate-500 text-sm font-medium">Remplissez les infos ci-dessous ✨</p>
         </div>
 
-        <div className="p-6">
-          <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
-            <label className="block text-xs font-bold text-slate-500 mb-3 uppercase tracking-wider">Statut du Colis</label>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-3 cursor-pointer">
+        <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Row 1: Client Info */}
+            <div className="grid grid-cols-2 gap-4">
+                 <InputGroup icon={User}>
+                     <input 
+                       required placeholder="Nom Client" 
+                       className={inputClasses}
+                       value={formData.clientName}
+                       onChange={e => setFormData({...formData, clientName: e.target.value})}
+                     />
+                 </InputGroup>
+                 <InputGroup icon={Phone}>
+                     <input 
+                       required placeholder="Téléphone" 
+                       className={inputClasses}
+                       value={formData.tel}
+                       onChange={e => setFormData({...formData, tel: e.target.value})}
+                     />
+                 </InputGroup>
+            </div>
+            
+            {/* Row 2: Product Info */}
+            <div className="grid grid-cols-2 gap-4">
+                 <div className="relative">
+                    <div className="absolute left-3 top-3 text-slate-400"><Package size={18} /></div>
+                    <select 
+                       required
+                       className={`${inputClasses} appearance-none cursor-pointer`}
+                       value={formData.productId}
+                       onChange={e => {
+                         const p = products.find(pr => pr.id === e.target.value);
+                         setFormData({...formData, productId: e.target.value, productName: p?.nom || '', prix: p?.prixVente || ''});
+                       }}
+                    >
+                       <option value="">Produit</option>
+                       {products.map(p => <option key={p.id} value={p.id}>{p.nom}</option>)}
+                    </select>
+                 </div>
+                 <InputGroup icon={CheckCircle}>
+                     <input 
+                       placeholder="Prix" 
+                       className={inputClasses}
+                       value={formData.prix}
+                       onChange={e => setFormData({...formData, prix: e.target.value})}
+                     />
+                 </InputGroup>
+            </div>
+
+            {/* Row 3: Location */}
+            <div className="grid grid-cols-2 gap-4">
                 <div className="relative">
-                  <input
-                    type="checkbox"
-                    checked={isReporter}
-                    onChange={(e) => handleReporterChange(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-6 h-6 border-2 border-slate-300 rounded peer-checked:bg-blue-600 peer-checked:border-blue-600 flex items-center justify-center transition-all">
-                    {isReporter && (
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
+                    <div className="absolute left-3 top-3 text-slate-400"><MapPin size={18} /></div>
+                    <select 
+                       className={`${inputClasses} appearance-none`}
+                       value={formData.ville} 
+                       onChange={e => setFormData({...formData, ville: e.target.value})}
+                       disabled={isLogistics} 
+                    >
+                       <option value="">Ville</option>
+                       {villes.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+                       {isLogistics && <option value="Agadir">Agadir</option>}
+                    </select>
                 </div>
-                <span className={`font-medium ${isReporter ? 'text-blue-600' : 'text-slate-600'}`}>Reporter</span>
-              </label>
 
-              <label className="flex items-center gap-3 cursor-pointer">
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    checked={isConfirmed}
-                    onChange={(e) => handleConfirmedChange(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-6 h-6 border-2 border-slate-300 rounded peer-checked:bg-emerald-600 peer-checked:border-emerald-600 flex items-center justify-center transition-all">
-                    {isConfirmed && (
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
+                <div className="space-y-1">
+                   <InputGroup icon={MapPin}>
+                       <input 
+                         placeholder="Quartier"
+                         className={inputClasses}
+                         value={formData.quartier}
+                         onChange={e => setFormData({...formData, quartier: e.target.value})}
+                         list="quartiers-list"
+                       />
+                       <datalist id="quartiers-list">
+                         {filteredQuartiers.map(q => <option key={q.id} value={q.name} />)}
+                       </datalist>
+                   </InputGroup>
                 </div>
-                <span className={`font-medium ${isConfirmed ? 'text-emerald-600' : 'text-slate-600'}`}>Confirmé</span>
-              </label>
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Produit *</label>
-              <select value={formData.productId} onChange={handleProductChange} className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all">
-                <option value="">Sélectionner un produit</option>
-                {products.map(p => (
-                  <option key={p.id} value={p.id}>{p.nom} - {p.categorie}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Employee Selection Removed - Auto assigned to currentUser */}
-
-            <div>
-              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Nom Client *</label>
-              <input type="text" value={formData.clientName} onChange={(e) => setFormData({...formData, clientName: e.target.value})} placeholder="Mohamed" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+            
+            {/* Row 4: Quantity */}
+            <div className="grid grid-cols-1">
+                <InputGroup icon={Package}>
+                     <input 
+                       type="number"
+                       min="1"
+                       placeholder="Nombre de pièces"
+                       className={inputClasses}
+                       value={formData.nbPiece}
+                       onChange={e => setFormData({...formData, nbPiece: e.target.value})}
+                     />
+                </InputGroup>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Téléphone *</label>
-              <input type="tel" value={formData.tel} onChange={(e) => setFormData({...formData, tel: e.target.value})} placeholder="0666666666" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+            {/* Row 5: Comment */}
+            <div className="relative">
+                <div className="absolute left-3 top-3 text-slate-400"><AlertTriangle size={18} /></div>
+                <textarea 
+                   placeholder="Un petit commentaire ? (optionnel)"
+                   className="w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-pink-400 transition-all font-medium text-slate-700 placeholder:text-slate-400 h-24 resize-none"
+                   value={formData.commentaire}
+                   onChange={e => setFormData({...formData, commentaire: e.target.value})}
+                />
             </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Ville</label>
-              <select value={formData.ville} onChange={(e) => setFormData({...formData, ville: e.target.value, quartier: ''})} className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all">
-                <option value="">Sélectionner</option>
-                {villes.map(v => (
-                  <option key={v.id} value={v.id}>{v.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Quartier</label>
-              <input type="text" value={formData.quartier} onChange={(e) => setFormData({...formData, quartier: e.target.value})} placeholder="Quartier" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Prix (DH)</label>
-              <input type="number" value={formData.prix} onChange={(e) => setFormData({...formData, prix: e.target.value})} placeholder="Prix" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
-            </div>
-
-            {isReporter && (
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Date de Confirmation *</label>
-                <input type="datetime-local" value={formData.dateReport} onChange={(e) => setFormData({...formData, dateReport: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+            
+            {/* Pipeline Stage Selection - Fun Cards */}
+            {!isLogistics && (
+               <div className="bg-slate-50 p-2 rounded-2xl flex gap-2">
+                 <label className={`flex-1 cursor-pointer relative`}>
+                   <input 
+                     type="radio" name="stage" value="Confirmé" 
+                     className="peer sr-only"
+                     checked={!dateRequired} 
+                     onChange={() => { setDateRequired(false); setFormData({...formData, stage: 'Confirmé', dateReport: ''}); }}
+                   />
+                   <div className="p-3 rounded-xl border-2 border-transparent peer-checked:bg-white peer-checked:shadow-sm peer-checked:border-emerald-400 transition-all flex flex-col items-center gap-1 text-slate-400 peer-checked:text-emerald-600">
+                        <CheckCircle size={24} className="mb-1" />
+                        <span className="font-bold text-sm">Confirmé</span>
+                   </div>
+                 </label>
+                 
+                 <label className={`flex-1 cursor-pointer relative`}>
+                   <input 
+                     type="radio" name="stage" value="Reporter" 
+                     className="peer sr-only"
+                     checked={dateRequired} 
+                     onChange={() => { setDateRequired(true); setFormData({...formData, stage: 'Reporter'}); }}
+                   />
+                   <div className="p-3 rounded-xl border-2 border-transparent peer-checked:bg-white peer-checked:shadow-sm peer-checked:border-amber-400 transition-all flex flex-col items-center gap-1 text-slate-400 peer-checked:text-amber-600">
+                        <Calendar size={24} className="mb-1" />
+                        <span className="font-bold text-sm">Reporter</span>
+                   </div>
+                 </label>
+               </div>
+            )}
+            
+            {/* Date Picker with Animation */}
+            {dateRequired && !isLogistics && (
+              <div className="animate-in slide-in-from-top-2 fade-in duration-300">
+                  <InputGroup icon={Clock}>
+                      <input 
+                        type="datetime-local" 
+                        required 
+                        className="w-full pl-10 pr-4 py-3 bg-amber-50 border-2 border-amber-100 rounded-2xl text-amber-800 focus:ring-2 focus:ring-amber-400 focus:border-transparent font-bold transition-all"
+                        value={formData.dateReport}
+                        onChange={e => setFormData({...formData, dateReport: e.target.value})}
+                      />
+                  </InputGroup>
               </div>
             )}
-
-            <div>
-              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Nb de pièce</label>
-              <input type="number" value={formData.nbPiece} onChange={(e) => setFormData({...formData, nbPiece: e.target.value})} min="1" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
+            
+            {/* Warning for Logistics */}
+            {isLogistics && (
+                <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 flex items-center gap-3 text-emerald-700">
+                    <Truck size={20} />
+                    <span className="text-sm font-bold">Ajout direct au pipeline Agadir 🚀</span>
+                </div>
+            )}
+            
+            {/* Actions */}
+            <div className="grid grid-cols-2 gap-3 mt-6 pt-4 border-t border-dashed border-slate-200">
+              <button 
+                type="button" 
+                onClick={onClose} 
+                className="py-3 px-6 rounded-2xl font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+              >
+                Annuler
+              </button>
+              <button 
+                type="submit" 
+                className={`py-3 px-6 rounded-2xl font-bold text-white shadow-lg shadow-purple-200 transform hover:-translate-y-1 transition-all ${
+                    isLogistics 
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500' 
+                    : 'bg-gradient-to-r from-pink-500 to-purple-600'
+                }`}
+              >
+                C'est parti ! 🚀
+              </button>
             </div>
-
-            <div className="col-span-2">
-              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Commentaire</label>
-              <textarea value={formData.commentaire} onChange={(e) => setFormData({...formData, commentaire: e.target.value})} placeholder="Notes..." rows="3" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3 mt-6">
-            <button onClick={onClose} className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 border border-slate-200 transition-all">
-              Annuler
-            </button>
-            <button onClick={handleSubmit} className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold shadow-lg shadow-blue-500/30 transition-all">
-              Enregistrer
-            </button>
-          </div>
-        </div>
+        </form>
       </div>
     </div>
   );
 }
 
-function TrackingModal({ colis, onClose, products, villes, quartiers }) {
-  const [activeTab, setActiveTab] = useState('suivi');
-  
-  const product = products.find(p => p.id === colis.productId);
-  const ville = villes.find(v => v.id === colis.ville);
-  const quartier = quartiers.find(q => q.id === colis.quartier);
-
-  // Mock tracking events
-  const trackingEvents = [
-    {
-      id: 1,
-      status: 'Colis créé',
-      description: 'Le colis a été enregistré dans le système',
-      date: colis.dateCreated || new Date().toISOString(),
-      completed: true
-    },
-    {
-      id: 2,
-      status: 'En préparation',
-      description: 'Le colis est en cours de préparation',
-      date: colis.dateCreated || new Date().toISOString(),
-      completed: colis.stage !== 'Reporter'
-    },
-    {
-      id: 3,
-      status: 'Expédié',
-      description: 'Le colis a été expédié',
-      date: null,
-      completed: ['Packaging', 'Out for Delivery', 'Livré'].includes(colis.stage)
-    },
-    {
-      id: 4,
-      status: 'En livraison',
-      description: 'Le colis est en cours de livraison',
-      date: null,
-      completed: ['Out for Delivery', 'Livré'].includes(colis.stage)
-    },
-    {
-      id: 5,
-      status: 'Livré',
-      description: 'Le colis a été livré au destinataire',
-      date: null,
-      completed: colis.stage === 'Livré'
-    }
-  ];
-
-  const tabs = [
-    { id: 'suivi', label: 'Suivi', icon: '📦' },
-    { id: 'expediteur', label: 'Expéditeur', icon: '📤' },
-    { id: 'destinataire', label: 'Destinataire', icon: '📥' },
-    { id: 'livreur', label: 'Livreur', icon: '🚚' },
-    { id: 'produit', label: 'Produit', icon: '📋' }
-  ];
-
-  return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-white">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Eye className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-800">Suivi de Colis</h2>
-              <p className="text-sm text-slate-500">#{colis.id}</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-2 bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex border-b border-slate-200 bg-slate-50 overflow-x-auto">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 font-medium transition-all whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-white'
-                  : 'text-slate-600 hover:text-blue-600 hover:bg-white/50'
-              }`}
-            >
-              <span>{tab.icon}</span>
-              <span className="text-sm">{tab.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {/* Suivi Tab */}
-          {activeTab === 'suivi' && (
-            <div className="space-y-4">
-              <h3 className="font-bold text-lg text-slate-800 mb-4">Historique de suivi</h3>
-              <div className="relative">
-                {trackingEvents.map((event, index) => (
-                  <div key={event.id} className="flex gap-4 pb-8 last:pb-0">
-                    <div className="flex flex-col items-center">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        event.completed ? 'bg-emerald-500' : 'bg-slate-300'
-                      }`}>
-                        {event.completed ? (
-                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                          </svg>
-                        ) : (
-                          <div className="w-3 h-3 bg-white rounded-full" />
-                        )}
-                      </div>
-                      {index < trackingEvents.length - 1 && (
-                        <div className={`w-0.5 h-full mt-2 ${event.completed ? 'bg-emerald-500' : 'bg-slate-300'}`} />
-                      )}
+function TrackingModal({ colis, onClose, products, villes }) {
+    const product = products.find(p => p.id === colis.productId);
+    const ville = villes.find(v => v.id === colis.ville);
+    
+    return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+                <div className="p-4 bg-slate-50 border-b flex justify-between items-center">
+                    <h3 className="font-bold text-slate-800">Détails du Colis</h3>
+                    <button onClick={onClose}><X size={20} className="text-slate-400 hover:text-red-500"/></button>
+                </div>
+                <div className="p-6 space-y-4">
+                    <div className="flex items-center gap-4">
+                         <div className="w-16 h-16 bg-slate-100 rounded-xl overflow-hidden">
+                             {product?.image ? <img src={product.image} className="w-full h-full object-cover"/> : <Package className="m-4 text-slate-400"/>}
+                         </div>
+                         <div>
+                             <h4 className="font-bold text-lg">{product?.nom || colis.productName}</h4>
+                             <p className="text-slate-500">{colis.clientName}</p>
+                         </div>
                     </div>
-
-                    <div className="flex-1 pb-2">
-                      <div className={`font-bold ${event.completed ? 'text-slate-800' : 'text-slate-400'}`}>
-                        {event.status}
-                      </div>
-                      <div className={`text-sm ${event.completed ? 'text-slate-600' : 'text-slate-400'}`}>
-                        {event.description}
-                      </div>
-                      {event.date && (
-                        <div className="text-xs text-slate-400 mt-1">
-                          {new Date(event.date).toLocaleString('fr-FR')}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="bg-slate-50 p-3 rounded-lg"><p className="text-slate-500 text-xs">Téléphone</p><p className="font-bold">{colis.tel}</p></div>
+                        <div className="bg-slate-50 p-3 rounded-lg"><p className="text-slate-500 text-xs">Ville</p><p className="font-bold">{ville?.name || colis.ville}</p></div>
+                        <div className="bg-slate-50 p-3 rounded-lg"><p className="text-slate-500 text-xs">Prix</p><p className="font-bold text-emerald-600">{colis.prix} DH</p></div>
+                        <div className="bg-slate-50 p-3 rounded-lg"><p className="text-slate-500 text-xs">Status</p><p className="font-bold text-blue-600">{colis.status || colis.stage}</p></div>
+                    </div>
+                    {colis.dateReport && (
+                        <div className="bg-amber-50 p-3 rounded-lg border border-amber-100">
+                            <p className="text-amber-800 text-xs font-bold">Date de Report</p>
+                            <p className="text-amber-900 font-mono">{new Date(colis.dateReport).toLocaleString()}</p>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    )}
+                </div>
             </div>
-          )}
-
-          {/* Expéditeur Tab */}
-          {activeTab === 'expediteur' && (
-            <div className="space-y-4">
-              <h3 className="font-bold text-lg text-slate-800 mb-4">Informations Expéditeur</h3>
-              <div className="bg-slate-50 rounded-xl p-4 space-y-3">
-                <InfoRow label="Business" value={colis.business || 'Commit'} />
-                <InfoRow label="Employé" value={colis.employee || 'N/A'} />
-                <InfoRow label="Date de création" value={colis.dateCreated ? new Date(colis.dateCreated).toLocaleString('fr-FR') : 'N/A'} />
-              </div>
-            </div>
-          )}
-
-          {/* Destinataire Tab */}
-          {activeTab === 'destinataire' && (
-            <div className="space-y-4">
-              <h3 className="font-bold text-lg text-slate-800 mb-4">Informations Destinataire</h3>
-              <div className="bg-slate-50 rounded-xl p-4 space-y-3">
-                <InfoRow label="Nom" value={colis.clientName} />
-                <InfoRow label="Téléphone" value={colis.tel} />
-                <InfoRow label="Ville" value={ville?.name || 'N/A'} />
-                <InfoRow label="Quartier" value={colis.quartier || 'N/A'} />
-                {colis.commentaire && (
-                  <div>
-                    <div className="text-xs font-bold text-slate-500 mb-1">COMMENTAIRE</div>
-                    <div className="text-sm text-slate-700">{colis.commentaire}</div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Livreur Tab */}
-          {activeTab === 'livreur' && (
-            <div className="space-y-4">
-              <h3 className="font-bold text-lg text-slate-800 mb-4">Informations Livreur</h3>
-              <div className="bg-slate-50 rounded-xl p-4 space-y-3">
-                <InfoRow label="Livreur assigné" value={colis.employee || 'Non assigné'} />
-                <InfoRow label="Statut actuel" value={colis.stage} />
-                {colis.status && <InfoRow label="Détails" value={colis.status} />}
-                {colis.dateReport && (
-                  <InfoRow 
-                    label="Date de report" 
-                    value={new Date(colis.dateReport).toLocaleString('fr-FR')} 
-                  />
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Produit Tab */}
-          {activeTab === 'produit' && (
-            <div className="space-y-4">
-              <h3 className="font-bold text-lg text-slate-800 mb-4">Informations Produit</h3>
-              <div className="bg-slate-50 rounded-xl p-4 space-y-4">
-                {product?.image && (
-                  <div className="flex justify-center">
-                    <img src={product.image} alt={product.nom} className="w-32 h-32 object-cover rounded-lg" />
-                  </div>
-                )}
-                <InfoRow label="Produit" value={product?.nom || colis.productName || 'N/A'} />
-                <InfoRow label="Catégorie" value={product?.categorie || 'N/A'} />
-                <InfoRow label="Prix" value={colis.prix || colis.price ? `${colis.prix || colis.price} DH` : 'N/A'} />
-                <InfoRow label="Nombre de pièces" value={colis.nbPiece || '1'} />
-                {product?.description && (
-                  <div>
-                    <div className="text-xs font-bold text-slate-500 mb-1">DESCRIPTION</div>
-                    <div className="text-sm text-slate-700">{product.description}</div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50">
-          <button
-            onClick={onClose}
-            className="w-full px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold shadow-lg shadow-blue-500/30 transition-all"
-          >
-            Fermer
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function InfoRow({ label, value }) {
-  return (
-    <div>
-      <div className="text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">{label}</div>
-      <div className="text-sm font-medium text-slate-800">{value}</div>
-    </div>
-  );
+    );
 }

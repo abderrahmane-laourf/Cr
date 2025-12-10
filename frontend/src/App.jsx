@@ -31,6 +31,7 @@ import AssetsDashboard from './page/admin/assetsDashboard';
 import DebtsPage from './page/admin/debts';
 import DebtsDashboard from './page/admin/debtsDashboard';
 import PetiteCaissePage from './page/admin/petitecaisse';
+import PetiteCaisseDashboard from './page/admin/petitecaisseDashboard';
 import ReportsPage from './page/admin/rapports';
 import TaskManager from './page/admin/listtask';
 import ComingSoon from './components/comingSoon';
@@ -38,6 +39,9 @@ import SettingsPage from './page/admin/settings';
 import AffectationsPage from './page/admin/affectations';
 import PermissionsPage from './page/admin/permissions';
 import CommissionsPage from './page/admin/commissions';
+import LogsPage from './page/admin/log';
+import SoldPage from './page/admin/sold';
+
 
 // Employee Pages
 import { EmployeeLayout } from './components/layout/employeeLayout';
@@ -47,6 +51,9 @@ import Leaderboard from './page/employee/confirmation/leaderboard';
 import PackagingQueue from './page/employee/packaging/queue';
 import PackagingDashboard from './page/employee/packaging/dashboard';
 import EmployeeTaskPage from './page/employee/tasks';
+import DeliveryDashboard from './page/employee/delivery/dashboard';
+import DeliveryRunPage from './page/employee/delivery/run';
+import GlobalDispatchPage from './page/employee/delivery/manager_dispatch';
 
 export default function App() {
   return (
@@ -115,6 +122,7 @@ export default function App() {
       <Route path="/admin/debts" element={<AdminLayout><DebtsPage /></AdminLayout>} />
       <Route path="/admin/debts/dashboard" element={<AdminLayout><DebtsDashboard /></AdminLayout>} />
       {/* Petite Caisse Routes */}
+      <Route path="/admin/petitecaisse/dashboard" element={<AdminLayout><PetiteCaisseDashboard /></AdminLayout>} />
       <Route path="/admin/petitecaisse" element={<AdminLayout><PetiteCaissePage defaultTab="espece" /></AdminLayout>} />
       <Route path="/admin/petitecaisse/espece" element={<AdminLayout><PetiteCaissePage defaultTab="espece" /></AdminLayout>} />
       <Route path="/admin/petitecaisse/virement" element={<AdminLayout><PetiteCaissePage defaultTab="virement" /></AdminLayout>} />
@@ -122,6 +130,9 @@ export default function App() {
       {/* Reports Routes */}
       <Route path="/admin/rapports" element={<AdminLayout><ReportsPage /></AdminLayout>} />
       <Route path="/admin/rapport" element={<AdminLayout><ReportsPage /></AdminLayout>} /> {/* Fallback route */}
+
+      {/* Sold / US Dollar Management */}
+      <Route path="/admin/sold" element={<AdminLayout><SoldPage /></AdminLayout>} />
 
       {/* Employee Routes (With Layout) */}
       <Route path="/employee" element={<Navigate to="/employee/confirmation/dashboard" replace />} />
@@ -145,6 +156,13 @@ export default function App() {
       <Route path="/employee/confirmation-manager/dashboard" element={<EmployeeLayout mode="confirmation_manager"><ConfirmationDashboard /></EmployeeLayout>} />
       <Route path="/employee/confirmation-manager/clients" element={<EmployeeLayout mode="confirmation_manager"><ListPipeline /></EmployeeLayout>} />
       <Route path="/employee/confirmation-manager/tasks" element={<EmployeeLayout mode="confirmation_manager"><EmployeeTaskPage /></EmployeeLayout>} />
+
+      {/* Delivery Role Routes */}
+      <Route path="/employee/delivery/dashboard" element={<EmployeeLayout mode="delivery"><DeliveryDashboard /></EmployeeLayout>} />
+      <Route path="/employee/delivery/run" element={<EmployeeLayout mode="delivery"><DeliveryRunPage /></EmployeeLayout>} />
+      <Route path="/employee/delivery/tasks" element={<EmployeeLayout mode="delivery"><EmployeeTaskPage /></EmployeeLayout>} />
+
+      <Route path="/admin/logs" element={<AdminLayout><LogsPage /></AdminLayout>} />
 
     </Routes>
   );

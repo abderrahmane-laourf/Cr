@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, RotateCw, X, Package, AlertTriangle, Eye, Calendar, 
-  CheckCircle, Search as SearchIcon, Printer, MapPin, User, Truck, Building, Phone, Clock
+  CheckCircle, Search as SearchIcon, Printer, MapPin, User, Truck, Building, Phone, Clock, ArrowRight
 } from 'lucide-react';
 import { productAPI, villeAPI, quartierAPI, settingsAPI } from '../../services/api';
 
@@ -36,6 +36,8 @@ export default function ColisManagement() {
   const [pipelines, setPipelines] = useState([]);
   const [selectedPipeline, setSelectedPipeline] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedBusiness, setSelectedBusiness] = useState('all');
   
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
@@ -55,8 +57,38 @@ export default function ColisManagement() {
   useEffect(() => {
     loadData();
     loadPipelineStages();
+    
+    // Auto-refresh when localStorage changes
+    const handleStorageChange = () => loadData();
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => window.removeEventListener('storage', handleStorageChange);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Migration: Assign pipelineId to old colis that don't have one
+  useEffect(() => {
+    if (pipelines.length > 0 && colis.length > 0) {
+      const needsMigration = colis.some(c => !c.pipelineId);
+      
+      if (needsMigration) {
+        console.log('🔧 Migrating old colis to assign pipelineId...');
+        const defaultPipeline = pipelines.find(p => p.name === 'Livraison Ammex') || pipelines[0];
+        
+        const migratedColis = colis.map(c => {
+          if (!c.pipelineId) {
+            console.log('  ➡️ Assigning', c.clientName, 'to pipeline:', defaultPipeline.name);
+            return { ...c, pipelineId: defaultPipeline.id };
+          }
+          return c;
+        });
+        
+        setColis(migratedColis);
+        localStorage.setItem('colis', JSON.stringify(migratedColis));
+        console.log('✅ Migration complete!');
+      }
+    }
+  }, [pipelines, colis]);
 
   const loadData = async () => {
     try {
@@ -76,23 +108,42 @@ export default function ColisManagement() {
     }
   };
 
-  const DEFAULT_PIPELINE = {
-    id: 1,
-    name: 'Pipeline Principal',
-    stages: [
-      { id: 1, name: 'Reporter', color: 'bg-slate-500', active: true },
-      { id: 2, name: 'Confirmé', color: 'bg-purple-500', active: true },
-      { id: 3, name: 'Packaging', color: 'bg-orange-500', active: true },
-      { id: 4, name: 'Out for Delivery', color: 'bg-blue-500', active: true },
-      { id: 5, name: 'Livré', color: 'bg-green-500', active: true },
-      { id: 6, name: 'Annulé', color: 'bg-red-500', active: true }
-    ]
-  };
+  const DEFAULT_PIPELINES = [
+    {
+      id: 1,
+      name: 'Livraison Ammex',
+      stages: [
+        { id: 'Reporter', name: 'Reporter', color: 'bg-amber-500', active: true },
+        { id: 'Confirmé', name: 'Confirmé', color: 'bg-purple-500', active: true },
+        { id: 'Packaging', name: 'Packaging', color: 'bg-orange-500', active: true },
+        { id: 'Out for Delivery', name: 'Out for Delivery', color: 'bg-blue-500', active: true },
+        { id: 'Livré', name: 'Livré', color: 'bg-green-500', active: true },
+        { id: 'Annulé', name: 'Annulé', color: 'bg-red-500', active: true }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Livreur Agadir',
+      stages: [
+        { id: 'Reporter-AG', name: 'Reporter', color: 'bg-amber-500', active: true },
+        { id: 'Confirmé-AG', name: 'Confirmé', color: 'bg-purple-500', active: true },
+        { id: 'Packaging-AG', name: 'Packaging', color: 'bg-orange-500', active: true },
+        { id: 'Out for Delivery-AG', name: 'Out for Delivery', color: 'bg-blue-500', active: true },
+        { id: 'Livré-AG', name: 'Livré', color: 'bg-green-500', active: true },
+        { id: 'Annulé-AG', name: 'Annulé', color: 'bg-red-500', active: true }
+      ]
+    }
+  ];
 
   const loadPipelineStages = () => {
     const saved = localStorage.getItem('pipelines');
     let allPipelines = saved ? JSON.parse(saved) : [];
-    if (allPipelines.length === 0) allPipelines = [DEFAULT_PIPELINE];
+    
+    // If no saved pipelines or old format, use defaults
+    if (!Array.isArray(allPipelines) || allPipelines.length === 0 || !allPipelines[0].stages) {
+       allPipelines = DEFAULT_PIPELINES;
+       localStorage.setItem('pipelines', JSON.stringify(allPipelines));
+    }
     
     setPipelines(allPipelines);
     const pipelineToUse = selectedPipeline || allPipelines[0];
@@ -101,22 +152,64 @@ export default function ColisManagement() {
   };
 
   const updateStagesFromPipeline = (pipeline) => {
+    if (!pipeline) return;
     const activeStages = pipeline.stages
       .filter(s => s.active)
       .map(s => ({
-        id: s.name,
+        id: s.name, // Use name as ID to match colis.stage
         title: s.name,
         color: s.color.replace('bg-', 'border-'),
-        bgColor: s.color.replace('bg-', 'bg-').replace('-500', '-50')
+        bgColor: s.color.replace('bg-', 'bg-').replace('-500', '-50').replace('-600', '-50')
       }));
+    console.log('🎯 Setting stages:', activeStages.map(s => s.id));
     setStages(activeStages);
   };
 
   const handlePipelineChange = (pipelineId) => {
+    console.log('🔄 Pipeline change called with ID:', pipelineId);
     const pipeline = pipelines.find(p => p.id === parseInt(pipelineId));
-    if (pipeline) {
-      setSelectedPipeline(pipeline);
-      updateStagesFromPipeline(pipeline);
+    console.log('📦 Found pipeline:', pipeline);
+    if (!pipeline) return;
+
+    // Update selected pipeline state
+    setSelectedPipeline(pipeline);
+    console.log('✅ Selected pipeline updated to:', pipeline.name, 'ID:', pipeline.id);
+    updateStagesFromPipeline(pipeline);
+
+    // Logic: Import 'Confirmé' -> 'Ramassé' when switching to Logistics (Agadir)
+    if (pipeline.id === 2) { 
+      const itemsToImport = colis.filter(c => c.stage === 'Confirmé');
+      
+      if (itemsToImport.length > 0) {
+        const confirmImport = window.confirm(
+          `Vous avez ${itemsToImport.length} colis "Confirmé". Voulez-vous les importer dans "Ramassé" ?`
+        );
+
+        if (confirmImport) {
+          const updatedList = colis.map(c => {
+            if (c.stage === 'Confirmé') {
+              return { 
+                ...c, 
+                stage: 'Ramassé',
+                prix: '', 
+                dateReport: ''
+              };
+            }
+            return c;
+          });
+
+          setColis(updatedList);
+          localStorage.setItem('colis', JSON.stringify(updatedList));
+
+          setToastMessage({
+            title: 'Importation réussie',
+            description: `${itemsToImport.length} colis déplacés vers Ramassé`,
+            type: 'success'
+          });
+          setShowToast(true);
+          setTimeout(() => setShowToast(false), 3000);
+        }
+      }
     }
   };
 
@@ -133,35 +226,36 @@ export default function ColisManagement() {
   // --- ACTIONS ---
   const handleDragStart = (e, colisItem) => {
     e.dataTransfer.setData('colisId', colisItem.id);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleLinkDrop = (e, colisId) => {
+      e.preventDefault(); 
   };
 
   const handleDrop = (e, targetStage) => {
     e.preventDefault();
     const colisId = e.dataTransfer.getData('colisId');
+    if (!colisId) return; 
+
     const colisToUpdate = colis.find(c => c.id.toString() === colisId.toString());
 
     if (!colisToUpdate || colisToUpdate.stage === targetStage) return;
 
-    let updatedColisData = null;
-    setColis(prevColis => 
-      prevColis.map(c => {
+    const updatedList = colis.map(c => {
         if (c.id.toString() === colisId.toString()) {
-          const newColis = { ...c, stage: targetStage };
-          if (targetStage === 'Confirmé') {
-            newColis.prix = ''; 
-            newColis.dateReport = ''; 
-          }
-          updatedColisData = newColis;
-          return newColis;
+            const newColis = { ...c, stage: targetStage };
+            if (targetStage === 'Confirmé') {
+                newColis.prix = ''; 
+                newColis.dateReport = ''; 
+            }
+            return newColis;
         }
         return c;
-      })
-    );
+    });
 
-    if(updatedColisData) {
-        const newColisList = colis.map(c => c.id === colisId ? updatedColisData : c);
-        localStorage.setItem('colis', JSON.stringify(newColisList));
-    }
+    setColis(updatedList);
+    localStorage.setItem('colis', JSON.stringify(updatedList));
 
     setToastMessage({
       title: 'Mise à jour réussie',
@@ -172,173 +266,171 @@ export default function ColisManagement() {
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  const handleAddColis = (newColis) => {
-    const updatedList = [...colis, { 
-      ...newColis, 
-      id: Date.now().toString(),
-      dateCreated: new Date().toISOString()
-    }];
+  const handleAddColis = (newColisData) => {
+    console.log('🆕 Adding new colis with data:', newColisData);
+    console.log('📦 Current pipeline:', selectedPipeline);
+    
+    const newId = Math.max(...colis.map(c => c.id), 0) + 1;
+    const colisWithId = { 
+      id: newId, 
+      ...newColisData, 
+      pipelineId: selectedPipeline?.id || 1, // Associate with current pipeline
+      dateCreated: new Date().toISOString(),
+      status: 'En cours',
+      employee: ''
+    };
+    
+    console.log('✅ New colis created:', colisWithId);
+    
+    const updatedList = [...colis, colisWithId];
     setColis(updatedList);
     localStorage.setItem('colis', JSON.stringify(updatedList));
+    console.log('💾 Saved to localStorage. Total colis:', updatedList.length);
+    
     setShowAddModal(false);
-    setToastMessage({ title: 'Succès', description: 'Client ajouté', type: 'success' });
+    
+    setToastMessage({ title: 'Succès', description: 'Colis ajouté avec succès', type: 'success' });
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
 
   const handleRefresh = () => {
     loadData();
-    loadPipelineStages();
-    setToastMessage({ title: 'Actualisé', description: 'Données mises à jour', type: 'success' });
+    setToastMessage({ title: 'Actualisé', description: 'Données rechargées', type: 'success' });
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
+
+  const handleResetPipelines = () => {
+    if (window.confirm('Voulez-vous réinitialiser les pipelines à leur configuration par défaut?')) {
+      localStorage.removeItem('pipelines');
+      setPipelines(DEFAULT_PIPELINES);
+      localStorage.setItem('pipelines', JSON.stringify(DEFAULT_PIPELINES));
+      
+      const firstPipeline = DEFAULT_PIPELINES[0];
+      setSelectedPipeline(firstPipeline);
+      updateStagesFromPipeline(firstPipeline);
+      
+      setToastMessage({ 
+        title: 'Pipelines réinitialisés', 
+        description: 'Les pipelines ont été restaurés à leur configuration par défaut', 
+        type: 'success' 
+      });
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  };
+
 
   const handleMoveColis = (targetStage) => {
     if (!colisToMove) return;
+    
     const updatedList = colis.map(c => {
-        if(c.id === colisToMove.id) {
-            const updated = { ...c, stage: targetStage };
-            if(targetStage === 'Confirmé') updated.dateReport = '';
-            return updated;
-        }
-        return c;
+      if (c.id === colisToMove.id) {
+         return { ...c, stage: targetStage };
+      }
+      return c;
     });
     setColis(updatedList);
     localStorage.setItem('colis', JSON.stringify(updatedList));
-    setToastMessage({ title: 'Déplacé', description: `${colisToMove.clientName} → ${targetStage}`, type: 'success' });
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
     setShowMoveModal(false);
     setColisToMove(null);
+    
+    setToastMessage({ title: 'Déplacé', description: 'Colis déplacé avec succès', type: 'success' });
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
   };
-
-  // --- PRINT FUNCTION ---
+  
   const handlePrintBonLivraison = (colisItem) => {
-    const product = products.find(p => p.id === colisItem.productId);
-    const ville = villes.find(v => v.id === colisItem.ville);
-
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Bon de Livraison - ${colisItem.clientName}</title>
-          <style>
-            body { font-family: 'Helvetica', sans-serif; padding: 40px; color: #333; }
-            .header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
-            .logo { font-size: 24px; font-weight: bold; color: #2563EB; }
-            .invoice-info { text-align: right; }
-            .grid { display: flex; gap: 40px; margin-bottom: 40px; }
-            .box { flex: 1; border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
-            .box h3 { border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0; color: #555; }
-            table { w-full; width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-            th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid #ddd; }
-            td { padding: 12px; border-bottom: 1px solid #eee; }
-            .total { text-align: right; font-size: 20px; font-weight: bold; margin-top: 20px; }
-            .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 20px; }
-            .barcode { text-align: center; margin: 20px 0; border: 1px solid #000; padding: 10px; display: inline-block; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <div class="logo">${colisItem.business || 'VOTRE ENTREPRISE'}</div>
-            <div class="invoice-info">
-              <h1>BON DE LIVRAISON</h1>
-              <p>N° CMD: #${colisItem.id.slice(-6)}</p>
-              <p>Date: ${new Date().toLocaleDateString('fr-FR')}</p>
-            </div>
-          </div>
-          <div class="grid">
-            <div class="box">
-              <h3>EXPÉDITEUR</h3>
-              <p><strong>${colisItem.business || 'Entreprise'}</strong></p>
-              <p>Responsable: ${colisItem.employee}</p>
-              <p>Entrepôt Central</p>
-            </div>
-            <div class="box">
-              <h3>DESTINATAIRE</h3>
-              <p><strong>${colisItem.clientName}</strong></p>
-              <p>${colisItem.tel}</p>
-              <p>${colisItem.quartier || ''}</p>
-              <p>${ville?.name || colisItem.ville}</p>
-            </div>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Désignation</th>
-                <th>Quantité</th>
-                <th>Prix Unitaire</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>${product?.nom || colisItem.productName}</td>
-                <td>${colisItem.nbPiece || 1}</td>
-                <td>${colisItem.prix} DH</td>
-                <td>${colisItem.prix} DH</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="total">TOTAL À PAYER: ${colisItem.prix} DH</div>
-          <div style="text-align: center; margin-top: 40px;">
-            <div class="barcode">||| |||| || ||||| |||| || ||| ${colisItem.id}</div>
-            <p>Signature du client</p>
-          </div>
-          <div class="footer">Merci de votre confiance !</div>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
+    window.print();
   };
 
-  // --- RENDERING & SORTING ---
-  const filteredColis = colis.filter(c => {
-    if (selectedEmployee !== 'all' && c.employee !== selectedEmployee) return false;
-    if (searchText) {
-      const lower = searchText.toLowerCase();
-      return c.clientName?.toLowerCase().includes(lower) || c.tel?.includes(lower) || c.productName?.toLowerCase().includes(lower);
+  // --- RENDERING ---
+  const filteredColis = colis.filter(item => {
+    const matchesSearch = searchText === '' || 
+      item.clientName?.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.tel?.includes(searchText) ||
+      item.productName?.toLowerCase().includes(searchText.toLowerCase());
+      
+    const matchesDate = searchDate === '' || item.dateCreated?.startsWith(searchDate);
+    const matchesEmployee = selectedEmployee === 'all' || item.employee === selectedEmployee;
+    
+    // Filter by current pipeline
+    const matchesPipeline = item.pipelineId === selectedPipeline?.id;
+    
+    // Debug logging
+    if (!matchesPipeline) {
+      console.log('❌ Colis filtered out:', item.clientName, 'Pipeline ID:', item.pipelineId, 'vs Selected:', selectedPipeline?.id);
     }
-    if (searchDate) {
-      return c.dateCreated?.startsWith(searchDate);
-    }
-    return true;
+    
+    return matchesSearch && matchesDate && matchesEmployee && matchesPipeline;
   });
+  
+  console.log('🔍 Total colis:', colis.length, '| Filtered:', filteredColis.length, '| Selected Pipeline ID:', selectedPipeline?.id);
+  console.log('📋 Filtered colis stages:', filteredColis.map(c => `${c.clientName}: ${c.stage}`));
+  console.log('🎯 Available stages:', stages.map(s => s.id));
 
-  const sortedColis = [...filteredColis].sort((a, b) => {
-    // 1. Alerts come first (Overdue or Soon)
-    const alertA = getAlerts(a);
-    const alertB = getAlerts(b);
-    if (alertA && !alertB) return -1;
-    if (!alertA && alertB) return 1;
-
-    // 2. If both are in Reporter stage, sort by DateReport ascending
-    if (a.stage === 'Reporter' && b.stage === 'Reporter') {
-        if (!a.dateReport) return 1;
-        if (!b.dateReport) return -1;
-        return new Date(a.dateReport) - new Date(b.dateReport);
-    }
-
-    // 3. Default sort by creation date (Newest first)
-    return new Date(b.dateCreated) - new Date(a.dateCreated);
-  });
-
-  const getColisByStage = (stageId) => sortedColis.filter(c => c.stage === stageId);
+  const getColisByStage = (stageName) => {
+    return filteredColis.filter(c => {
+      if (!c.stage) return false;
+      
+      // Normalize both stage names for comparison
+      const normalizeStage = (name) => {
+        let normalized = name
+          .toLowerCase()
+          .replace(/-ag$/i, '')     // Remove -AG suffix
+          .replace(/é/g, 'e')       // Replace é with e
+          .replace(/è/g, 'e')
+          .replace(/ê/g, 'e')
+          .trim();
+        
+        // Map common variations to standard names
+        const mappings = {
+          'confirme': 'confirmer',
+          'confirmed': 'confirmer',
+          'livre': 'livre',
+          'delivered': 'livre',
+          'annule': 'annuler',
+          'cancelled': 'annuler',
+          'canceled': 'annuler',
+          'en cours': 'packaging',      // Map "En cours" to Packaging
+          'nouveau': 'reporter',         // Map "Nouveau" to Reporter
+          'out of delivery': 'out for delivery',
+          'out of delevry': 'out for delivery'  // Fix typo
+        };
+        
+        return mappings[normalized] || normalized;
+      };
+      
+      const normalizedColisStage = normalizeStage(c.stage);
+      const normalizedStageName = normalizeStage(stageName);
+      
+      const matches = normalizedColisStage === normalizedStageName;
+      
+      if (matches) {
+        console.log(`✅ Match: "${c.stage}" matches "${stageName}"`);
+      } else {
+        console.log(`❌ No match: "${c.stage}" (normalized: "${normalizedColisStage}") vs "${stageName}" (normalized: "${normalizedStageName}")`);
+      }
+      
+      return matches;
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8">
-      <div className="max-w-[1600px] mx-auto">
+    <div className="min-h-screen bg-slate-50/50 p-4">
+      <div className="w-full mx-auto">
         {/* Header Controls */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 mb-6">
           <div className="flex justify-between items-center gap-4 flex-wrap">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white"><Package size={24} /></div>
-              <h1 className="text-2xl font-bold text-slate-900">Gestion des Colis</h1>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">Gestion des Colis</h1>
+                <p className="text-xs text-slate-500">Pipeline: {selectedPipeline?.name || 'Aucun'} (ID: {selectedPipeline?.id || 'N/A'})</p>
+              </div>
             </div>
             <div className="flex gap-2 flex-wrap">
-               {/* Pipeline Selector */}
                <select 
                  value={selectedPipeline?.id || ''} 
                  onChange={e => handlePipelineChange(e.target.value)} 
@@ -347,112 +439,214 @@ export default function ColisManagement() {
                  {pipelines.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                </select>
                
-               <select value={selectedEmployee} onChange={e => setSelectedEmployee(e.target.value)} className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm">
-                 <option value="all">Tous les employés</option>
-                 {EMPLOYEES.map(e => <option key={e} value={e}>{e}</option>)}
-               </select>
-               <button onClick={handleRefresh} className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors"><RotateCw size={18} /></button>
-               <button onClick={() => setShowAddModal(true)} className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"><Plus size={18} /> Ajouter</button>
+               <button onClick={handleRefresh} className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors" title="Actualiser">
+                 <RotateCw size={18} />
+               </button>
+               <button onClick={handleResetPipelines} className="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl hover:bg-amber-100 transition-colors text-sm font-medium" title="Réinitialiser les pipelines">
+                 Réinitialiser
+               </button>
+               <button 
+                 key={`add-btn-${selectedPipeline?.id}`}
+                 onClick={() => setShowAddModal(true)} 
+                 className={`px-6 py-2 text-white rounded-xl flex items-center gap-2 shadow-lg transition-all ${
+                   selectedPipeline?.name === 'Livreur Agadir'
+                     ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/30' 
+                     : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30'
+                 }`}
+               >
+                 <Plus size={18} /> 
+                 {selectedPipeline?.name === 'Livreur Agadir' ? 'Ajouter Livreur Agadir' : 'Ajouter Livraison Ammex'}
+               </button>
             </div>
           </div>
-          <div className="mt-4 flex gap-3">
-             <div className="relative flex-1">
-               <input type="text" value={searchText} onChange={e => setSearchText(e.target.value)} placeholder="Rechercher par nom, téléphone, produit..." className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
+          
+          {/* Filters Row */}
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-6 gap-3">
+             {/* Search */}
+             <div className="relative md:col-span-2">
+               <input 
+                 type="text" 
+                 value={searchText} 
+                 onChange={e => setSearchText(e.target.value)} 
+                 placeholder="Rechercher par nom, téléphone, produit..." 
+                 className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
+               />
                <SearchIcon className="absolute left-3 top-2.5 text-slate-400" size={18} />
              </div>
-             <input type="date" value={searchDate} onChange={e => setSearchDate(e.target.value)} className="px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
+             
+             {/* Date */}
+             <input 
+               type="date" 
+               value={searchDate} 
+               onChange={e => setSearchDate(e.target.value)} 
+               className="px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" 
+             />
+             
+             {/* Category Filter */}
+             <select 
+               value={selectedCategory}
+               onChange={e => setSelectedCategory(e.target.value)}
+               className="px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm"
+             >
+               <option value="all">Toutes catégories</option>
+               <option value="cat1">Catégorie 1</option>
+               <option value="cat2">Catégorie 2</option>
+             </select>
+             
+             {/* Employee Filter */}
+             <select 
+               value={selectedEmployee}
+               onChange={e => setSelectedEmployee(e.target.value)}
+               className="px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm"
+             >
+               <option value="all">Tous employés</option>
+               {EMPLOYEES.map(emp => (
+                 <option key={emp} value={emp}>{emp}</option>
+               ))}
+             </select>
+             
+             {/* Business Filter */}
+             <select 
+               value={selectedBusiness}
+               onChange={e => setSelectedBusiness(e.target.value)}
+               className="px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm"
+             >
+               <option value="all">Tous business</option>
+               {businesses.map(business => (
+                 <option key={business} value={business}>{business}</option>
+               ))}
+             </select>
+             
+             {/* Project Filter - Disabled */}
+             <select 
+               className="px-4 py-2 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 text-sm cursor-not-allowed"
+               disabled
+             >
+               <option>Projet</option>
+             </select>
           </div>
         </div>
 
         {/* KANBAN BOARD */}
-        <div className="flex flex-row gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-200px)]">
+        <div className="flex flex-row gap-2 overflow-x-auto pb-4 px-1 min-h-[calc(100vh-250px)]">
           {stages.map((stage) => {
             const stageColis = getColisByStage(stage.id);
-            
-            // Logic vars
             const isReporterOrConfirmed = ['Reporter', 'Confirmé'].includes(stage.id);
-            const canPrint = ['Packaging', 'Out for Delivery', 'Livré'].includes(stage.id);
+            const canPrint = ['Packaging', 'Out for Delivery', 'Livré', 'Ramassé', 'En cours'].includes(stage.id);
             const showTracking = !isReporterOrConfirmed;
-            const showStatus = !isReporterOrConfirmed;
+            // const showStatus = !isReporterOrConfirmed; // This variable is no longer needed
 
             return (
-              <div key={stage.id} className="flex-shrink-0 w-80" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, stage.id)}>
+              <div key={stage.id} className="flex-1 min-w-[240px]" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, stage.id)}>
                 <div className={`bg-white rounded-t-xl border-t-4 ${stage.color} p-3 shadow-sm flex justify-between`}>
                   <span className="font-bold text-slate-700">{stage.title}</span>
                   <span className="bg-slate-100 text-xs px-2 py-1 rounded-full font-bold">{stageColis.length}</span>
                 </div>
-                <div className={`${stage.bgColor} rounded-b-xl p-2 min-h-[600px] space-y-2 border-x border-b border-slate-200`}>
+                <div className={`${stage.bgColor} rounded-b-xl p-2 min-h-[500px] space-y-2 border-x border-b border-slate-200`}>
                   {stageColis.map((colisItem) => {
-                    const alert = getAlerts(colisItem);
                     const product = products.find(p => p.id === colisItem.productId);
                     const ville = villes.find(v => v.id === colisItem.ville);
                     
+                    // Check if date alert (for Reporter stage)
+                    const hasDateAlert = stage.id === 'Reporter' && colisItem.dateReport && (() => {
+                      const reportDate = new Date(colisItem.dateReport);
+                      const now = new Date();
+                      const hoursUntil = (reportDate - now) / (1000 * 60 * 60);
+                      return hoursUntil <= 24 && hoursUntil >= 0;
+                    })();
+                    
+                    // Unified Card Design
                     return (
-                      <div key={colisItem.id} draggable onDragStart={e => handleDragStart(e, colisItem)} className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md cursor-move border border-slate-200 group">
-                        <div className="flex gap-3">
-                           <div className="w-12 h-12 rounded-lg bg-slate-100 shrink-0 overflow-hidden">
-                             {product?.image ? <img src={product.image} className="w-full h-full object-cover"/> : <Package className="m-3 text-slate-400"/>}
-                           </div>
-                           <div className="min-w-0 flex-1">
-                             <h4 className="font-bold text-sm truncate">{product?.nom}</h4>
-                             
-                             {/* CLIENT INFO */}
-                             <div className="mt-1 flex flex-col gap-0.5">
-                                <div className="flex items-center gap-1 text-[11px] text-slate-600">
-                                   <User size={10} className="text-slate-400" />
-                                   <span className="font-semibold truncate">{colisItem.clientName}</span>
-                                </div>
-                                <div className="flex items-center gap-1 text-[11px] text-slate-500">
-                                   <Phone size={10} className="text-slate-400" />
-                                   <span>{colisItem.tel}</span>
-                                </div>
-                                <div className="flex items-center gap-1 text-[11px] text-slate-500">
-                                   <MapPin size={10} className="text-slate-400" />
-                                   <span className="truncate">{ville?.name} {colisItem.quartier ? `- ${colisItem.quartier}` : ''}</span>
-                                </div>
-                             </div>
-
-                             <div className="flex items-center justify-between mt-2">
-                                <p className="text-xs font-bold text-emerald-600">{colisItem.prix} DH</p>
-                                
-                                {/* Status Icon */}
-                                {showStatus && (
-                                  <div className="flex items-center gap-1 bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-medium">
-                                    <Truck size={10} />
-                                    <span className="max-w-[60px] truncate">{colisItem.status || 'En cours'}</span>
-                                  </div>
-                                )}
-                             </div>
-                           </div>
-                           {alert && <AlertTriangle className="text-amber-500 w-4 h-4" />}
-                        </div>
-
-                        {/* DATE CONFIRMATION (REPORTER ONLY) */}
-                        {stage.id === 'Reporter' && colisItem.dateReport && (
-                           <div className="mt-2 flex items-center justify-center gap-2 text-xs font-bold text-slate-700 bg-slate-100 p-2 rounded-lg border border-slate-200">
-                              <Clock size={14} className="text-slate-500" />
-                              <span>{new Date(colisItem.dateReport).toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'})}</span>
-                           </div>
-                        )}
-                        
-                        <div className="mt-3 pt-2 border-t border-slate-100 flex justify-between items-center">
-                           <span className="text-[10px] text-slate-400">{colisItem.employee}</span>
-                           <div className="flex gap-1">
-                              <button onClick={() => { setColisToMove(colisItem); setShowMoveModal(true); }} className="p-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-600 md:hidden"><RotateCw size={14} /></button>
-                              
+                      <div 
+                        key={colisItem.id} 
+                        draggable
+                        onDragStart={e => handleDragStart(e, colisItem)} 
+                        onDragOver={e => e.preventDefault()}
+                        onDrop={e => handleLinkDrop(e, colisItem.id)}
+                        className={`bg-white rounded-lg p-2.5 shadow-sm hover:shadow-md cursor-move border-2 transition-all group ${
+                          hasDateAlert ? 'border-red-500 animate-pulse bg-red-50/10' : 'border-slate-200 hover:border-blue-300'
+                        }`}
+                      >
+                        <div className="flex gap-2 items-center">
+                          {/* Product Image - Circle */}
+                          <div className="w-10 h-10 rounded-full bg-slate-100 shrink-0 overflow-hidden border-2 border-white shadow-sm">
+                            {product?.image ? (
+                              <img src={product.image} className="w-full h-full object-cover" alt={product.nom} />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Package size={16} className="text-slate-400" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-xs truncate text-slate-800">{product?.nom || colisItem.productName}</h4>
+                            <p className="text-[10px] text-slate-600 font-medium truncate">{colisItem.clientName}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-[9px] text-slate-500 truncate flex items-center gap-0.5">
+                                <MapPin size={8} /> {ville?.name || colisItem.ville}
+                              </span>
+                              <span className="text-[9px] text-slate-500">•</span>
+                              <span className="text-[9px] text-slate-500">{colisItem.tel}</span>
+                            </div>
+                          </div>
+                          
+                          {/* Price & Actions */}
+                          <div className="text-right flex flex-col items-end gap-0.5">
+                            <p className="text-xs font-bold text-emerald-600 whitespace-nowrap">{colisItem.prix} DH</p>
+                            
+                            {hasDateAlert && (
+                              <span className="text-[9px] text-red-600 font-bold flex items-center gap-0.5">
+                                <AlertTriangle size={10} /> Urgent
+                              </span>
+                            )}
+                            
+                            {/* Actions Row */}
+                            <div className="flex items-center gap-1 mt-1">
                               {canPrint && (
-                                <button onClick={() => handlePrintBonLivraison(colisItem)} className="p-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded transition-colors" title="Imprimer Bon">
-                                  <Printer size={14} />
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); handlePrintBonLivraison(colisItem); }}
+                                  className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                                  title="Imprimer"
+                                >
+                                  <Printer size={12} />
                                 </button>
                               )}
                               
                               {showTracking && (
-                                <button onClick={() => { setSelectedColisForTracking(colisItem); setShowTrackingModal(true); }} className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded transition-colors" title="Voir le suivi">
-                                  <Eye size={14} />
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); setSelectedColisForTracking(colisItem); setShowTrackingModal(true); }}
+                                  className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                                  title="Voir Détails"
+                                >
+                                  <Eye size={12} />
                                 </button>
                               )}
-                           </div>
+
+                              <button 
+                                  onClick={(e) => { e.stopPropagation(); setColisToMove(colisItem); setShowMoveModal(true); }}
+                                  className="md:hidden p-1.5 bg-slate-50 text-slate-500 hover:text-blue-600 rounded-lg border border-slate-200"
+                              >
+                                  <ArrowRight size={12} />
+                              </button>
+                            </div>
+                          </div>
                         </div>
+                        
+                        {/* Date de relance for Reporter */}
+                        {stage.id === 'Reporter' && colisItem.dateReport && (
+                          <div className={`mt-2 pt-2 border-t ${hasDateAlert ? 'border-red-200' : 'border-slate-100'}`}>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[9px] text-slate-500 flex items-center gap-1">
+                                <Calendar size={10} /> Relance:
+                              </span>
+                              <span className={`text-[10px] font-bold ${hasDateAlert ? 'text-red-600' : 'text-slate-700'}`}>
+                                {new Date(colisItem.dateReport).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -465,7 +659,29 @@ export default function ColisManagement() {
       </div>
 
       {/* MODALS */}
-      {showAddModal && <AddClientModal onClose={() => setShowAddModal(false)} onAdd={handleAddColis} employees={EMPLOYEES} businesses={businesses} products={products} villes={villes} quartiers={quartiers} />}
+      {showAddModal && selectedPipeline?.name === 'Livreur Agadir' ? (
+        <AddLogisticsModal 
+          onClose={() => setShowAddModal(false)} 
+          onAdd={handleAddColis} 
+          employees={EMPLOYEES} 
+          businesses={businesses} 
+          products={products} 
+          villes={villes} 
+          quartiers={quartiers} 
+          availableStages={stages} 
+        />
+      ) : showAddModal && (
+        <AddCommercialModal 
+          onClose={() => setShowAddModal(false)} 
+          onAdd={handleAddColis} 
+          employees={EMPLOYEES} 
+          businesses={businesses} 
+          products={products} 
+          villes={villes} 
+          quartiers={quartiers} 
+          availableStages={stages} 
+        />
+      )}
       
       {showMoveModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
@@ -510,15 +726,12 @@ export default function ColisManagement() {
   );
 }
 
-// --- ADD CLIENT MODAL WITH LABELS ---
-function AddClientModal({ onClose, onAdd, employees, businesses, products, villes, quartiers }) {
+function AddCommercialModal({ onClose, onAdd, employees, businesses, products, villes, quartiers, availableStages }) {
   const [formData, setFormData] = useState({
-    productId: '', productName: '', clientName: '', ville: '', quartier: '', 
-    tel: '', prix: '', employee: employees[0] || '', business: businesses[0] || 'Herboclear',
-    stage: 'Reporter', commentaire: '', nbPiece: '1', dateReport: ''
+    productId: '', productName: '', clientName: '', ville: '', quartier: '', tel: '', prix: '', 
+    employee: employees[0] || '', business: businesses[0] || 'Herboclear',
+    stage: 'Confirmé', commentaire: '', nbPiece: '1', dateReport: ''
   });
-  const [isReporter, setIsReporter] = useState(true);
-  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const handleProductChange = (e) => {
     const p = products.find(pr => pr.id.toString() === e.target.value);
@@ -540,8 +753,10 @@ function AddClientModal({ onClose, onAdd, employees, businesses, products, ville
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Ajouter un Colis</h2>
-            <button onClick={onClose}><X className="text-slate-400" /></button>
+            <h2 className="text-xl font-bold text-slate-800">Ajouter Client - Livraison Ammex</h2>
+            <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
+              <X size={20} />
+            </button>
          </div>
          <div className="grid grid-cols-2 gap-4">
             
@@ -576,7 +791,7 @@ function AddClientModal({ onClose, onAdd, employees, businesses, products, ville
             
             <div>
               <Label text="Prix (DH)" />
-              <input className="w-full p-3 bg-slate-50 border rounded-xl" placeholder="0.00" value={formData.prix} onChange={e => setFormData({...formData, prix: e.target.value})} />
+              <input className="w-full p-3 bg-slate-50 border rounded-xl" placeholder="0.00" value={formData.nbPiece > 1 ? (parseFloat(formData.prix || 0) * parseInt(formData.nbPiece)).toString() : formData.prix} onChange={e => setFormData({...formData, prix: e.target.value})} />
             </div>
             
             <div>
@@ -585,15 +800,33 @@ function AddClientModal({ onClose, onAdd, employees, businesses, products, ville
             </div>
             
             <div className="col-span-2">
-              <Label text="Statut Initial" />
-              <div className="flex gap-4 p-3 bg-slate-50 rounded-xl border">
-                 <label className="flex gap-2 cursor-pointer items-center"><input type="checkbox" checked={isReporter} onChange={e => {setIsReporter(true); setIsConfirmed(false); setFormData({...formData, stage: 'Reporter'})}} className="w-4 h-4" /> <span className="font-medium text-slate-700">Reporter</span></label>
-                 <label className="flex gap-2 cursor-pointer items-center"><input type="checkbox" checked={isConfirmed} onChange={e => {setIsConfirmed(true); setIsReporter(false); setFormData({...formData, stage: 'Confirmé'})}} className="w-4 h-4" /> <span className="font-medium text-slate-700">Confirmé</span></label>
+              <Label text="Statut" />
+              <div className="flex gap-3 p-3 bg-slate-50 rounded-xl border">
+                 <label className="flex gap-2 cursor-pointer items-center bg-white px-4 py-2 rounded-lg border shadow-sm flex-1 justify-center">
+                     <input 
+                         type="radio" 
+                         name="stage"
+                         checked={formData.stage === 'Confirmé'} 
+                         onChange={() => setFormData({...formData, stage: 'Confirmé', dateReport: ''})} 
+                         className="w-4 h-4 text-purple-600" 
+                     /> 
+                     <span className="font-bold text-sm text-slate-700">✓ Confirmé</span>
+                 </label>
+                 <label className="flex gap-2 cursor-pointer items-center bg-white px-4 py-2 rounded-lg border shadow-sm flex-1 justify-center">
+                     <input 
+                         type="radio" 
+                         name="stage"
+                         checked={formData.stage === 'Reporter'} 
+                         onChange={() => setFormData({...formData, stage: 'Reporter'})} 
+                         className="w-4 h-4 text-amber-600" 
+                     /> 
+                     <span className="font-bold text-sm text-slate-700">⏰ Reporter</span>
+                 </label>
               </div>
             </div>
             
-            {isReporter && (
-              <div className="col-span-2">
+            {formData.stage === 'Reporter' && (
+              <div className="col-span-2 animate-slide-up">
                 <Label text="Date de Report" />
                 <input type="datetime-local" className="w-full p-3 bg-slate-50 border rounded-xl" value={formData.dateReport} onChange={e => setFormData({...formData, dateReport: e.target.value})} />
               </div>
@@ -613,6 +846,134 @@ function AddClientModal({ onClose, onAdd, employees, businesses, products, ville
          <div className="flex justify-end gap-3 mt-6">
             <button onClick={onClose} className="px-6 py-2 border rounded-xl hover:bg-slate-50">Annuler</button>
             <button onClick={handleSubmit} className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700">Enregistrer</button>
+         </div>
+      </div>
+    </div>
+  );
+}
+
+function AddLogisticsModal({ onClose, onAdd, employees, businesses, products, villes, quartiers }) {
+  const agadirVille = villes.find(v => v.name.toLowerCase() === 'agadir')?.id || 'Agadir';
+  const defaultStage = 'Confirmé-AG';
+
+  const [formData, setFormData] = useState({
+    productId: '', productName: '', clientName: '', 
+    ville: agadirVille, 
+    quartier: '', tel: '', prix: '', 
+    employee: employees[0] || '', business: businesses[0] || 'Herboclear',
+    stage: defaultStage, 
+    commentaire: '', nbPiece: '1', dateReport: ''
+  });
+
+  const handleProductChange = (e) => {
+    const p = products.find(pr => pr.id.toString() === e.target.value);
+    setFormData({ ...formData, productId: e.target.value, productName: p?.nom || '', prix: p?.prix1 || '' });
+  };
+
+  const handleSubmit = () => {
+    if(!formData.clientName || !formData.tel || !formData.productId) return alert("Champs obligatoires manquants");
+    onAdd(formData);
+  };
+
+  const Label = ({ text }) => (
+    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">
+      {text}
+    </label>
+  );
+
+  return (
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+         <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+              <Truck className="text-emerald-600" size={24} /> 
+              Ajouter Client - Livreur Agadir
+            </h2>
+            <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
+              <X size={20} />
+            </button>
+         </div>
+         <div className="grid grid-cols-2 gap-4">
+            
+            <div className="col-span-2">
+              <Label text="Produit" />
+              <select className="w-full p-3 bg-slate-50 border rounded-xl" value={formData.productId} onChange={handleProductChange}>
+                 <option value="">Sélectionner...</option>{products.map(p => <option key={p.id} value={p.id}>{p.nom}</option>)}
+              </select>
+            </div>
+            
+            <div>
+              <Label text="Nom Client" />
+              <input className="w-full p-3 bg-slate-50 border rounded-xl" placeholder="Ex: Mohamed" value={formData.clientName} onChange={e => setFormData({...formData, clientName: e.target.value})} />
+            </div>
+
+            <div>
+              <Label text="Téléphone" />
+              <input className="w-full p-3 bg-slate-50 border rounded-xl" placeholder="06..." value={formData.tel} onChange={e => setFormData({...formData, tel: e.target.value})} />
+            </div>
+            
+            <div>
+              <Label text="Quartier" />
+              <input className="w-full p-3 bg-slate-50 border rounded-xl" placeholder="Quartier" value={formData.quartier} onChange={e => setFormData({...formData, quartier: e.target.value})} />
+            </div>
+            
+            <div>
+              <Label text="Prix (DH)" />
+              <input className="w-full p-3 bg-slate-50 border rounded-xl" placeholder="0.00" value={formData.nbPiece > 1 ? (parseFloat(formData.prix || 0) * parseInt(formData.nbPiece)).toString() : formData.prix} onChange={e => setFormData({...formData, prix: e.target.value})} />
+            </div>
+            
+            <div>
+              <Label text="Nombre de pièces" />
+              <input type="number" min="1" className="w-full p-3 bg-slate-50 border rounded-xl" placeholder="1" value={formData.nbPiece} onChange={e => setFormData({...formData, nbPiece: e.target.value})} />
+            </div>
+            
+            <div className="col-span-2">
+              <Label text="Statut" />
+              <div className="flex gap-3 p-3 bg-slate-50 rounded-xl border">
+                 <label className="flex gap-2 cursor-pointer items-center bg-white px-4 py-2 rounded-lg border shadow-sm flex-1 justify-center">
+                     <input 
+                         type="radio" 
+                         name="stage-logistics"
+                         checked={formData.stage === 'Confirmé-AG'} 
+                         onChange={() => setFormData({...formData, stage: 'Confirmé-AG', dateReport: ''})} 
+                         className="w-4 h-4 text-purple-600" 
+                     /> 
+                     <span className="font-bold text-sm text-slate-700">✓ Confirmé</span>
+                 </label>
+                 <label className="flex gap-2 cursor-pointer items-center bg-white px-4 py-2 rounded-lg border shadow-sm flex-1 justify-center">
+                     <input 
+                         type="radio" 
+                         name="stage-logistics"
+                         checked={formData.stage === 'Reporter-AG'} 
+                         onChange={() => setFormData({...formData, stage: 'Reporter-AG'})} 
+                         className="w-4 h-4 text-amber-600" 
+                     /> 
+                     <span className="font-bold text-sm text-slate-700">⏰ Reporter</span>
+                 </label>
+              </div>
+            </div>
+            
+            {formData.stage === 'Reporter-AG' && (
+              <div className="col-span-2 animate-slide-up">
+                <Label text="Date de Report" />
+                <input type="datetime-local" className="w-full p-3 bg-slate-50 border rounded-xl" value={formData.dateReport} onChange={e => setFormData({...formData, dateReport: e.target.value})} />
+              </div>
+            )}
+            
+            <div className="col-span-2">
+              <Label text="Commentaire" />
+              <textarea 
+                className="w-full p-3 bg-slate-50 border rounded-xl" 
+                placeholder="Notez quelque chose..." 
+                rows="3"
+                value={formData.commentaire} 
+                onChange={e => setFormData({...formData, commentaire: e.target.value})} 
+              />
+            </div>
+         </div>
+         <div className="flex justify-end gap-3 mt-6">
+            <button onClick={onClose} className="px-6 py-2 border rounded-xl hover:bg-slate-50">Annuler</button>
+            <button onClick={handleSubmit} className="px-6 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700">Enregistrer Stock</button>
          </div>
       </div>
     </div>

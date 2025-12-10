@@ -26,13 +26,15 @@ const GlobalDashboard = () => {
       const colisData = JSON.parse(localStorage.getItem('colis') || '[]');
       const productsData = await productAPI.getAll() || [];
       const employeesData = await employeeAPI.getAll() || [];
-      const adsData = await adsAPI.getAll() || [];
+      // const adsData = await adsAPI.getAll() || []; // Ancienne source (Optional: keep if needed for other metrics)
       
-      // 2. Calculs Marketing (Ads)
-      // On suppose que chaque ad a un 'amount' ou 'cost'
-      const adSpend = adsData.reduce((sum, ad) => sum + (parseFloat(ad.amount || ad.cost || 0)), 0);
-      const totalMessages = adsData.reduce((sum, ad) => sum + (parseInt(ad.messages || 0)), 0) || 1; // Avoid div by 0
-      const costPerMessage = totalMessages > 0 ? adSpend / totalMessages : 0;
+      // NOUVEAU : Récupération depuis le module "Sold" (Gestionnaire Dollar)
+      const soldData = JSON.parse(localStorage.getItem('usd_trans_final') || '[]');
+
+      // 2. Calculs Marketing (Ads) basés sur "Sold"
+      const adSpend = soldData.reduce((sum, t) => sum + (parseFloat(t.mad || 0)), 0);
+      const totalMessages = 0; // Donnée non présente dans "Sold", à voir si on la garde ou on la retire
+      const costPerMessage = 0; // Non calculable sans messages
       
       // 3. Calculs Pipeline (Colis)
       const totalLeads = colisData.length;
@@ -45,13 +47,14 @@ const GlobalDashboard = () => {
       const confRate = totalLeads > 0 ? (confirmedCount / totalLeads) * 100 : 0;
       const delRate = confirmedCount > 0 ? (deliveredCount / confirmedCount) * 100 : 0;
       
+      // Calcul CPA / CPL avec le nouveau adSpend
       const cpa = confirmedCount > 0 ? adSpend / confirmedCount : 0;
       const cpl = deliveredCount > 0 ? adSpend / deliveredCount : 0;
       
       // 4. Calculs Stock & Produits
-      const initialStock = productsData.reduce((sum, p) => sum + (parseInt(p.initialStock || 0)), 0); // Champ hypothétique
+      const initialStock = productsData.reduce((sum, p) => sum + (parseInt(p.initialStock || 0)), 0); 
       const currentStock = productsData.reduce((sum, p) => sum + (parseInt(p.stock || 0)), 0);
-      const stockFix = currentStock + deliveredCount; // Approximation de ce qui était là
+      const stockFix = currentStock + deliveredCount; 
       const stockRest = currentStock;
       
       const returnsCount = colisData.filter(c => ['Retourné', 'Annulé', 'Échec livraison'].includes(c.stage)).length;
@@ -62,23 +65,24 @@ const GlobalDashboard = () => {
       const totalPieces = deliveredCols.reduce((sum, c) => sum + (parseInt(c.nbPiece || 1)), 0);
       const avgParcelPrice = deliveredCount > 0 ? revenue / deliveredCount : 0;
       const avgPiecePrice = totalPieces > 0 ? revenue / totalPieces : 0;
-      const avgCart = avgParcelPrice; // Panier moyen ~ prix moyen colis ici
+      const avgCart = avgParcelPrice; 
       
-      // 6. Recharges (Si disponible dans une collection 'recharges', sinon placeholder ou localStorage)
-      // Pour l'instant on garde une simulation car pas de module recharge visible immédiat, ou on cherche 'recharges'
+      // 6. Recharges (Si disponible dans une collection 'recharges')
+      // NOTE: Le module "Sold" gère aussi les achats de solde (USD). 
+      // On peut agréger ici le total USD acheté si "Sold" sert à ça.
+      // D'après sold.jsx, c'est "Dépensé en Ads", donc adSpend ci-dessus est correct.
+      // On garde recharges séparé si c'est des entrées de fond, ou on l'ignore si c'est couvert par adSpend.
       const rechargesData = JSON.parse(localStorage.getItem('recharges') || '[]');
       const rechUSD = rechargesData.reduce((sum, r) => sum + (parseFloat(r.amountUSD || 0)), 0);
       const exchRate = 10.5; // Taux fixe ou config
-      const rechDH = rechUSD * exchRate; // Ou somme directe si en DH
+      const rechDH = rechUSD * exchRate; 
       const rechCount = rechargesData.length;
       
       // 7. Financier
       const salaries = employeesData.reduce((sum, e) => sum + (parseFloat(e.salary || 0)), 0);
-      // Calcul commissions réel basé sur les ventes des employés ?
-      // Pour simplifier on prend une approx ou 0 si pas de module paie lié
       const commissions = confirmedCols.reduce((sum, c) => sum + (parseFloat(c.commission || 0)), 0); 
-      const fixedCosts = 5000; // À récupérer des settings
-      const stockCost = 0; // À calculer (Prix d'achat * Nb vendus) -> nécessite Prix Achat dans produit
+      const fixedCosts = 5000; 
+      const stockCost = 0; 
       
       const netProfit = revenue - salaries - commissions - adSpend - rechDH - fixedCosts - stockCost;
       
@@ -113,7 +117,6 @@ const GlobalDashboard = () => {
         delRate: p.confirmed > 0 ? (p.delivered / p.confirmed) * 100 : 0
       }));
       
-      // Si vide (pas de données), mettre des placeholders pour éviter crash UI
       if (productsList.length === 0) productsList.push({ name: 'Aucun', sales: 0, revenue: 0, confRate: 0, delRate: 0 });
 
       // 9. Aggregation par Employé
@@ -128,9 +131,8 @@ const GlobalDashboard = () => {
         if (['Confirmé', 'Livré', 'Expédié'].includes(c.stage)) stats.confirmed++;
         if (c.stage === 'Livré') {
             stats.delivered++;
-            stats.sales++; // Ventes validées
+            stats.sales++; 
         }
-        // Parcels sent = confirmed
         if (['Confirmé', 'Livré', 'Expédié', 'En livraison'].includes(c.stage)) stats.parcels++;
       });
       

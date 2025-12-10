@@ -5,7 +5,8 @@ import {
   ChevronRight, ChevronDown, CreditCard, UserCheck, Bell, LogOut, Menu, 
   X, Package, Box, ClipboardList, Truck, History, Workflow, List, 
   ShoppingCart, Search, Factory, Megaphone, ListTodo, Building, Wallet, 
-  Coins, PanelLeftClose, PanelLeftOpen, ShieldCheck, Clipboard, User
+  Coins, PanelLeftClose, PanelLeftOpen, ShieldCheck, Clipboard, User, DollarSign,
+  Sun, Moon
 } from 'lucide-react';
 
 // ----------------------------------------------------------------------
@@ -23,6 +24,7 @@ const MODULES = [
     label: 'Ressources Humaines',
     icon: Users,
     subItems: [
+      { id: 'emp-dash', label: 'Dashboard', path: '/admin/employees/dashboard' },
       { id: 'emp-list', label: 'Liste des Employés', path: '/admin/employees' },
       { id: 'emp-pay', label: 'Paiement & Salaires', path: '/admin/paiement' },
       { id: 'emp-presence', label: 'Suivi de Présence', path: '/admin/presence' },
@@ -57,6 +59,7 @@ const MODULES = [
     label: 'Catalogue',
     icon: Package,
     subItems: [
+      { id: 'prod-dash', label: 'Dashboard', path: '/admin/products/dashboard' },
       { id: 'prod-list', label: 'Tous les Produits', path: '/admin/products' },
     ]
   },
@@ -74,7 +77,8 @@ const MODULES = [
     label: 'Production',
     icon: Factory,
     subItems: [
-      {id: 'prod-manage', label: 'Gestion', path: '/admin/production'},
+      { id: 'production-dash', label: 'Dashboard', path: '/admin/production/dashboard' },
+      { id: 'prod-manage', label: 'Gestion', path: '/admin/production' },
     ]
   },
   {
@@ -97,6 +101,7 @@ const MODULES = [
     label: 'Actifs',
     icon: Building,
     subItems: [
+      { id: 'actifs-dash', label: 'Dashboard', path: '/admin/actifs/dashboard' },
       { id: 'actifs-list', label: 'Liste', path: '/admin/actifs' },
     ]
   },
@@ -105,14 +110,24 @@ const MODULES = [
     label: 'Dettes',
     icon: Wallet,
     subItems: [
+      { id: 'debts-dash', label: 'Dashboard', path: '/admin/debts/dashboard' },
       { id: 'debts-list', label: 'Liste', path: '/admin/debts' }
     ]
   },
   {
-    id:'petitecaisse',
-    label:'Petite Caisse',
+    id: 'petitecaisse',
+    label: 'Petite Caisse',
     icon: Coins, 
-    path:'/admin/petitecaisse',
+    subItems: [
+        { id: 'petitecaisse-dash', label: 'Dashboard', path: '/admin/petitecaisse/dashboard' },
+        { id: 'petitecaisse-manage', label: 'Gestion', path: '/admin/petitecaisse' },
+    ]
+  },
+  {
+    id: 'sold',
+    label: 'Sold',
+    icon: DollarSign,
+    path: '/admin/sold'
   },
   {
     id:'rapport',
@@ -125,6 +140,12 @@ const MODULES = [
     label: 'Paramètres',
     icon: Settings,
     path: '/admin/settings',
+  },
+  {
+    id: 'logs',
+    label: 'Journal d\'Activité',
+    icon: History,
+    path: '/admin/logs',
   }
 ];
 
@@ -145,7 +166,7 @@ const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick }) => {
           onClick={toggleExpand}
           className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
             ${isParentActive 
-              ? 'text-slate-800 bg-slate-100' 
+              ? 'text-blue-700 font-bold bg-blue-50/50' // Added slight bg for active parent
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
@@ -168,15 +189,20 @@ const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick }) => {
                 key={sub.id}
                 to={sub.path}
                 onClick={onClick}
+                end // <--- THIS IS THE FIX
                 className={({ isActive }) => `
                   relative flex items-center pl-9 pr-3 py-2 rounded-lg text-sm transition-all duration-200
                   ${isActive ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}
                 `}
               >
-                {location.pathname === sub.path && (
-                  <span className="absolute left-[18px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-sm ring-4 ring-blue-50"></span>
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <span className="absolute left-[18px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-sm ring-4 ring-blue-50"></span>
+                    )}
+                    {sub.label}
+                  </>
                 )}
-                {sub.label}
               </NavLink>
             ))}
           </div>
@@ -190,6 +216,7 @@ const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick }) => {
     <NavLink
       to={item.path}
       onClick={onClick}
+      end // <--- THIS IS THE FIX
       className={({ isActive }) => `
         flex items-center gap-3 px-3 py-2.5 mb-1 rounded-lg text-sm font-medium transition-all duration-200
         ${isActive 

@@ -14,8 +14,10 @@ export default function Login() {
     {id:2, name: "asim", password: "as1234$", role: "admin"},
     {id:2, name: "khadija", password: "kh1234$", role: "employee"},
     {id:2, name: "adil", password: "ad1234$", role: "employee"},
-    { id: 3, name: "hakima", password: "ha1234$", role: "manager" },
     { id: 4, name: "gerant", password: "gr1234$", role: "confirmation_manager" },
+    { id: 5, name: "karim", password: "deli", role: "delivery" },
+    { id: 7, name: "mohamed", password: "mo1234$", role: "livreur" },
+    { id: 8, name: "souad", password: "so1234$", role: "confirmation_manager" },
   ]
 
   // Toast function
@@ -102,6 +104,10 @@ export default function Login() {
           navigate('/employee/confirmation/dashboard')
         } else if (user.role === 'packaging') {
           navigate('/employee/packaging/queue')
+        } else if (user.role === 'delivery' || user.role === 'livreur') {
+          navigate('/employee/delivery/dashboard')
+        } else if (user.role === 'delivery_manager') {
+          navigate('/employee/delivery-manager/dashboard')
         } else {
           navigate('/employee')
         }

@@ -3,28 +3,31 @@ import {
   Search, Plus, Edit2, Trash2, Eye, X, Check,
   LayoutDashboard, Users, Box, Workflow, Package, ShoppingCart,
   Factory, Megaphone, ListTodo, Building, Wallet,
-  Coins, FileText, Settings, ChevronDown, CheckCircle, AlertCircle, 
-  ShieldCheck, MoreHorizontal, UserCog, Key, Lock, Shield,
-  Filter, Briefcase, UserSearch 
+  Coins, FileText, Settings, Key, Lock, Shield,
+  Filter, Briefcase, UserSearch, Trophy,ShieldCheck , Zap, ScanBarcode,Truck
 } from 'lucide-react';
 import { employeeAPI } from '../../services/api';
 
-// --- 1. CONFIGURATION DES ACTIONS (CRUD + FILTERS) ---
+// --- 1. CONFIGURATION DES ACTIONS ---
 const ACTION_TYPES = {
-  // Standard Actions
-  view:   { id: 'view',   label: 'Lecture',   color: 'emerald', icon: Eye },
+  // Standard
+  view:   { id: 'view',   label: 'Voir',      color: 'emerald', icon: Eye },
   create: { id: 'create', label: 'Ajout',     color: 'blue',    icon: Plus },
   edit:   { id: 'edit',   label: 'Modif.',    color: 'amber',   icon: Edit2 },
   delete: { id: 'delete', label: 'Suppr.',    color: 'red',     icon: Trash2 },
   
-  // Specific Filter Actions for Pipeline
+  // Custom for Employees
+  process: { id: 'process', label: 'Scanner/Traiter', color: 'purple', icon: ScanBarcode },
+  update_status: { id: 'update_status', label: 'Changer Statut', color: 'cyan', icon: Zap },
+
+  // Filters
   filter_pipeline: { id: 'filter_pipeline', label: 'Filtre Pipeline',  color: 'violet', icon: Filter },
   filter_employee: { id: 'filter_employee', label: 'Filtre Employé',   color: 'indigo', icon: UserSearch },
   filter_business: { id: 'filter_business', label: 'Filtre Business',  color: 'pink',   icon: Briefcase },
 };
 
-// --- 2. DATA MATCHING YOUR LAYOUT ---
-const PERMISSION_MODULES = [
+// --- DATA: MODULES ADMIN / MANAGER ---
+const ADMIN_MODULES = [
   {
     category: "Tableau de bord",
     icon: LayoutDashboard,
@@ -55,24 +58,12 @@ const PERMISSION_MODULES = [
     ]
   },
   {
-    category: "Pipeline",
+    category: "Pipeline CRM",
     icon: Workflow,
     items: [
       { id: 'pipeline-dash', label: 'Dashboard Pipeline', actions: ['view'] },
       { id: 'pipeline-kanban', label: 'Management Pipeline', actions: ['view', 'create', 'edit', 'delete'] },
-      // UPDATED HERE: Removed 'edit' and 'delete'
-      { 
-        id: 'pipeline-list', 
-        label: 'Liste des clients', 
-        actions: [
-          'view', 
-          'create', 
-          // 'edit' and 'delete' have been removed
-          'filter_pipeline', 
-          'filter_employee', 
-          'filter_business'
-        ] 
-      },
+      { id: 'pipeline-list', label: 'Liste des clients', actions: ['view', 'create', 'filter_pipeline', 'filter_employee', 'filter_business'] },
     ]
   },
   {
@@ -84,14 +75,6 @@ const PERMISSION_MODULES = [
     ]
   },
   {
-    category: "Achats",
-    icon: ShoppingCart,
-    items: [
-      { id: 'buy-bon', label: 'Bons d\'achat', actions: ['view', 'create', 'edit', 'delete'] },
-      { id: 'buy-supp', label: 'Fournisseurs', actions: ['view', 'create', 'edit', 'delete'] },
-    ]
-  },
-  {
     category: "Production",
     icon: Factory,
     items: [
@@ -100,60 +83,55 @@ const PERMISSION_MODULES = [
     ]
   },
   {
-    category: "Publicité",
-    icon: Megaphone,
-    items: [
-      { id: 'ads-dash', label: 'Dashboard Pubs', actions: ['view'] },
-      { id: 'ads-list', label: 'Liste des publicités', actions: ['view', 'create', 'edit', 'delete'] },
-    ]
-  },
-  {
-    category: "Tâches",
-    icon: ListTodo,
-    items: [
-      { id: 'task-list', label: 'Liste des taches', actions: ['view', 'create', 'edit', 'delete'] },
-    ]
-  },
-  {
-    category: "Actifs",
-    icon: Building,
-    items: [
-      { id: 'actifs-dash', label: 'Dashboard Actifs', actions: ['view'] },
-      { id: 'actifs-list', label: 'Liste des actifs', actions: ['view', 'create', 'edit', 'delete'] },
-    ]
-  },
-  {
-    category: "Dettes",
+    category: "Finance & Achats",
     icon: Wallet,
     items: [
+      { id: 'buy-bon', label: 'Bons d\'achat', actions: ['view', 'create', 'edit'] },
+      { id: 'buy-supp', label: 'Fournisseurs', actions: ['view', 'create', 'edit'] },
       { id: 'debts-dash', label: 'Dashboard Dettes', actions: ['view'] },
       { id: 'debts-list', label: 'Liste des Dettes', actions: ['view', 'create', 'edit'] },
     ]
   },
   {
-    category: "Petite Caisse",
-    icon: Coins,
+    category: "Actifs / Pubs",
+    icon: Building,
     items: [
-      { id: 'petitecaisse-list', label: 'Mouvements Caisse', actions: ['view', 'create', 'edit'] },
+      { id: 'actifs-dash', label: 'Dashboard Actifs', actions: ['view'] },
+      { id: 'actifs-list', label: 'Liste des actifs', actions: ['view', 'create', 'edit'] },
+      { id: 'ads-dash', label: 'Dashboard Pubs', actions: ['view'] },
+      { id: 'ads-list', label: 'Liste des publicités', actions: ['view', 'create', 'edit'] },
     ]
   },
   {
-    category: "Rapports",
-    icon: FileText,
+     category: "Tâches & Rapports",
+     icon: ListTodo,
+     items: [
+       { id: 'task-list', label: 'Gestion des taches', actions: ['view', 'create', 'edit', 'delete'] },
+       { id: 'rapports-list', label: 'Rapports', actions: ['view', 'create'] },
+     ]
+  },
+  {
+    category: "Workspace Confirmation",
+    icon: Users,
     items: [
-      { id: 'rapports-list', label: 'Liste des rapports', actions: ['view', 'create'] },
+      { id: 'conf_dashboard', label: 'Tableau de bord', actions: ['view'] },
+      { id: 'conf_clients', label: 'Mes Clients', actions: ['view', 'edit', 'update_status'] },
+      { id: 'conf_tasks', label: 'Mes Tâches', actions: ['view', 'update_status'] },
+      { id: 'conf_leaderboard', label: 'Classement', actions: ['view'] },
     ]
   },
   {
-    category: "Paramètres",
-    icon: Settings,
+    category: "Workspace Packaging",
+    icon: Package,
     items: [
-      { id: 'business', label: 'Business', actions: ['view', 'edit'] },
+      { id: 'pack_dashboard', label: 'Tableau de bord', actions: ['view'] },
+      { id: 'pack_queue', label: 'File de Colis (Scan)', actions: ['view', 'process'] },
+      { id: 'pack_tasks', label: 'Mes Tâches', actions: ['view', 'update_status'] },
     ]
   }
 ];
 
-// --- 3. TOAST COMPONENT ---
+// --- TOAST COMPONENT ---
 const Toast = ({ message, type = 'success', onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => onClose(), 3000);
@@ -162,27 +140,32 @@ const Toast = ({ message, type = 'success', onClose }) => {
 
   return (
     <div className="fixed top-6 right-6 z-[100] animate-in slide-in-from-right-10 fade-in duration-300">
-      <div className={`flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl border backdrop-blur-md
-        ${type === 'success' ? 'bg-emerald-50/95 border-emerald-200 text-emerald-800' : 'bg-red-50/95 border-red-200 text-red-800'}`}>
-        {type === 'success' ? <CheckCircle size={20} className="text-emerald-500" /> : <AlertCircle size={20} className="text-red-500" />}
+      <div className={`flex items-center gap-3 px-6 py-4 rounded-xl shadow-lg border backdrop-blur-md
+        ${type === 'success' ? 'bg-slate-900 text-white border-slate-700' : 'bg-red-50 text-red-800 border-red-100'}`}>
+        <div className={`p-1 rounded-full ${type === 'success' ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
+           {type === 'success' ? <Check size={16} className="text-emerald-400" /> : <X size={16} className="text-red-500" />}
+        </div>
         <div>
-          <h4 className="font-bold text-sm">{type === 'success' ? 'Succès' : 'Erreur'}</h4>
-          <p className="text-xs opacity-90">{message}</p>
+          <h4 className="font-semibold text-sm">{type === 'success' ? 'Succès' : 'Erreur'}</h4>
+          <p className="text-xs opacity-70 mt-0.5">{message}</p>
         </div>
       </div>
     </div>
   );
 };
 
-// --- 4. PERMISSIONS MODAL ---
+// --- PERMISSIONS MODAL ---
 const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
   const [permissions, setPermissions] = useState(new Set());
-  const [activeCategory, setActiveCategory] = useState(PERMISSION_MODULES[0]?.category);
+  const [activeCategory, setActiveCategory] = useState(null);
+  
+  // Use ADMIN_MODULES for everyone for now (simplified)
+  const modulesConfig = ADMIN_MODULES;
 
   useEffect(() => {
     if (isOpen && employee) {
       setPermissions(new Set(employee.permissions || []));
-      if(PERMISSION_MODULES.length > 0) setActiveCategory(PERMISSION_MODULES[0].category);
+      if(ADMIN_MODULES.length > 0) setActiveCategory(ADMIN_MODULES[0].category);
     }
   }, [isOpen, employee]);
 
@@ -206,46 +189,53 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
   };
 
   const selectAll = () => {
-    const allPermissions = new Set();
-    PERMISSION_MODULES.forEach(module => {
+    const allPossible = [];
+    modulesConfig.forEach(module => {
       module.items.forEach(item => {
-        item.actions.forEach(action => allPermissions.add(`${item.id}:${action}`));
+        item.actions.forEach(action => allPossible.push(`${item.id}:${action}`));
       });
     });
-    setPermissions(allPermissions);
+
+    const isAllSelected = allPossible.every(p => permissions.has(p));
+
+    if (isAllSelected) {
+      setPermissions(new Set());
+    } else {
+      setPermissions(new Set(allPossible));
+    }
   };
 
-  const activeModuleData = PERMISSION_MODULES.find(m => m.category === activeCategory);
+  const activeModuleData = modulesConfig.find(m => m.category === activeCategory);
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all overflow-hidden">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col animate-in zoom-in-95 duration-300 overflow-hidden">
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-[80vh] flex flex-col animate-in scale-95 duration-200 overflow-hidden border border-slate-100">
         
-        {/* Header */}
-        <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+        {/* Header - Simple & Clean */}
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-blue-50 border-2 border-white shadow-lg flex items-center justify-center overflow-hidden">
-              <img src={employee.avatar || "https://i.pravatar.cc/150"} alt={employee.name} className="w-full h-full object-cover" />
+            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
+                <img src={employee.avatar || "https://i.pravatar.cc/150"} alt={employee.name} className="w-full h-full object-cover" />
             </div>
             <div>
               <h3 className="font-bold text-lg text-slate-800">{employee.name}</h3>
-              <p className="text-sm text-slate-500 font-medium">Configuration des accès</p>
+              <p className="text-xs text-slate-400 font-medium">Gestion des accès</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-             <button onClick={selectAll} className="text-sm font-semibold text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors">
-               Tout activer
+          <div className="flex items-center gap-2">
+             <button onClick={selectAll} className="text-xs font-semibold text-slate-600 hover:bg-slate-50 px-3 py-2 rounded-lg transition-colors border border-slate-200">
+               Tout cocher / Décocher
              </button>
-             <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+             <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600 transition-colors">
                <X size={20} />
              </button>
           </div>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
-            {/* Sidebar Categories */}
-            <div className="w-64 bg-slate-50 border-r border-slate-100 overflow-y-auto custom-scrollbar p-3 space-y-1">
-                {PERMISSION_MODULES.map((module) => {
+            {/* Sidebar Categories - Minimalist */}
+            <div className="w-64 bg-slate-50 border-r border-slate-100 overflow-y-auto p-2 space-y-0.5">
+                {modulesConfig.map((module) => {
                     const Icon = module.icon;
                     const isActive = activeCategory === module.category;
                     const activeCount = module.items.reduce((acc, item) => acc + item.actions.filter(a => permissions.has(`${item.id}:${a}`)).length, 0);
@@ -254,15 +244,17 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
                         <button
                             key={module.category}
                             onClick={() => setActiveCategory(module.category)}
-                            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all
-                                ${isActive ? 'bg-white shadow-md text-blue-600 ring-1 ring-blue-50' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'}`}
+                            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                                ${isActive 
+                                    ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-100' 
+                                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'}`}
                         >
                             <div className="flex items-center gap-3">
-                                <Icon size={18} />
+                                <Icon size={16} className={isActive ? 'text-slate-900' : 'text-slate-400'} />
                                 <span>{module.category}</span>
                             </div>
                             {activeCount > 0 && (
-                                <span className={`text-[10px] px-2 py-0.5 rounded-full ${isActive ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-600'}`}>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold ${isActive ? 'bg-slate-100 text-slate-600' : 'bg-slate-200 text-slate-500'}`}>
                                     {activeCount}
                                 </span>
                             )}
@@ -272,17 +264,12 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 overflow-y-auto p-8 bg-slate-50/30">
-                {activeModuleData && (
-                    <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-4">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-3 bg-white rounded-xl shadow-sm border border-slate-100 text-blue-600">
-                                <activeModuleData.icon size={24} />
-                            </div>
-                            <div>
-                                <h2 className="text-xl font-bold text-slate-800">{activeModuleData.category}</h2>
-                                <p className="text-slate-500 text-sm">Gérez les permissions pour ce module.</p>
-                            </div>
+            <div className="flex-1 overflow-y-auto p-6 bg-white">
+                {activeModuleData ? (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                        <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
+                            <activeModuleData.icon size={20} className="text-slate-400" />
+                            <h2 className="text-lg font-bold text-slate-800">{activeModuleData.category}</h2>
                         </div>
 
                         <div className="grid grid-cols-1 gap-4">
@@ -290,43 +277,34 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
                                 const allActive = item.actions.every(act => permissions.has(`${item.id}:${act}`));
                                 
                                 return (
-                                    <div key={item.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 hover:shadow-md transition-shadow">
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                                            <div className="flex items-center gap-3">
-                                                <div 
-                                                    onClick={() => toggleModuleAll(item)}
-                                                    className={`w-5 h-5 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all 
-                                                        ${allActive ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 hover:border-blue-400'}`}
-                                                >
-                                                    <Check size={12} strokeWidth={3} className={allActive ? '' : 'opacity-0'} />
-                                                </div>
-                                                <span className="font-bold text-slate-800">{item.label}</span>
+                                    <div key={item.id} className="p-4 rounded-xl border border-slate-100 hover:border-slate-300 transition-colors">
+                                        <div className="flex items-center gap-3 mb-4 cursor-pointer" onClick={() => toggleModuleAll(item)}>
+                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${allActive ? 'bg-slate-900 border-slate-900 text-white' : 'border-slate-300 bg-white'}`}>
+                                                {allActive && <Check size={12} strokeWidth={3} />}
                                             </div>
-                                            <div className="h-px flex-1 bg-slate-50 mx-4 hidden sm:block"></div>
+                                            <span className="font-semibold text-slate-700">{item.label}</span>
                                         </div>
 
-                                        <div className="flex flex-wrap gap-2 sm:pl-8">
+                                        <div className="flex flex-wrap gap-2 pl-8">
                                             {item.actions.map(actionType => {
                                                 const config = ACTION_TYPES[actionType];
-                                                
-                                                // Safety check in case action isn't defined
                                                 if (!config) return null;
 
                                                 const isActive = permissions.has(`${item.id}:${actionType}`);
-                                                const ActionIcon = config.icon;
+                                                // Simplified Icon (optional)
+                                                // const ActionIcon = config.icon; 
 
                                                 return (
                                                     <button
                                                         key={actionType}
                                                         onClick={() => togglePermission(item.id, actionType)}
                                                         className={`
-                                                            flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border
+                                                            px-3 py-1.5 rounded-md text-xs font-medium border transition-all
                                                             ${isActive 
-                                                                ? `bg-${config.color}-50 text-${config.color}-700 border-${config.color}-200 shadow-sm` 
-                                                                : 'bg-slate-50 text-slate-400 border-slate-100 hover:bg-white hover:border-slate-200'}
+                                                                ? 'bg-slate-900 text-white border-slate-900' 
+                                                                : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:text-slate-700'}
                                                         `}
                                                     >
-                                                        <ActionIcon size={14} />
                                                         {config.label}
                                                     </button>
                                                 )
@@ -337,18 +315,26 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
                             })}
                         </div>
                     </div>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-300">
+                    <LayoutDashboard size={32} className="mb-2" />
+                    <p className="text-sm">Sélectionnez une catégorie</p>
+                  </div>
                 )}
             </div>
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-5 border-t border-slate-100 bg-white flex justify-end gap-3 shrink-0">
-          <button onClick={onClose} className="px-6 py-2.5 rounded-xl text-slate-500 font-bold hover:bg-slate-50 transition-colors">
+        <div className="px-6 py-4 border-t border-slate-100 bg-white flex justify-end gap-3 shrink-0">
+          <button onClick={onClose} className="px-5 py-2 rounded-lg text-slate-500 font-medium hover:bg-slate-50 text-sm transition-colors">
             Annuler
           </button>
-          <button onClick={() => { onSave(employee.id, Array.from(permissions)); onClose(); }} className="px-8 py-2.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 shadow-lg shadow-slate-900/20 transition-all flex items-center gap-2">
-            <Check size={18} />
-            Enregistrer les modifications
+          <button 
+            onClick={() => { onSave(employee.id, Array.from(permissions)); onClose(); }} 
+            className="px-6 py-2 rounded-lg bg-slate-900 text-white font-semibold text-sm hover:bg-slate-800 shadow-lg shadow-slate-200 transition-all flex items-center gap-2"
+          >
+            <Check size={16} />
+            Enregistrer
           </button>
         </div>
 
@@ -375,10 +361,14 @@ export default function PermissionsPage() {
       setEmployees(data.map(e => ({...e, permissions: e.permissions || []})));
     } catch (error) {
       console.error("Failed to load", error);
-      // Fallback data for testing if API fails
+      // Fallback data
       setEmployees([
           { id: 1, name: "Ali Benamor", role: "Admin", active: true, permissions: ['pipeline-list:view', 'pipeline-list:filter_business'] },
-          { id: 2, name: "Sara Alami", role: "Manager", active: true, permissions: [] }
+          { id: 2, name: "Sara Alami", role: "Manager", active: true, permissions: [] },
+          { id: 3, name: "Khadija", role: "confirmation", active: true, permissions: ['conf_clients:view'] },
+          { id: 4, name: "Adil", role: "packaging", active: true, permissions: [] },
+          { id: 5, name: "Karim", role: "delivery", active: true, permissions: [] },
+          { id: 6, name: "Sef Livreur", role: "delivery_manager", active: true, permissions: [] }
       ]);
     } finally {
       setTimeout(() => setLoading(false), 300);
@@ -390,11 +380,10 @@ export default function PermissionsPage() {
   const handleSavePermissions = async (id, newPermissions) => {
     try {
       await employeeAPI.patch(id, { permissions: newPermissions });
-      setToast({ message: "Permissions sauvegardées !", type: 'success' });
+      setToast({ message: "Permissions mises à jour avec succès !", type: 'success' });
       loadEmployees();
     } catch (error) {
-        // Mock success for UI demo if API missing
-        setToast({ message: "Permissions sauvegardées (Simulé) !", type: 'success' });
+        setToast({ message: "Permissions sauvegardées (Mode démo)", type: 'success' });
         setEmployees(prev => prev.map(e => e.id === id ? {...e, permissions: newPermissions} : e));
     }
   };
@@ -402,76 +391,119 @@ export default function PermissionsPage() {
   const filteredEmployees = employees.filter(emp => emp.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800">
+    <div className="min-h-screen bg-[#F8FAFC] p-6 lg:p-10 font-sans text-slate-800">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <div className="max-w-[1600px] mx-auto space-y-8">
+      <div className="max-w-[1800px] mx-auto space-y-8">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-            <div className="flex items-center gap-4">
-                <div className="p-4 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl shadow-lg shadow-indigo-500/20 text-white">
-                    <ShieldCheck size={32} strokeWidth={1.5} />
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+            <div className="flex items-center gap-6">
+                <div className="p-5 bg-slate-900 rounded-3xl shadow-xl shadow-slate-900/20 text-white">
+                    <ShieldCheck size={40} strokeWidth={1.5} />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Gestion des Permissions</h1>
-                    <div className="flex items-center gap-3 mt-1.5">
-                        <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-100">
+                    <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Gestion des Permissions</h1>
+                    <div className="flex items-center gap-3 mt-2">
+                        <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Système actif
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
                             {employees.length} collaborateurs
                         </span>
                     </div>
                 </div>
             </div>
 
-            <div className="relative group w-full md:w-80">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={20} />
+            <div className="relative group w-full md:w-96">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors" size={22} />
                 <input 
                     type="text" 
-                    placeholder="Rechercher un collaborateur..." 
+                    placeholder="Rechercher un membre..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-700 font-medium focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-400"
+                    className="w-full pl-14 pr-5 py-4 rounded-2xl bg-slate-50 border-2 border-slate-50 text-slate-800 font-bold focus:bg-white focus:border-slate-900/10 focus:ring-4 focus:ring-slate-900/5 outline-none transition-all placeholder:text-slate-400 text-sm"
                 />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
-              {loading ? Array.from({length:6}).map((_,i) => (
-                  <div key={i} className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 animate-pulse h-48"></div>
-              )) : filteredEmployees.map(employee => (
-                  <div key={employee.id} className="group bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:border-indigo-100 transition-all duration-300 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => handleOpenModal(employee)} className="p-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-colors">
-                              <Settings size={20} />
-                          </button>
-                      </div>
-
-                      <div className="flex flex-col items-center text-center">
-                          <div className="relative mb-4">
-                              <div className="w-20 h-20 rounded-full p-1 bg-white border-2 border-slate-100 shadow-sm group-hover:border-indigo-200 transition-colors">
-                                  <img src={employee.avatar || "https://i.pravatar.cc/150"} className="w-full h-full rounded-full object-cover" alt="" />
-                              </div>
-                              <div className={`absolute bottom-1 right-1 w-5 h-5 rounded-full border-4 border-white ${employee.active ? 'bg-emerald-500' : 'bg-slate-300'}`}></div>
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-50 border-b border-slate-100">
+                  <tr>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Employé</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rôle</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Statut</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Permissions</th>
+                    <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {loading ? (
+                     <tr>
+                        <td colSpan="5" className="px-6 py-8 text-center text-slate-400">
+                           <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-200 border-t-slate-600"></div>
+                        </td>
+                     </tr>
+                  ) : filteredEmployees.length === 0 ? (
+                     <tr>
+                        <td colSpan="5" className="px-6 py-10 text-center text-slate-400 flex flex-col items-center">
+                           <Search size={40} className="mb-2 opacity-20" />
+                           <p>Aucun employé trouvé</p>
+                        </td>
+                     </tr>
+                  ) : (
+                    filteredEmployees.map(employee => (
+                      <tr key={employee.id} className="hover:bg-slate-50/80 transition-colors group">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                               <img src={employee.avatar || "https://i.pravatar.cc/150"} alt={employee.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm" />
+                               <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${employee.active ? 'bg-emerald-500' : 'bg-slate-300'}`}></span>
+                            </div>
+                            <div>
+                               <span className="block font-semibold text-slate-800">{employee.name}</span>
+                            </div>
                           </div>
-                          
-                          <h3 className="text-lg font-bold text-slate-800 mb-1">{employee.name}</h3>
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-6 ${
-                              employee.role === 'Admin' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700'
-                          }`}>
+                        </td>
+                        <td className="px-6 py-4">
+                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border
+                              ${employee.role === 'Admin' ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 
+                                employee.role === 'confirmation' ? 'bg-orange-50 text-orange-700 border-orange-100' :
+                                employee.role === 'delivery' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                                employee.role === 'delivery_manager' ? 'bg-slate-800 text-white border-slate-900' :
+                                'bg-blue-50 text-blue-600 border-blue-100'
+                              }`}>
                               {employee.role}
-                          </span>
-
-                          <div className="w-full bg-slate-50 rounded-2xl p-4 flex items-center justify-between border border-slate-100">
-                              <div className="text-left">
-                                  <span className="block text-xs font-bold text-slate-400 uppercase">Permissions</span>
-                                  <span className="text-xl font-extrabold text-slate-800">{employee.permissions.length}</span>
-                              </div>
-                              <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
-                                  <Lock size={20} />
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              ))}
+                           </span>
+                        </td>
+                        <td className="px-6 py-4">
+                            <span className={`text-xs font-bold ${employee.active ? 'text-emerald-600' : 'text-slate-400'}`}>
+                                {employee.active ? 'Actif' : 'Inactif'}
+                            </span>
+                        </td>
+                        <td className="px-6 py-4">
+                           <div className="flex items-center gap-2 text-slate-600 bg-slate-50 inline-flex px-3 py-1.5 rounded-lg border border-slate-100">
+                              <UnlockIcon hasPermissions={employee.permissions.length > 0} />
+                              <span className="text-xs font-bold">{employee.permissions.length} accès configurés</span>
+                           </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                           <button 
+                             onClick={() => handleOpenModal(employee)} 
+                             className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all shadow-sm group-hover:shadow-md"
+                           >
+                              <Settings size={14} />
+                              Configurer
+                           </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
       </div>
 
@@ -483,4 +515,8 @@ export default function PermissionsPage() {
       />
     </div>
   );
+}
+
+const UnlockIcon = ({ hasPermissions }) => {
+    return hasPermissions ? <ShieldCheck size={20} /> : <Lock size={20} className="opacity-50" />;
 }

@@ -468,10 +468,13 @@ export default function AffectationsPage() {
     });
   };
 
-  const filtered = affectations.filter(aff => employees.find(e => e.id === aff.employeeId)?.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  const getEmployee = (id) => employees.find(e => e.id === id);
-  const getProductName = (id) => products.find(p => p.id === id)?.name || 'N/A';
-  const getProduct = (id) => products.find(p => p.id === id);
+  const filtered = affectations.filter(aff => {
+    const emp = employees.find(e => e.id == aff.employeeId);
+    return emp && emp.name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+  const getEmployee = (id) => employees.find(e => e.id == id);
+  const getProductName = (id) => products.find(p => p.id == id)?.name || 'N/A';
+  const getProduct = (id) => products.find(p => p.id == id);
 
   return (
     <div className="min-h-screen bg-slate-50/50 p-6 md:p-10 font-sans text-slate-800">
@@ -598,7 +601,7 @@ export default function AffectationsPage() {
                             </div>
                          </td>
                          <td className="px-6 py-5 text-right">
-                            <div className="flex items-center justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                            <div className="flex items-center justify-end gap-1">
                                <button onClick={() => { setSelectedAffectation(aff); setDetailsModalOpen(true); }} className="p-2.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"><Eye size={18}/></button>
                                <button onClick={() => { setSelectedAffectation(aff); setModalOpen(true); }} className="p-2.5 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-colors"><Edit2 size={18}/></button>
                                <button onClick={() => handleDelete(aff.id)} className="p-2.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"><Trash2 size={18}/></button>

@@ -326,18 +326,37 @@ const DamageReportModal = ({ isOpen, onClose, asset, onSave }) => {
 // --- 3. MAIN PAGE COMPONENT ---
 
 const AssetsPage = () => {
-  const [assets, setAssets] = useState([
-      // Mock Data
-      { id: 1, photo: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=150', name: 'MacBook Pro M1', category: 'Informatique', purchaseValue: 15000, date: '2024-01-15', project: 'Alpha', supplierName: 'Global Info', supplierPhone: '0661123456', status: 'Bon état' },
-      { id: 2, photo: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=150', name: 'Bureau Angle', category: 'Mobilier', purchaseValue: 2500, date: '2023-11-20', project: 'Beta', supplierName: 'Ikea Business', supplierPhone: '0522987654', status: 'Bon état' },
-  ]);
+  const [assets, setAssets] = useState([]); // Start empty, load from LS
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDamageModalOpen, setIsDamageModalOpen] = useState(false); // New State
+  const [isDamageModalOpen, setIsDamageModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [toast, setToast] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Load from LocalStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('assets_db');
+    if (saved) {
+      setAssets(JSON.parse(saved));
+    } else {
+        // Initial Mock Data if empty
+        const initialData = [
+            { id: 1, photo: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=150', name: 'MacBook Pro M1', category: 'Informatique', purchaseValue: 15000, date: '2024-01-15', project: 'Alpha', supplierName: 'Global Info', supplierPhone: '0661123456', status: 'Bon état', quantity: 1 },
+            { id: 2, photo: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=150', name: 'Bureau Angle', category: 'Mobilier', purchaseValue: 2500, date: '2023-11-20', project: 'Beta', supplierName: 'Ikea Business', supplierPhone: '0522987654', status: 'Bon état', quantity: 5 },
+        ];
+        setAssets(initialData);
+        localStorage.setItem('assets_db', JSON.stringify(initialData));
+    }
+  }, []);
+
+  // Save to LocalStorage whenever assets change
+  useEffect(() => {
+    if (assets.length > 0) {
+        localStorage.setItem('assets_db', JSON.stringify(assets));
+    }
+  }, [assets]);
 
   const handleOpenAdd = () => {
     setModalMode('add');

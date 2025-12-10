@@ -210,6 +210,34 @@ const MarketingPlanner = () => {
     setRecords(updated);
     saveToStorage('marketing_records', updated);
 
+    // --- SYNC WITH SOLD (USD MANAGER) ---
+    // Create a corresponding transaction in 'usd_trans_final'
+    // Sold structure: {id, date, platform, mad, rate, usd}
+    // Ads Dashboard only has USD 'spent'. We need a rate to convert back to MAD or just store USD?
+    // The Sold page expects MAD and Rate. Since we don't have rate here, we can assume a default or fetch from settings.
+    // However, the cleanest way is to just push the USD amount and calculate MAD using a default rate (e.g., 10.5) 
+    // OR just use this as a 'USD' entry. 
+    // BUT the Global Dashboard sums 'mad' from Sold. So we MUST provide a MAD value.
+    // Let's assume a default rate of 10.5 if not provided (which it isn't in AdsDashboard).
+    
+    const defaultRate = 10.5; // Or fetch from 'usd_settings_final' if available?
+    const settings = JSON.parse(localStorage.getItem('usd_settings_final') || '{}');
+    const rateToUse = (settings.good + settings.bad) / 2 || defaultRate; // Use average of targets as proxy
+
+    const soldTrans = {
+        id: newRecord.id, // Use same ID or new unique one? 
+        date: newRecord.date,
+        platform: newRecord.platform, // 'facebook', etc.
+        mad: newRecord.spent * rateToUse, // Convert USD to MAD
+        rate: rateToUse,
+        usd: newRecord.spent
+    };
+    
+    const existingSold = JSON.parse(localStorage.getItem('usd_trans_final') || '[]');
+    const updatedSold = [soldTrans, ...existingSold];
+    localStorage.setItem('usd_trans_final', JSON.stringify(updatedSold));
+    // ------------------------------------
+
     // Réinitialiser le formulaire
     setRecordForm({
       product: '',
@@ -222,7 +250,7 @@ const MarketingPlanner = () => {
       targetProfile: ''
     });
 
-    alert('Enregistrement ajouté avec succès!');
+    alert('Enregistrement ajouté avec succès! (Synchronisé avec Sold)');
   };
 
   // Supprimer un enregistrement

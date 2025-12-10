@@ -269,6 +269,8 @@ export const lossAPI = createGenericAPI('losses');
 export const adsAPI = createGenericAPI('ads');
 export const businessAPI = createGenericAPI('businesses');
 export const taskAPI = createGenericAPI('tasks');
+export const pipelineAPI = createGenericAPI('pipelines');
+export const affectationAPI = createGenericAPI('affectations');
 
 export const settingsAPI = {
   // Generic helper to get/set lists
@@ -322,6 +324,7 @@ export default {
   ads: adsAPI,
   business: businessAPI,
   task: taskAPI,
+  pipeline: pipelineAPI,
   settings: settingsAPI,
   
   // Helpers

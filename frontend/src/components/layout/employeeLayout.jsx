@@ -15,7 +15,8 @@ import {
   ChevronRight,
   ChevronDown,
   User,
-  Settings
+  Settings,
+  MapPin
 } from 'lucide-react';
 import { taskAPI } from '../../services/api';
 
@@ -57,6 +58,16 @@ const MODULES = {
     { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/employee/packaging/dashboard' },
     { id: 'queue', label: 'File de Colis', icon: Package, path: '/employee/packaging/queue' },
     { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/packaging/tasks' },
+  ],
+  delivery: [
+    { id: 'dashboard', label: 'Dashboard Livreur', icon: LayoutDashboard, path: '/employee/delivery/dashboard' },
+    { id: 'run', label: 'Ma Tournée (Colis)', icon: MapPin, path: '/employee/delivery/run' },
+    { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/delivery/tasks' },
+  ],
+  delivery_manager: [
+    { id: 'dashboard', label: 'Dashboard Chef', icon: LayoutDashboard, path: '/employee/delivery-manager/dashboard' },
+    { id: 'dispatch', label: 'Suivi Global', icon: MapPin, path: '/employee/delivery-manager/dispatch' }, // The "Pipeline" for the manager
+    { id: 'drivers', label: 'Mes Livreurs', icon: Users, path: '/employee/delivery-manager/drivers' },
   ], 
   default: [
      { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/employee' },
@@ -310,6 +321,8 @@ export function EmployeeLayout({ children, mode = 'default' }) {
   if (mode === 'confirmation') currentModules = MODULES.confirmation;
   else if (mode === 'confirmation_manager') currentModules = MODULES.confirmation_manager;
   else if (mode === 'packaging') currentModules = MODULES.packaging;
+  else if (mode === 'delivery') currentModules = MODULES.delivery;
+  else if (mode === 'delivery_manager') currentModules = MODULES.delivery_manager;
   else currentModules = MODULES.default;
 
   // Determine Page Title

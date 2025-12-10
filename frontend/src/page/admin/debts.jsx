@@ -336,12 +336,20 @@ const DebtsPage = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [pendingDebtId, setPendingDebtId] = useState(null);
 
-  // Mock Data
-  const [debts, setDebts] = useState([
-      { id: 1, date: '2024-12-01', project: 'Alpha', supplier: 'Global Info', amount: 15000, paymentMethod: 'Chèque', dueDate: '2024-12-08', status: 'Ouvert', responsible: 'Ahmed', note: 'Facture N°123', proofFile: null },
-      { id: 2, date: '2024-11-20', project: 'Alpha', supplier: 'Bricoma', amount: 3200, paymentMethod: 'Espèces', dueDate: '2024-12-05', status: 'Ouvert', responsible: 'Sarah', note: 'Achat peinture', proofFile: null },
-      { id: 3, date: '2024-10-15', project: 'Alpha', supplier: 'Office Depot', amount: 5000, paymentMethod: 'Virement', dueDate: '2024-10-30', status: 'Payé', responsible: 'Ali', note: 'Mobilier bureau', proofFile: 'proof.jpg' },
-  ]);
+  // Load from LocalStorage
+  const [debts, setDebts] = useState(() => {
+    const saved = localStorage.getItem('finance_debts_db');
+    return saved ? JSON.parse(saved) : [
+      { id: 1, date: '2024-12-01', project: 'Alpha', supplier: 'Global Info', amount: 15000, paymentMethod: 'Chèque', dueDate: '2024-12-08', status: 'Ouvert', responsible: 'Ahmed', note: 'Facture N°123', proofFile: null, type: 'Bichda' },
+      { id: 2, date: '2024-11-20', project: 'Alpha', supplier: 'Bricoma', amount: 3200, paymentMethod: 'Espèces', dueDate: '2024-12-05', status: 'Ouvert', responsible: 'Sarah', note: 'Achat peinture', proofFile: null, type: 'Service' },
+      { id: 3, date: '2024-10-15', project: 'Alpha', supplier: 'Office Depot', amount: 5000, paymentMethod: 'Virement', dueDate: '2024-10-30', status: 'Payé', responsible: 'Ali', note: 'Mobilier bureau', proofFile: 'proof.jpg', type: 'Loan' },
+    ];
+  });
+
+  // Save to LocalStorage
+  useEffect(() => {
+    localStorage.setItem('finance_debts_db', JSON.stringify(debts));
+  }, [debts]);
 
   const handleOpenAdd = () => {
       setModalMode('add');
@@ -368,7 +376,8 @@ const DebtsPage = () => {
           responsible: data.responsible,
           note: data.note,
           file: data.file,
-          proofFile: null
+          proofFile: null,
+          type: data.type || 'Service' // Default type
       };
       setDebts([newDebt, ...debts]);
       setIsModalOpen(false);
