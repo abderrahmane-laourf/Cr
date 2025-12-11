@@ -55,11 +55,6 @@ export default function ConfirmationClients() {
   
   const [searchText, setSearchText] = useState('');
   
-  // Filters for Ammex
-  const [filterAmmexStage, setFilterAmmexStage] = useState('all');
-  const [filterAmmexStartDate, setFilterAmmexStartDate] = useState('');
-  const [filterAmmexEndDate, setFilterAmmexEndDate] = useState('');
-  
   // Filters for Agadir
   const [filterAgadirStage, setFilterAgadirStage] = useState('all');
   const [filterAgadirStartDate, setFilterAgadirStartDate] = useState('');
@@ -272,31 +267,17 @@ export default function ConfirmationClients() {
   });
 
   // Separate colis by pipeline with additional filters
-  const ammexColis = filteredColis.filter(c => {
-    if (c.pipelineId !== 1) return false;
-    
-    // Filter by stage
-    if (filterAmmexStage !== 'all' && c.stage !== filterAmmexStage) return false;
-    
-    // Filter by date range
-    if (filterAmmexStartDate || filterAmmexEndDate) {
-      const colisDate = new Date(c.dateCreated);
-      if (filterAmmexStartDate && colisDate < new Date(filterAmmexStartDate)) return false;
-      if (filterAmmexEndDate) {
-        const endDate = new Date(filterAmmexEndDate);
-        endDate.setHours(23, 59, 59, 999);
-        if (colisDate > endDate) return false;
-      }
-    }
-    
-    return true;
-  });
+  const ammexColis = filteredColis.filter(c => c.pipelineId === 1);
   
   const agadirColis = filteredColis.filter(c => {
     if (c.pipelineId !== 2) return false;
     
+    // Normalize stage for filtering (remove -AG suffix)
+    const normalizeStage = (stage) => stage?.replace(/-AG$/i, '') || '';
+    const normalizedColisStage = normalizeStage(c.stage);
+    
     // Filter by stage
-    if (filterAgadirStage !== 'all' && c.stage !== filterAgadirStage) return false;
+    if (filterAgadirStage !== 'all' && normalizedColisStage !== filterAgadirStage) return false;
     
     // Filter by date range
     if (filterAgadirStartDate || filterAgadirEndDate) {
@@ -451,28 +432,28 @@ export default function ConfirmationClients() {
             </div>
         </div>
 
-        {/* LIVRAISON AMMEX */}
+        {/* LIVRAISON AGADIR */}
         <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/50">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white">
                 <Truck size={20} />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Livraison Ammex</h2>
-                <p className="text-xs text-slate-500">{ammexColis.length} colis</p>
+                <h2 className="text-xl font-bold text-slate-900">Livraison Agadir</h2>
+                <p className="text-xs text-slate-500">{agadirColis.length} colis</p>
               </div>
             </div>
             <button 
-              onClick={() => { setSelectedPipeline(pipelines[0]); setShowAddModal(true); }} 
-              className="px-4 py-2 bg-blue-600 text-white rounded-xl flex items-center gap-2 shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all"
+              onClick={() => { setSelectedPipeline(pipelines[1]); setShowAddModal(true); }} 
+              className="px-4 py-2 bg-green-600 text-white rounded-xl flex items-center gap-2 shadow-lg shadow-green-500/30 hover:bg-green-700 transition-all"
             >
               <Plus size={18} /> Ajouter
             </button>
           </div>
           
-          {/* Filters for Ammex */}
-          <div className="flex flex-wrap gap-3 mb-4 p-4 bg-blue-50 rounded-xl">
+          {/* Filters for Agadir */}
+          <div className="flex flex-wrap gap-3 mb-4 p-4 bg-green-50 rounded-xl">
             <div className="flex-1 min-w-[200px]">
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Recherche</label>
               <div className="relative">
@@ -489,8 +470,8 @@ export default function ConfirmationClients() {
             <div className="flex-1 min-w-[180px]">
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Catégorie</label>
               <select 
-                value={filterAmmexStage} 
-                onChange={(e) => setFilterAmmexStage(e.target.value)}
+                value={filterAgadirStage} 
+                onChange={(e) => setFilterAgadirStage(e.target.value)}
                 className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm"
               >
                 <option value="all">Toutes les catégories</option>
@@ -506,8 +487,8 @@ export default function ConfirmationClients() {
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Date début</label>
               <input 
                 type="date" 
-                value={filterAmmexStartDate} 
-                onChange={(e) => setFilterAmmexStartDate(e.target.value)}
+                value={filterAgadirStartDate} 
+                onChange={(e) => setFilterAgadirStartDate(e.target.value)}
                 className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm"
               />
             </div>
@@ -515,15 +496,15 @@ export default function ConfirmationClients() {
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Date fin</label>
               <input 
                 type="date" 
-                value={filterAmmexEndDate} 
-                onChange={(e) => setFilterAmmexEndDate(e.target.value)}
+                value={filterAgadirEndDate} 
+                onChange={(e) => setFilterAgadirEndDate(e.target.value)}
                 className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm"
               />
             </div>
-            {(filterAmmexStage !== 'all' || filterAmmexStartDate || filterAmmexEndDate) && (
+            {(filterAgadirStage !== 'all' || filterAgadirStartDate || filterAgadirEndDate) && (
               <button 
-                onClick={() => { setFilterAmmexStage('all'); setFilterAmmexStartDate(''); setFilterAmmexEndDate(''); }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-all self-end"
+                onClick={() => { setFilterAgadirStage('all'); setFilterAgadirStartDate(''); setFilterAgadirEndDate(''); }}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-all self-end"
               >
                 Réinitialiser
               </button>
@@ -531,8 +512,8 @@ export default function ConfirmationClients() {
           </div>
           
           <div className="flex flex-row gap-2 overflow-x-auto pb-4 px-1 min-h-[400px]">
-            {pipelines[0]?.stages.filter(s => s.active).map((stage) => {
-              const stageColis = getColisByStage(stage.name, 1);
+            {pipelines[1]?.stages.filter(s => s.active).map((stage) => {
+              const stageColis = getColisByStage(stage.name, 2);
               const isReporterOrConfirmed = ['Reporter', 'Confirmé'].includes(stage.name);
               const canDrag = isReporterOrConfirmed;
 
@@ -660,8 +641,7 @@ export default function ConfirmationClients() {
             })}
           </div>
         </div>
-
-
+        
         {/* Modals */}
         {showAddModal && (
           <AddClientModal 
@@ -742,24 +722,26 @@ function AddClientModal({ onClose, onAdd, employees, currentUser, products, vill
     prix: '',
     employee: currentUser.name || '',
     business: 'Commit',
-    stage: isLogistics ? 'Confirmé-AG' : 'Reporter',
+    stage: isLogistics ? 'Reporter-AG' : 'Reporter',
     commentaire: '',
     nbPiece: '1',
     dateReport: ''
   });
 
-  const [dateRequired, setDateRequired] = useState(!isLogistics); 
-  const [filteredQuartiers, setFilteredQuartiers] = useState([]);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [quartiersAgadir, setQuartiersAgadir] = useState([]);
   
   const BUSINESSES = ['Commit', 'Herboclear', 'Other'];
 
   useEffect(() => {
-    if (formData.ville) {
-      setFilteredQuartiers(quartiers.filter(q => q.villeId === formData.ville));
-    } else {
-      setFilteredQuartiers([]);
+    if (isLogistics) {
+      // Load quartiers from settings for Agadir
+      import('../../../services/api').then(({ settingsAPI }) => {
+        const quartiers = settingsAPI.getQuartiersAgadir();
+        setQuartiersAgadir(quartiers);
+      });
     }
-  }, [formData.ville, quartiers]);
+  }, [isLogistics]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -849,19 +831,21 @@ function AddClientModal({ onClose, onAdd, employees, currentUser, products, vill
                     </select>
                 </div>
 
-                <div className="space-y-1">
-                   <InputGroup icon={MapPin}>
-                       <input 
-                         placeholder="Quartier"
-                         className={inputClasses}
-                         value={formData.quartier}
-                         onChange={e => setFormData({...formData, quartier: e.target.value})}
-                         list="quartiers-list"
-                       />
-                       <datalist id="quartiers-list">
-                         {filteredQuartiers.map(q => <option key={q.id} value={q.name} />)}
-                       </datalist>
-                   </InputGroup>
+                <div className="relative">
+                    <div className="absolute left-3 top-3 text-slate-400"><MapPin size={18} /></div>
+                    <select 
+                       required={isLogistics}
+                       className={`${inputClasses} appearance-none`}
+                       value={formData.quartier}
+                       onChange={e => setFormData({...formData, quartier: e.target.value})}
+                    >
+                       <option value="">Quartier</option>
+                       {isLogistics ? (
+                         quartiersAgadir.map((q, idx) => <option key={idx} value={q}>{q}</option>)
+                       ) : (
+                         quartiers.filter(q => q.villeId === formData.ville).map(q => <option key={q.id} value={q.name}>{q.name}</option>)
+                       )}
+                    </select>
                 </div>
             </div>
             
@@ -890,39 +874,45 @@ function AddClientModal({ onClose, onAdd, employees, currentUser, products, vill
                 />
             </div>
             
-            {/* Pipeline Stage Selection - Fun Cards */}
-            {!isLogistics && (
-               <div className="bg-slate-50 p-2 rounded-2xl flex gap-2">
-                 <label className={`flex-1 cursor-pointer relative`}>
-                   <input 
-                     type="radio" name="stage" value="Confirmé" 
-                     className="peer sr-only"
-                     checked={!dateRequired} 
-                     onChange={() => { setDateRequired(false); setFormData({...formData, stage: 'Confirmé', dateReport: ''}); }}
-                   />
-                   <div className="p-3 rounded-xl border-2 border-transparent peer-checked:bg-white peer-checked:shadow-sm peer-checked:border-emerald-400 transition-all flex flex-col items-center gap-1 text-slate-400 peer-checked:text-emerald-600">
-                        <CheckCircle size={24} className="mb-1" />
-                        <span className="font-bold text-sm">Confirmé</span>
+            {/* Stage Selection - Switch for Agadir, Cards for Ammex */}
+            <div className="bg-slate-50 p-4 rounded-2xl">
+               <div className="flex items-center justify-between mb-3">
+                 <label className="flex items-center gap-3 cursor-pointer">
+                   <div className="relative">
+                     <input 
+                       type="checkbox" 
+                       className="sr-only peer"
+                       checked={isConfirmed} 
+                       onChange={(e) => { 
+                         setIsConfirmed(e.target.checked);
+                         setFormData({
+                           ...formData, 
+                           stage: e.target.checked ? (isLogistics ? 'Confirmé-AG' : 'Confirmé') : (isLogistics ? 'Reporter-AG' : 'Reporter'),
+                           dateReport: e.target.checked ? '' : formData.dateReport
+                         });
+                       }}
+                     />
+                     <div className="w-12 h-6 bg-slate-300 rounded-full peer-checked:bg-emerald-500 transition-all"></div>
+                     <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6"></div>
                    </div>
-                 </label>
-                 
-                 <label className={`flex-1 cursor-pointer relative`}>
-                   <input 
-                     type="radio" name="stage" value="Reporter" 
-                     className="peer sr-only"
-                     checked={dateRequired} 
-                     onChange={() => { setDateRequired(true); setFormData({...formData, stage: 'Reporter'}); }}
-                   />
-                   <div className="p-3 rounded-xl border-2 border-transparent peer-checked:bg-white peer-checked:shadow-sm peer-checked:border-amber-400 transition-all flex flex-col items-center gap-1 text-slate-400 peer-checked:text-amber-600">
-                        <Calendar size={24} className="mb-1" />
-                        <span className="font-bold text-sm">Reporter</span>
+                   <div className="flex items-center gap-2">
+                     {isConfirmed ? (
+                       <>
+                         <CheckCircle size={20} className="text-emerald-600" />
+                         <span className="font-bold text-emerald-600">Confirmé</span>
+                       </>
+                     ) : (
+                       <>
+                         <Calendar size={20} className="text-amber-600" />
+                         <span className="font-bold text-amber-600">Reporter</span>
+                       </>
+                     )}
                    </div>
                  </label>
                </div>
-            )}
             
             {/* Date Picker with Animation */}
-            {dateRequired && !isLogistics && (
+            {!isConfirmed && (
               <div className="animate-in slide-in-from-top-2 fade-in duration-300">
                   <InputGroup icon={Clock}>
                       <input 
@@ -964,6 +954,7 @@ function AddClientModal({ onClose, onAdd, employees, currentUser, products, vill
                 C'est parti ! 🚀
               </button>
             </div>
+          </div>
         </form>
       </div>
     </div>

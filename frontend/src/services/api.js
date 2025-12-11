@@ -295,6 +295,7 @@ export const settingsAPI = {
   getUnits: () => settingsAPI.getList('settings_units', ['ml', 'L', 'g', 'kg', 'unité', 'pièce']),
   getStores: () => settingsAPI.getList('settings_stores', ['Magasin Principal', 'Magasin Secondaire', 'Entrepôt A', 'Entrepôt B']),
   getBusinesses: () => settingsAPI.getList('settings_businesses', ['Herboclear', 'Commit', 'Other']),
+  getQuartiersAgadir: () => settingsAPI.getList('settings_quartiers_agadir', ['Talborjt', 'Founty', 'Agadir Centre', 'Inezgane', 'Anza']),
   
   // Generic Updater
   updateList: (key, newList) => {
@@ -304,7 +305,47 @@ export const settingsAPI = {
             resolve(newList);
         }, 300); // Simulate network delay
     });
+  },
+
+  // Delivery Configuration
+  getDeliveryConfig: () => {
+    const saved = localStorage.getItem('settings_delivery_config');
+    if (!saved) {
+      const defaults = {
+        prixLivraisonAmmex: 30,
+        prixLivraisonAgadir: 20
+      };
+      localStorage.setItem('settings_delivery_config', JSON.stringify(defaults));
+      return defaults;
+    }
+    return JSON.parse(saved);
+  },
+
+  updateDeliveryConfig: (config) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        localStorage.setItem('settings_delivery_config', JSON.stringify(config));
+        resolve(config);
+      }, 300);
+    });
   }
+};
+
+// Delivery Payment API
+export const deliveryPaymentAPI = createGenericAPI('deliveryPayments');
+
+// Add specific method for updating prices
+deliveryPaymentAPI.updatePrices = (id, priceData) => {
+  return asyncWrapper(() => {
+    const payments = storageService.getAll('deliveryPayments');
+    const payment = payments.find(p => p.id === id);
+    if (payment) {
+      payment.prixColis = priceData.prixColis;
+      payment.updatedAt = new Date().toISOString();
+      storageService.update('deliveryPayments', id, payment);
+    }
+    return payment;
+  });
 };
 
 // Export all APIs as a single object
@@ -326,6 +367,7 @@ export default {
   task: taskAPI,
   pipeline: pipelineAPI,
   settings: settingsAPI,
+  deliveryPayment: deliveryPaymentAPI,
   
   // Helpers
   calculateDailyRate,

@@ -41,12 +41,15 @@ import PermissionsPage from './page/admin/permissions';
 import CommissionsPage from './page/admin/commissions';
 import LogsPage from './page/admin/log';
 import SoldPage from './page/admin/sold';
+import HistoriquePaiementLivraison from './page/admin/historiquepaiementlivraison';
+import PipelineAgadir from './page/admin/pipelineAgadir';
 
 
 // Employee Pages
 import { EmployeeLayout } from './components/layout/employeeLayout';
 import ConfirmationDashboard from './page/employee/confirmation/dashboard'; 
 import ConfirmationClients from './page/employee/confirmation/clients';
+import ConfirmationClientsAgadir from './page/employee/confirmation/clientsAgadir';
 import Leaderboard from './page/employee/confirmation/leaderboard';
 import PackagingQueue from './page/employee/packaging/queue';
 import PackagingDashboard from './page/employee/packaging/dashboard';
@@ -74,6 +77,8 @@ export default function App() {
       <Route path="/admin/employees/dashboard" element={<AdminLayout><EmployeeDashboard /></AdminLayout>} />
       <Route path="/admin/business" element={<AdminLayout><BusinessPage /></AdminLayout>} />
       <Route path="/admin/settings" element={<AdminLayout><SettingsPage /></AdminLayout>} />
+      <Route path="/admin/historiquepaiementlivraison" element={<AdminLayout><HistoriquePaiementLivraison /></AdminLayout>} />
+      <Route path="/admin/pipelineagadir" element={<AdminLayout><PipelineAgadir /></AdminLayout>} />
       <Route path="/admin/paiement" element={<AdminLayout><Paiement /></AdminLayout>} />
       <Route path="/admin/presence" element={<AdminLayout><AttendancePage /></AdminLayout>} />
       <Route path="/admin/affectations" element={<AdminLayout><AffectationsPage /></AdminLayout>} />
@@ -144,6 +149,7 @@ export default function App() {
       {/* Confirmation Role Routes */}
       <Route path="/employee/confirmation/dashboard" element={<EmployeeLayout mode="confirmation"><ConfirmationDashboard /></EmployeeLayout>} />
       <Route path="/employee/confirmation/clients" element={<EmployeeLayout mode="confirmation"><ConfirmationClients /></EmployeeLayout>} />
+      <Route path="/employee/confirmation/clientsagadir" element={<EmployeeLayout mode="confirmation"><ConfirmationClientsAgadir /></EmployeeLayout>} />
       <Route path="/employee/confirmation/tasks" element={<EmployeeLayout mode="confirmation"><EmployeeTaskPage /></EmployeeLayout>} />
       <Route path="/employee/confirmation/leaderboard" element={<EmployeeLayout mode="confirmation"><Leaderboard /></EmployeeLayout>} />
 

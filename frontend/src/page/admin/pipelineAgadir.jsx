@@ -20,7 +20,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-export default function ColisManagement() {
+export default function PipelineAgadir() {
   // --- STATE ---
   const [colis, setColis] = useState(() => {
     const saved = localStorage.getItem('colis');
@@ -146,10 +146,10 @@ export default function ColisManagement() {
     }
     
     setPipelines(allPipelines);
-    // Always use Livraison Ammex pipeline (id: 1)
-    const ammexPipeline = allPipelines.find(p => p.id === 1) || allPipelines[0];
-    setSelectedPipeline(ammexPipeline);
-    updateStagesFromPipeline(ammexPipeline);
+    // Always use Livreur Agadir pipeline (id: 2)
+    const agadirPipeline = allPipelines.find(p => p.id === 2) || allPipelines[1];
+    setSelectedPipeline(agadirPipeline);
+    updateStagesFromPipeline(agadirPipeline);
   };
 
   const updateStagesFromPipeline = (pipeline) => {
@@ -372,6 +372,7 @@ export default function ColisManagement() {
   console.log('🎯 Available stages:', stages.map(s => s.id));
 
   const getColisByStage = (stageName) => {
+    // Use filteredColis which already includes pipeline filtering
     return filteredColis.filter(c => {
       if (!c.stage) return false;
       
@@ -425,10 +426,10 @@ export default function ColisManagement() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 mb-6">
           <div className="flex justify-between items-center gap-4 flex-wrap">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white"><Package size={24} /></div>
+              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white"><Truck size={24} /></div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Livraison Ammex</h1>
-                <p className="text-xs text-slate-500">Kanban Livraison Ammex</p>
+                <h1 className="text-2xl font-bold text-slate-900">Centre Agadir - Pipeline</h1>
+                <p className="text-xs text-slate-500">Kanban Livreur Agadir</p>
               </div>
             </div>
             <div className="flex gap-2 flex-wrap">
@@ -437,10 +438,10 @@ export default function ColisManagement() {
                </button>
                <button 
                  onClick={() => setShowAddModal(true)} 
-                 className="px-6 py-2 text-white rounded-xl flex items-center gap-2 shadow-lg transition-all bg-blue-600 hover:bg-blue-700 shadow-blue-500/30"
+                 className="px-6 py-2 text-white rounded-xl flex items-center gap-2 shadow-lg transition-all bg-green-600 hover:bg-green-700 shadow-green-500/30"
                >
                  <Plus size={18} /> 
-                 Ajouter Livraison Ammex
+                 Ajouter Colis Agadir
                </button>
             </div>
           </div>
@@ -712,6 +713,13 @@ export default function ColisManagement() {
 }
 
 function AddCommercialModal({ onClose, onAdd, employees, businesses, products, villes, quartiers, availableStages }) {
+  const [quartiersAgadir, setQuartiersAgadir] = React.useState([]);
+
+  React.useEffect(() => {
+    const quartiers = settingsAPI.getQuartiersAgadir();
+    setQuartiersAgadir(quartiers);
+  }, []);
+
   const [formData, setFormData] = useState({
     productId: '', productName: '', clientName: '', ville: '', quartier: '', tel: '', prix: '', 
     employee: employees[0] || '', business: businesses[0] || 'Herboclear',
@@ -771,7 +779,15 @@ function AddCommercialModal({ onClose, onAdd, employees, businesses, products, v
             
             <div>
               <Label text="Quartier" />
-              <input className="w-full p-3 bg-slate-50 border rounded-xl" placeholder="Quartier" value={formData.quartier} onChange={e => setFormData({...formData, quartier: e.target.value})} />
+              <select 
+                className="w-full p-3 bg-slate-50 border rounded-xl" 
+                value={formData.quartier}
+                onChange={e => setFormData({...formData, quartier: e.target.value})}>
+                <option value="">Sélectionner un quartier...</option>
+                {quartiersAgadir.map((q, idx) => (
+                  <option key={idx} value={q}>{q}</option>
+                ))}
+              </select>
             </div>
             
             <div>
@@ -840,6 +856,12 @@ function AddCommercialModal({ onClose, onAdd, employees, businesses, products, v
 function AddLogisticsModal({ onClose, onAdd, employees, businesses, products, villes, quartiers }) {
   const agadirVille = villes.find(v => v.name.toLowerCase() === 'agadir')?.id || 'Agadir';
   const defaultStage = 'Confirmé-AG';
+  const [quartiersAgadir, setQuartiersAgadir] = React.useState([]);
+
+  React.useEffect(() => {
+    const quartiers = settingsAPI.getQuartiersAgadir();
+    setQuartiersAgadir(quartiers);
+  }, []);
 
   const [formData, setFormData] = useState({
     productId: '', productName: '', clientName: '', 
@@ -899,7 +921,15 @@ function AddLogisticsModal({ onClose, onAdd, employees, businesses, products, vi
             
             <div>
               <Label text="Quartier" />
-              <input className="w-full p-3 bg-slate-50 border rounded-xl" placeholder="Quartier" value={formData.quartier} onChange={e => setFormData({...formData, quartier: e.target.value})} />
+              <select 
+                className="w-full p-3 bg-slate-50 border rounded-xl" 
+                value={formData.quartier}
+                onChange={e => setFormData({...formData, quartier: e.target.value})}>
+                <option value="">Sélectionner un quartier...</option>
+                {quartiersAgadir.map((q, idx) => (
+                  <option key={idx} value={q}>{q}</option>
+                ))}
+              </select>
             </div>
             
             <div>

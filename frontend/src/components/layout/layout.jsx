@@ -51,7 +51,9 @@ const MODULES = [
     subItems: [
       { id: 'pipeline-dash', label: 'Dashboard', path: '/admin/pipeline/dashboard' },
       { id: 'pipeline-kanban', label: 'Pipeline', path: '/admin/pipeline' },
-      { id: 'pipeline-list', label: 'Liste Clients', path: '/admin/pipeline/list' },
+      { id: 'pipeline-list', label: 'Livraison Ammex', path: '/admin/pipeline/list' },
+      { id: 'pipeline-list-agadir', label: 'Livraison Agadir', path: '/admin/pipelineagadir' },
+      { id: 'pipeline-agadir', label: 'Historique livraison', path: '/admin/historiquepaiementlivraison' },
     ]
   },
   {

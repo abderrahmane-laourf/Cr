@@ -144,17 +144,19 @@ export default function DeliveryRunPage() {
     
     setProducts(savedProducts);
 
-    // Filter Logic for "My Run"
+    // Filter Logic for "My Run" - ONLY AGADIR PIPELINE (pipelineId = 2)
     let myRun = savedColis.filter(c => {
-         // Must be in Agadir Pipeline Stages (or assigned to me explicitly)
-         const isAgadirStage = [STAGE_EN_ROUTE, STAGE_LIVRE, STAGE_REPORTE, STAGE_ANNULE, STAGE_PACKAGING, 'Packaging'].includes(c.stage);
+         // MUST be Agadir Pipeline (pipelineId === 2)
+         if (c.pipelineId !== 2) return false;
+
+         // Must be in Agadir Pipeline Stages
+         const isAgadirStage = [STAGE_EN_ROUTE, STAGE_LIVRE, STAGE_REPORTE, STAGE_ANNULE, STAGE_PACKAGING].includes(c.stage);
          if (!isAgadirStage) return false;
 
-         // If I am a driver, strict filtering by employee name OR if it's open 'Out for Delivery-AG' (depending on rules)
-         // Assuming Strict Assignment:
-         /* if (user.name && c.employee !== user.name) return false; */
+         // Optional: Filter by assigned driver (if employee field is used for driver assignment)
+         // Uncomment if you want strict assignment: 
+         // if (user.name && c.employee !== user.name) return false;
          
-         // For now, let's show ALL 'Out for Delivery-AG' to simulate the run, or filter by user if present
          return true; 
     });
 
@@ -193,7 +195,10 @@ export default function DeliveryRunPage() {
        {/* Header */}
        <div className="flex items-center justify-between mb-6 pt-2">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Ma Tournée 🚚</h1>
+            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+              <Truck className="text-orange-600" size={28} />
+              Livraison Agadir
+            </h1>
             <p className="text-sm text-slate-500 font-medium">Bonne route, {currentUser?.name} !</p>
           </div>
           <div className="flex gap-2">

@@ -45,7 +45,8 @@ const MOCK_NOTIFICATIONS = [
 const MODULES = {
   confirmation: [
     { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/employee/confirmation/dashboard' },
-    { id: 'clients', label: 'Clients', icon: Users, path: '/employee/confirmation/clients' },
+    { id: 'clients-ammex', label: 'Livraison Ammex', icon: Users, path: '/employee/confirmation/clients' },
+    { id: 'clients-agadir', label: 'Livraison Agadir', icon: MapPin, path: '/employee/confirmation/clientsagadir' },
     { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/confirmation/tasks' },
     { id: 'leaderboard', label: 'Leaderboard', icon: Trophy, path: '/employee/confirmation/leaderboard' }
   ],
@@ -61,7 +62,7 @@ const MODULES = {
   ],
   delivery: [
     { id: 'dashboard', label: 'Dashboard Livreur', icon: LayoutDashboard, path: '/employee/delivery/dashboard' },
-    { id: 'run', label: 'Ma Tournée (Colis)', icon: MapPin, path: '/employee/delivery/run' },
+    { id: 'run', label: 'Mes Colis Agadir', icon: MapPin, path: '/employee/delivery/run' },
     { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/delivery/tasks' },
   ],
   delivery_manager: [

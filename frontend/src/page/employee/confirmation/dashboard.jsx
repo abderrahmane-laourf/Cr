@@ -17,9 +17,26 @@ const ConfirmationTeamDashboard = () => {
     dateFrom: '',
     dateTo: '',
     employee: isManager ? 'all' : currentUserName,
-    product: 'all'
+    product: 'all',
+    pipeline: 'all'
   });
   const [kpis, setKpis] = useState({
+    confirmed: 0,
+    scheduled: 0,
+    inTransit: 0,
+    delivered: 0,
+    returned: 0,
+    total: 0
+  });
+  const [kpisAmmex, setKpisAmmex] = useState({
+    confirmed: 0,
+    scheduled: 0,
+    inTransit: 0,
+    delivered: 0,
+    returned: 0,
+    total: 0
+  });
+  const [kpisAgadir, setKpisAgadir] = useState({
     confirmed: 0,
     scheduled: 0,
     inTransit: 0,
@@ -49,44 +66,36 @@ const ConfirmationTeamDashboard = () => {
     }
   }, [kpis.delivered, kpis.returned]);
 
-  // Generate sample data
+  // Load real data from localStorage
   const generateData = () => {
-    const employees = ["Sarah", "Mohamed", "Khaled", "Huda", "Karim"];
-    const products = ["iPhone 15 Pro", "Chargeur Anker", "Montre connectée", "Machine à café", "Écouteurs Bluetooth"];
+    // Load colis from localStorage
+    const savedColis = localStorage.getItem('colis');
+    const allColis = savedColis ? JSON.parse(savedColis) : [];
     
-    const newOrders = [];
-    const today = new Date();
-
-    for(let i = 0; i < 300; i++) {
-      const daysAgo = Math.floor(Math.random() * 30);
-      const d = new Date(); 
-      d.setDate(today.getDate() - daysAgo);
-      const dateStr = d.toISOString().split('T')[0];
-      
-      const emp = employees[Math.floor(Math.random() * employees.length)];
-      const prod = products[Math.floor(Math.random() * products.length)];
-      
-      const rand = Math.random();
-      let status = "Confirmé";
-      if(rand > 0.8) status = "Livré";
-      else if(rand > 0.7) status = "Retourné";
-      else if(rand > 0.5) status = "En cours de livraison";
-      else if(rand > 0.4) status = "Confirmé avec date";
-
-      newOrders.push({ 
-        id: i+1, 
-        emp: emp, 
-        product: prod, 
-        status: status, 
-        date: dateStr 
-      });
-    }
+    // Load products from localStorage
+    const savedProducts = localStorage.getItem('products');
+    const allProducts = savedProducts ? JSON.parse(savedProducts) : [];
+    
+    // Get unique employees
+    const uniqueEmployees = [...new Set(allColis.map(c => c.employee).filter(Boolean))];
+    
+    // Convert colis to orders format
+    const newOrders = allColis.map(c => ({
+      id: c.id,
+      emp: c.employee || 'Non assigné',
+      product: c.productName || allProducts.find(p => p.id === c.productId)?.nom || 'Produit inconnu',
+      status: c.stage || 'Reporter',
+      date: c.dateCreated ? c.dateCreated.split('T')[0] : new Date().toISOString().split('T')[0],
+      pipelineId: c.pipelineId || 1,
+      pipeline: c.pipelineId === 2 ? 'Agadir' : 'Ammex'
+    }));
 
     setOrders(newOrders);
-    setEmployees(employees);
-    setProducts(products);
+    setEmployees(uniqueEmployees.length > 0 ? uniqueEmployees : ["Sarah", "Mohamed", "Khaled", "Huda", "Karim"]);
+    setProducts([...new Set(newOrders.map(o => o.product))]);
     
     // Set default date filters (last 30 days)
+    const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(today.getDate() - 30);
@@ -109,6 +118,7 @@ const ConfirmationTeamDashboard = () => {
 
     const employee = filters.employee;
     const product = filters.product;
+    const pipeline = filters.pipeline;
 
     // Filter orders based on criteria
     const filtered = orders.filter(o => {
@@ -116,23 +126,50 @@ const ConfirmationTeamDashboard = () => {
       const dateMatch = orderDate >= dateFrom && orderDate <= dateTo;
       const empMatch = employee === 'all' || o.emp === employee;
       const prodMatch = product === 'all' || o.product === product;
+      const pipelineMatch = pipeline === 'all' || o.pipeline === pipeline;
       
-      return dateMatch && empMatch && prodMatch;
+      return dateMatch && empMatch && prodMatch && pipelineMatch;
     });
 
     setFilteredOrders(filtered);
 
-    // Calculate KPIs
+    // Calculate KPIs for all filtered
     const newKpis = {
-      confirmed: filtered.filter(o => o.status === "Confirmé").length,
+      confirmed: filtered.filter(o => o.status === "Confirmé" || o.status === "Reporter").length,
       scheduled: filtered.filter(o => o.status === "Confirmé avec date").length,
-      inTransit: filtered.filter(o => o.status === "En cours de livraison").length,
+      inTransit: filtered.filter(o => o.status === "Out for Delivery" || o.status === "Packaging").length,
       delivered: filtered.filter(o => o.status === "Livré").length,
-      returned: filtered.filter(o => o.status === "Retourné").length,
+      returned: filtered.filter(o => o.status === "Annulé" || o.status === "Retourné").length,
       total: filtered.length
     };
 
     setKpis(newKpis);
+
+    // Calculate KPIs for Ammex
+    const ammexOrders = filtered.filter(o => o.pipeline === 'Ammex');
+    const newKpisAmmex = {
+      confirmed: ammexOrders.filter(o => o.status === "Confirmé" || o.status === "Reporter").length,
+      scheduled: ammexOrders.filter(o => o.status === "Confirmé avec date").length,
+      inTransit: ammexOrders.filter(o => o.status === "Out for Delivery" || o.status === "Packaging").length,
+      delivered: ammexOrders.filter(o => o.status === "Livré").length,
+      returned: ammexOrders.filter(o => o.status === "Annulé" || o.status === "Retourné").length,
+      total: ammexOrders.length
+    };
+
+    setKpisAmmex(newKpisAmmex);
+
+    // Calculate KPIs for Agadir
+    const agadirOrders = filtered.filter(o => o.pipeline === 'Agadir');
+    const newKpisAgadir = {
+      confirmed: agadirOrders.filter(o => o.status === "Confirmé" || o.status === "Reporter").length,
+      scheduled: agadirOrders.filter(o => o.status === "Confirmé avec date").length,
+      inTransit: agadirOrders.filter(o => o.status === "Out for Delivery" || o.status === "Packaging").length,
+      delivered: agadirOrders.filter(o => o.status === "Livré").length,
+      returned: agadirOrders.filter(o => o.status === "Annulé" || o.status === "Retourné").length,
+      total: agadirOrders.length
+    };
+
+    setKpisAgadir(newKpisAgadir);
 
     // Calculate delivery rate
     const totalClosed = newKpis.delivered + newKpis.returned;
@@ -140,11 +177,11 @@ const ConfirmationTeamDashboard = () => {
     setDeliveryRate(rate);
 
     // Calculate employee stats
-    calculateEmployeeStats(dateFrom, dateTo, product);
+    calculateEmployeeStats(dateFrom, dateTo, product, pipeline);
   };
 
   // Calculate statistics for each employee
-  const calculateEmployeeStats = (dateFrom, dateTo, product) => {
+  const calculateEmployeeStats = (dateFrom, dateTo, product, pipeline) => {
     const stats = {};
     
     // Initialize stats for each employee
@@ -160,26 +197,37 @@ const ConfirmationTeamDashboard = () => {
       };
     });
 
-    // Filter orders by date and product
+    // Filter orders by date, product, and pipeline
     const relevantOrders = orders.filter(o => {
       const orderDate = new Date(o.date);
       const dateMatch = orderDate >= dateFrom && orderDate <= dateTo;
       const prodMatch = product === 'all' || o.product === product;
+      const pipelineMatch = pipeline === 'all' || o.pipeline === pipeline;
       
-      return dateMatch && prodMatch;
+      return dateMatch && prodMatch && pipelineMatch;
     });
 
     // Count orders for each employee
     relevantOrders.forEach(o => {
-      if (stats[o.emp]) {
-        stats[o.emp].total++;
-        
-        if (o.status === "Confirmé") stats[o.emp].confirmed++;
-        else if (o.status === "Confirmé avec date") stats[o.emp].scheduled++;
-        else if (o.status === "En cours de livraison") stats[o.emp].inTransit++;
-        else if (o.status === "Livré") stats[o.emp].delivered++;
-        else if (o.status === "Retourné") stats[o.emp].returned++;
+      if (!stats[o.emp]) {
+        stats[o.emp] = {
+          confirmed: 0,
+          scheduled: 0,
+          inTransit: 0,
+          delivered: 0,
+          returned: 0,
+          total: 0,
+          rate: 0
+        };
       }
+      
+      stats[o.emp].total++;
+      
+      if (o.status === "Confirmé" || o.status === "Reporter") stats[o.emp].confirmed++;
+      else if (o.status === "Confirmé avec date") stats[o.emp].scheduled++;
+      else if (o.status === "Out for Delivery" || o.status === "Packaging") stats[o.emp].inTransit++;
+      else if (o.status === "Livré") stats[o.emp].delivered++;
+      else if (o.status === "Annulé" || o.status === "Retourné") stats[o.emp].returned++;
     });
 
     // Calculate success rate for each employee
@@ -312,6 +360,19 @@ const ConfirmationTeamDashboard = () => {
               </select>
             </div>
 
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold text-gray-500 uppercase">Pipeline</label>
+              <select 
+                value={filters.pipeline}
+                onChange={(e) => handleFilterChange('pipeline', e.target.value)}
+                className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[140px]"
+              >
+                <option value="all">Tous</option>
+                <option value="Ammex">Livraison Ammex</option>
+                <option value="Agadir">Livraison Agadir</option>
+              </select>
+            </div>
+
             <button 
               onClick={applyFilters}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
@@ -365,6 +426,71 @@ const ConfirmationTeamDashboard = () => {
             </div>
             <div className="text-2xl font-bold text-white">{formatNumber(kpis.total)}</div>
             <div className="text-xs text-gray-400 mt-1">Dans le filtre sélectionné</div>
+          </div>
+        </div>
+
+        {/* Pipeline Statistics - Ammex & Agadir */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Livraison Ammex */}
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-200">
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                <Truck className="text-white" size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900">Livraison Ammex</h3>
+                <p className="text-xs text-gray-500">{formatNumber(kpisAmmex.total)} colis</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <div className="text-xs text-gray-600 mb-1">Confirmés</div>
+                <div className="text-xl font-bold text-blue-600">{formatNumber(kpisAmmex.confirmed)}</div>
+              </div>
+              <div className="p-3 bg-amber-50 rounded-lg">
+                <div className="text-xs text-gray-600 mb-1">En Transit</div>
+                <div className="text-xl font-bold text-amber-600">{formatNumber(kpisAmmex.inTransit)}</div>
+              </div>
+              <div className="p-3 bg-green-50 rounded-lg">
+                <div className="text-xs text-gray-600 mb-1">Livrés</div>
+                <div className="text-xl font-bold text-green-600">{formatNumber(kpisAmmex.delivered)}</div>
+              </div>
+              <div className="p-3 bg-red-50 rounded-lg">
+                <div className="text-xs text-gray-600 mb-1">Annulés</div>
+                <div className="text-xl font-bold text-red-600">{formatNumber(kpisAmmex.returned)}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Livraison Agadir */}
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-200">
+              <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+                <Truck className="text-white" size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900">Livraison Agadir</h3>
+                <p className="text-xs text-gray-500">{formatNumber(kpisAgadir.total)} colis</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <div className="text-xs text-gray-600 mb-1">Confirmés</div>
+                <div className="text-xl font-bold text-blue-600">{formatNumber(kpisAgadir.confirmed)}</div>
+              </div>
+              <div className="p-3 bg-amber-50 rounded-lg">
+                <div className="text-xs text-gray-600 mb-1">En Transit</div>
+                <div className="text-xl font-bold text-amber-600">{formatNumber(kpisAgadir.inTransit)}</div>
+              </div>
+              <div className="p-3 bg-green-50 rounded-lg">
+                <div className="text-xs text-gray-600 mb-1">Livrés</div>
+                <div className="text-xl font-bold text-green-600">{formatNumber(kpisAgadir.delivered)}</div>
+              </div>
+              <div className="p-3 bg-red-50 rounded-lg">
+                <div className="text-xs text-gray-600 mb-1">Annulés</div>
+                <div className="text-xl font-bold text-red-600">{formatNumber(kpisAgadir.returned)}</div>
+              </div>
+            </div>
           </div>
         </div>
 

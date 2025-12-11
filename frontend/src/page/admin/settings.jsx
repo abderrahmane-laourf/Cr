@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Settings, Save, Plus, Trash2, Edit2, RotateCw, CheckCircle, AlertCircle, 
-  Layers, Package, Database, Briefcase, Tag, Ruler
+  Layers, Package, Database, Briefcase, Tag, Ruler, Truck, MapPin
 } from 'lucide-react';
 import { settingsAPI, businessAPI } from '../../services/api';
 
@@ -170,6 +170,17 @@ const SettingsPage = () => {
                         fetcher={settingsAPI.getStores}
                     />
 
+                    <ListManager 
+                        title="Quartiers Agadir" 
+                        icon={MapPin} 
+                        dataKey="settings_quartiers_agadir"
+                        fetcher={settingsAPI.getQuartiersAgadir}
+                        placeholder="Ex: Talborjt, Founty..."
+                    />
+
+                    {/* SECTION: DELIVERY CONFIGURATION */}
+                    <DeliveryConfigSection />
+
                     {/* SECTION: BUSINESS UNITS (Table View) */}
                     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden h-full flex flex-col md:col-span-2 lg:col-span-3">
                         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
@@ -211,7 +222,103 @@ const SettingsPage = () => {
 // Simple Icon Wrapper if Lucide doesn't have 'Tag' exported as 'TagsIcon' or similar naming conflict
 const TagsIcon = (props) => <Tag {...props} />;
 
+const DeliveryConfigSection = () => {
+    const navigate = useNavigate();
+    const [config, setConfig] = useState({
+        prixLivraisonAmmex: 30,
+        prixLivraisonAgadir: 20
+    });
+    const [toast, setToast] = useState(null);
+    const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        const loadConfig = async () => {
+            const savedConfig = await settingsAPI.getDeliveryConfig();
+            if (savedConfig) {
+                setConfig(savedConfig);
+            }
+        };
+        loadConfig();
+    }, []);
+
+    const handleSave = async () => {
+        setLoading(true);
+        await settingsAPI.updateDeliveryConfig(config);
+        setToast({ message: "Configuration sauvegardée !", type: "success" });
+        setLoading(false);
+    };
+
+    const handleInputChange = (field, value) => {
+        setConfig(prev => ({ ...prev, [field]: parseFloat(value) || 0 }));
+    };
+
+    return (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden h-full flex flex-col md:col-span-2 lg:col-span-3">
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+            
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-2">
+                    <div className="p-2 bg-green-100/50 text-green-600 rounded-lg">
+                        <Truck size={18} />
+                    </div>
+                    <h3 className="font-bold text-slate-800">Configuration Livraison</h3>
+                </div>
+                <button 
+                    onClick={() => navigate('/admin/historiquepaiementlivraison')}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-bold hover:bg-green-700 transition-colors shadow-sm"
+                >
+                    Historique Paiements
+                </button>
+            </div>
+
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                        Prix Livraison Ammex
+                    </label>
+                    <div className="relative">
+                        <input 
+                            type="number"
+                            step="0.01"
+                            value={config.prixLivraisonAmmex}
+                            onChange={(e) => handleInputChange('prixLivraisonAmmex', e.target.value)}
+                            className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/10 transition-all"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">DH</span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">Prix de livraison via Ammex</p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                        Prix Livraison Agadir
+                    </label>
+                    <div className="relative">
+                        <input 
+                            type="number"
+                            step="0.01"
+                            value={config.prixLivraisonAgadir}
+                            onChange={(e) => handleInputChange('prixLivraisonAgadir', e.target.value)}
+                            className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/10 transition-all"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">DH</span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">Prix de livraison Agadir</p>
+                </div>
+
+                <div className="md:col-span-2">
+                    <button 
+                        onClick={handleSave}
+                        disabled={loading}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+                    >
+                        <Save size={18} /> Sauvegarder la Configuration
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const BusinessListRow = () => {
     const [businesses, setBusinesses] = useState([]);

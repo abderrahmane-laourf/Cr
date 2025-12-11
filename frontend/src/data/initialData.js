@@ -1075,5 +1075,62 @@ export const initialData = {
       "apiId": "API-COMMIT-002",
       "apiToken": "tk_live_commit_987654321"
     }
+  ],
+  "deliveryPayments": [
+    {
+      "id": "1",
+      "refColis": "COL-001",
+      "clientNom": "Ahmed Bennani",
+      "clientPhone": "0661234567",
+      "dateLivraison": "2025-12-10",
+      "typeLivraison": "Ammex",
+      "prixColis": 30,
+      "createdAt": "2025-12-10T10:30:00.000Z",
+      "updatedAt": "2025-12-10T10:30:00.000Z"
+    },
+    {
+      "id": "2",
+      "refColis": "COL-002",
+      "clientNom": "Fatima Zahra",
+      "clientPhone": "0662345678",
+      "dateLivraison": "2025-12-10",
+      "typeLivraison": "Agadir",
+      "prixColis": 20,
+      "createdAt": "2025-12-10T11:15:00.000Z",
+      "updatedAt": "2025-12-10T11:15:00.000Z"
+    },
+    {
+      "id": "3",
+      "refColis": "COL-003",
+      "clientNom": "Mohamed Alami",
+      "clientPhone": "0663456789",
+      "dateLivraison": "2025-12-11",
+      "typeLivraison": "Ammex",
+      "prixColis": 30,
+      "createdAt": "2025-12-11T09:00:00.000Z",
+      "updatedAt": "2025-12-11T09:00:00.000Z"
+    },
+    {
+      "id": "4",
+      "refColis": "COL-004",
+      "clientNom": "Khadija Merzouki",
+      "clientPhone": "0664567890",
+      "dateLivraison": "2025-12-11",
+      "typeLivraison": "Agadir",
+      "prixColis": 20,
+      "createdAt": "2025-12-11T14:20:00.000Z",
+      "updatedAt": "2025-12-11T14:20:00.000Z"
+    },
+    {
+      "id": "5",
+      "refColis": "COL-005",
+      "clientNom": "Youssef Idrissi",
+      "clientPhone": "0665678901",
+      "dateLivraison": "2025-12-11",
+      "typeLivraison": "Ammex",
+      "prixColis": 30,
+      "createdAt": "2025-12-11T16:00:00.000Z",
+      "updatedAt": "2025-12-11T16:00:00.000Z"
+    }
   ]
 };

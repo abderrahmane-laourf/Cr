@@ -20,18 +20,50 @@ const StatCard = ({ title, value, icon: Icon, color, subValue }) => (
 
 export default function DeliveryDashboard() {
   const [stats, setStats] = useState({
-    delivered: 12,
-    pending: 8,
-    returned: 2,
-    cash: 1450,
+    delivered: 0,
+    pending: 0,
+    returned: 0,
+    cash: 0,
   });
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = () => {
+    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    setCurrentUser(user);
+    
+    const savedColis = JSON.parse(localStorage.getItem('colis')) || [];
+    
+    // Filter only Agadir pipeline (pipelineId === 2) and delivery stages
+    const agadirColis = savedColis.filter(c => c.pipelineId === 2);
+    
+    const delivered = agadirColis.filter(c => c.stage === 'Livré-AG' || c.stage === 'Livré').length;
+    const pending = agadirColis.filter(c => c.stage === 'Out for Delivery-AG' || c.stage === 'Packaging-AG').length;
+    const returned = agadirColis.filter(c => c.stage === 'Annulé-AG').length;
+    const cash = agadirColis
+      .filter(c => c.stage === 'Livré-AG' || c.stage === 'Livré')
+      .reduce((sum, c) => sum + (parseFloat(c.prix) || 0), 0);
+
+    setStats({
+      delivered,
+      pending,
+      returned,
+      cash: Math.round(cash)
+    });
+  };
 
   return (
     <div className="space-y-6 pb-20">
       {/* Header Mobile-First */}
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-extrabold text-slate-900">Bonjour, Livreur 👋</h1>
-        <p className="text-slate-500 font-medium">Prêt pour la tournée d'aujourd'hui ?</p>
+        <h1 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+          <Truck className="text-orange-600" size={28} />
+          Livraison Agadir
+        </h1>
+        <p className="text-slate-500 font-medium">Bonjour {currentUser?.name || 'Livreur'}, prêt pour la tournée ?</p>
       </div>
 
       {/* Quick Stats Grid */}
