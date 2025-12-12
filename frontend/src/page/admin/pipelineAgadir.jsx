@@ -421,7 +421,7 @@ export default function PipelineAgadir() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 p-4">
-      <div className="w-full mx-auto">
+      <div className="w-full">
         {/* Header Controls */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 mb-6">
           <div className="flex justify-between items-center gap-4 flex-wrap">

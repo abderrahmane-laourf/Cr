@@ -6,7 +6,7 @@ import {
   X, Package, Box, ClipboardList, Truck, History, Workflow, List, 
   ShoppingCart, Search, Factory, Megaphone, ListTodo, Building, Wallet, 
   Coins, PanelLeftClose, PanelLeftOpen, ShieldCheck, Clipboard, User, DollarSign,
-  Sun, Moon, Trophy
+  Sun, Moon, Trophy, MapPin, Navigation
 } from 'lucide-react';
 
 // ----------------------------------------------------------------------
@@ -53,7 +53,17 @@ const MODULES = [
       { id: 'pipeline-kanban', label: 'Pipeline', path: '/admin/pipeline' },
       { id: 'pipeline-list', label: 'Livraison Ammex', path: '/admin/pipeline/list' },
       { id: 'pipeline-list-agadir', label: 'Livraison Agadir', path: '/admin/pipelineagadir' },
-      { id: 'pipeline-agadir', label: 'Historique livraison', path: '/admin/historiquepaiementlivraison' },
+      { id: 'pipeline-retourner', label: 'Retourner', path: '/admin/retourner' },
+    ]
+  },
+  {
+    id: 'details-livraison',
+    label: 'Détails de Livraison',
+    icon: Truck,
+    subItems: [
+      { id: 'historique-livraison', label: 'Historique de Livraison', path: '/admin/historiquepaiementlivraison' },
+      { id: 'tracking-livreur', label: 'Tracking Livraison', path: '/admin/tracking-livreur' },
+      { id: 'gestion-settlements', label: 'check livreur', path: '/admin/settlements'},
     ]
   },
   {
@@ -362,6 +372,36 @@ const Header = ({ isSidebarOpen, setSidebarOpen, pageTitle }) => {
                   <div className="text-xs text-slate-500">{user.role || 'Gérant'}</div>
                 </div>
                 <div className="p-2">
+                  <button
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      navigate('/admin/tracking-livreur');
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                  >
+                    <MapPin size={18} className="text-slate-400" />
+                    <span>Tracking Livreur</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      navigate('/admin/approvals');
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                  >
+                    <CreditCard size={18} className="text-slate-400" />
+                    <span>Approbations Paiements</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      navigate('/admin/settlements');
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                  >
+                    <DollarSign size={18} className="text-slate-400" />
+                    <span>Gestion des Versements</span>
+                  </button>
                   <button
                     onClick={() => {
                       setShowProfileMenu(false);

@@ -16,7 +16,9 @@ import {
   ChevronDown,
   User,
   Settings,
-  MapPin
+  MapPin,
+  Wallet,
+  DollarSign
 } from 'lucide-react';
 import { taskAPI } from '../../services/api';
 
@@ -54,6 +56,8 @@ const MODULES = {
   confirmation_manager: [
     { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/employee/confirmation-manager/dashboard' },
     { id: 'clients', label: 'Liste Clients', icon: Users, path: '/employee/confirmation-manager/clients' },
+    { id: 'investissement', label: 'Investissement', icon: Wallet, path: '/employee/confirmation-manager/investissement' },
+    { id: 'versements', label: 'Gestion des Versements', icon: DollarSign, path: '/employee/confirmation-manager/versements' },
     { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/confirmation-manager/tasks' },
   ],
   packaging: [
@@ -64,11 +68,13 @@ const MODULES = {
   delivery: [
     { id: 'dashboard', label: 'Dashboard Livreur', icon: LayoutDashboard, path: '/employee/delivery/dashboard' },
     { id: 'run', label: 'Mes Colis Agadir', icon: MapPin, path: '/employee/delivery/run' },
+    { id: 'portefeuille', label: 'Mon Portefeuille', icon: Wallet, path: '/employee/delivery/portefeuille' },
     { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/delivery/tasks' },
   ],
   delivery_manager: [
     { id: 'dashboard', label: 'Dashboard Chef', icon: LayoutDashboard, path: '/employee/delivery-manager/dashboard' },
-    { id: 'dispatch', label: 'Suivi Global', icon: MapPin, path: '/employee/delivery-manager/dispatch' }, // The "Pipeline" for the manager
+    { id: 'dispatch', label: 'Suivi Global', icon: MapPin, path: '/employee/delivery-manager/dispatch' },
+    { id: 'approvals', label: 'Approbations', icon: AlertCircle, path: '/employee/delivery-manager/approvals' },
     { id: 'drivers', label: 'Mes Livreurs', icon: Users, path: '/employee/delivery-manager/drivers' },
   ], 
   default: [

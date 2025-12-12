@@ -191,7 +191,8 @@ export default function DeliveryRunPage() {
   });
 
   return (
-    <div className="pb-24 max-w-lg mx-auto p-4 bg-slate-50 min-h-screen">
+    <div className="pb-24 bg-slate-50 min-h-screen">
+      <div className="w-full p-4">
        {/* Header */}
        <div className="flex items-center justify-between mb-6 pt-2">
           <div>
@@ -205,20 +206,21 @@ export default function DeliveryRunPage() {
               <button 
                 onClick={() => {
                     const demoData = [
-                        { id: 9001, clientName: "Mouna Tazi", tel: "0600112233", ville: "Agadir", quartier: "Talborjt", prix: 300, stage: 'Out for Delivery-AG', dateCreated: new Date().toISOString(), productName: "Pack Cheveux" },
-                        { id: 9002, clientName: "Karim Benani", tel: "0611223344", ville: "Agadir", quartier: "Hay Mohammadi", prix: 150, stage: 'Out for Delivery-AG', dateCreated: new Date().toISOString(), productName: "Savon Noir" },
-                        { id: 9003, clientName: "Laila Alami", tel: "0622334455", ville: "Agadir", quartier: "Dakhla", prix: 450, stage: 'Livré-AG', dateCreated: new Date().toISOString(), productName: "Pack Complet" }
+                        { id: Date.now() + 1, clientName: "Mouna Tazi", tel: "0600112233", ville: "Agadir", quartier: "Talborjt", prix: 300, stage: 'Out for Delivery-AG', dateCreated: new Date().toISOString(), productName: "Pack Cheveux", pipelineId: 2 },
+                        { id: Date.now() + 2, clientName: "Karim Benani", tel: "0611223344", ville: "Agadir", quartier: "Hay Mohammadi", prix: 150, stage: 'Out for Delivery-AG', dateCreated: new Date().toISOString(), productName: "Savon Noir", pipelineId: 2 },
+                        { id: Date.now() + 3, clientName: "Laila Alami", tel: "0622334455", ville: "Agadir", quartier: "Dakhla", prix: 450, stage: 'Livré-AG', dateCreated: new Date().toISOString(), productName: "Pack Complet", pipelineId: 2 },
+                        { id: Date.now() + 4, clientName: "Ahmed Rifi", tel: "0633445566", ville: "Agadir", quartier: "Founty", prix: 200, stage: 'Out for Delivery-AG', dateCreated: new Date().toISOString(), productName: "Huile d'Argan", pipelineId: 2 }
                     ];
                     const existing = JSON.parse(localStorage.getItem('colis')) || [];
-                    // Merge avoiding duplicates
-                    const newColis = [...existing, ...demoData.filter(d => !existing.find(e => e.id === d.id))];
+                    // Add new demo data
+                    const newColis = [...existing, ...demoData];
                     localStorage.setItem('colis', JSON.stringify(newColis));
                     loadRun(currentUser);
-                    showNotification('Mode Démo', '3 colis exemples ajoutés !');
+                    showNotification('Mode Démo', `${demoData.length} colis exemples ajoutés !`);
                 }}
                 className="p-2.5 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl font-bold text-xs active:scale-95 transition-transform"
               >
-                + Ex
+                + Test
               </button>
               <button onClick={() => loadRun(currentUser)} className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 active:scale-95 transition-transform shadow-sm"><RefreshCw size={20} className={filteredRun.length === 0 ? 'animate-spin' : ''}/></button>
           </div>
@@ -241,7 +243,7 @@ export default function DeliveryRunPage() {
        {/* <div className="relative mb-4">...</div> */}
 
        {/* List */}
-       <div className="space-y-1">
+       <div className="space-y-1 w-full">
           {filteredRun.map(parcel => (
              <ParcelCard 
                 key={parcel.id} 
@@ -260,7 +262,7 @@ export default function DeliveryRunPage() {
        </div>
 
        {/* Toast */}
-       {showToast && (
+        {showToast && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-full max-w-[90%] px-4">
           <div className={`px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border ${
             toastMessage.type === 'error' ? 'bg-red-500 border-red-600' : 'bg-slate-800 border-slate-900'
@@ -273,6 +275,7 @@ export default function DeliveryRunPage() {
           </div>
         </div>
        )}
+      </div>
     </div>
   );
 }

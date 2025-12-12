@@ -80,8 +80,8 @@ export default function ProductionManagement() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-slate-50/50 p-4 sm:p-6 lg:p-8">
+      <div className="w-full">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
           <div className="flex items-center justify-between">

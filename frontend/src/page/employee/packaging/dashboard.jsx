@@ -10,12 +10,10 @@ const LogisticsDashboard = () => {
   };
 
   const initialProducts = [
-    { id: "p1", name: "iPhone 15 Pro", cat: "Electronics", stock: 10, warehouse: "Ammex" },
     { id: "p2", name: "Anker 20W Charger", cat: "Accessories", stock: 120, warehouse: "Agadir" },
     { id: "p3", name: "Coffee Machine", cat: "Home Appliances", stock: 5, warehouse: "Casa" },
     { id: "p4", name: "Laptop Bag", cat: "Clothing & Bags", stock: 40, warehouse: "Tanger" },
     { id: "p5", name: "Screen Protector", cat: "Accessories", stock: 300, warehouse: "Agadir" },
-    { id: "p6", name: "Smart Watch", cat: "Electronics", stock: 50, warehouse: "Ammex" }
   ];
 
   const initialOrders = (() => {

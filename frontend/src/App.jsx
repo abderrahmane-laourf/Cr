@@ -44,7 +44,10 @@ import LogsPage from './page/admin/log';
 import SoldPage from './page/admin/sold';
 import HistoriquePaiementLivraison from './page/admin/historiquepaiementlivraison';
 import PipelineAgadir from './page/admin/pipelineAgadir';
-
+import TrackingLivreur from './page/admin/trackingLivreur';
+import Retourner from './page/admin/retourner';
+import SettlementManagement from './page/admin/settlementManagement';
+import InvestmentManagement from './page/admin/investissement';
 
 // Employee Pages
 import { EmployeeLayout } from './components/layout/employeeLayout';
@@ -53,12 +56,17 @@ import ConfirmationClients from './page/employee/confirmation/clients';
 import ConfirmationClientsAgadir from './page/employee/confirmation/clientsAgadir';
 import ConfirmationRetourner from './page/employee/confirmation/retourner';
 import Leaderboard from './page/employee/confirmation/leaderboard';
+import ConfirmationManagerInvestment from './page/employee/confirmation/investissement';
+import VersementEmployeeManager from './page/employee/confirmation/versementemployeemanager';
 import PackagingQueue from './page/employee/packaging/queue';
 import PackagingDashboard from './page/employee/packaging/dashboard';
 import EmployeeTaskPage from './page/employee/tasks';
 import DeliveryDashboard from './page/employee/delivery/dashboard';
 import DeliveryRunPage from './page/employee/delivery/run';
 import GlobalDispatchPage from './page/employee/delivery/manager_dispatch';
+import Portefeuille from './page/employee/delivery/portefeuille';
+import ManagerApprovals from './page/employee/delivery/manager_approvals';
+import AdminApprovals from './page/admin/adminApprovals';
 
 export default function App() {
   return (
@@ -111,6 +119,11 @@ export default function App() {
       <Route path="/admin/pipeline" element={<AdminLayout><KanbanBoard /></AdminLayout>} />
       <Route path="/admin/pipeline/dashboard" element={<AdminLayout><PipelineDashboard /></AdminLayout>} />
       <Route path="/admin/pipeline/list" element={<AdminLayout><ListPipeline /></AdminLayout>} />
+      <Route path="/admin/retourner" element={<AdminLayout><Retourner /></AdminLayout>} />
+      <Route path="/admin/tracking-livreur" element={<AdminLayout><TrackingLivreur /></AdminLayout>} />
+      <Route path="/admin/approvals" element={<AdminLayout><AdminApprovals /></AdminLayout>} />
+      <Route path="/admin/settlements" element={<AdminLayout><SettlementManagement /></AdminLayout>} />
+      <Route path="/admin/investissement" element={<AdminLayout><InvestmentManagement /></AdminLayout>} />
 
       {/* lose page */}
       <Route path='/admin/pertes' element={<AdminLayout><LossesPage /></AdminLayout>} />
@@ -167,12 +180,17 @@ export default function App() {
       {/* Confirmation Manager Role Routes */}
       <Route path="/employee/confirmation-manager/dashboard" element={<EmployeeLayout mode="confirmation_manager"><ConfirmationDashboard /></EmployeeLayout>} />
       <Route path="/employee/confirmation-manager/clients" element={<EmployeeLayout mode="confirmation_manager"><ListPipeline /></EmployeeLayout>} />
+      <Route path="/employee/confirmation-manager/investissement" element={<EmployeeLayout mode="confirmation_manager"><ConfirmationManagerInvestment /></EmployeeLayout>} />
+      <Route path="/employee/confirmation-manager/versements" element={<EmployeeLayout mode="confirmation_manager"><VersementEmployeeManager /></EmployeeLayout>} />
       <Route path="/employee/confirmation-manager/tasks" element={<EmployeeLayout mode="confirmation_manager"><EmployeeTaskPage /></EmployeeLayout>} />
 
       {/* Delivery Role Routes */}
       <Route path="/employee/delivery/dashboard" element={<EmployeeLayout mode="delivery"><DeliveryDashboard /></EmployeeLayout>} />
       <Route path="/employee/delivery/run" element={<EmployeeLayout mode="delivery"><DeliveryRunPage /></EmployeeLayout>} />
+      <Route path="/employee/delivery/portefeuille" element={<EmployeeLayout mode="delivery"><Portefeuille /></EmployeeLayout>} />
       <Route path="/employee/delivery/tasks" element={<EmployeeLayout mode="delivery"><EmployeeTaskPage /></EmployeeLayout>} />
+
+
 
       <Route path="/admin/logs" element={<AdminLayout><LogsPage /></AdminLayout>} />
 
