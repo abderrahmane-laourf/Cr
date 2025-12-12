@@ -6,7 +6,7 @@ import {
   X, Package, Box, ClipboardList, Truck, History, Workflow, List, 
   ShoppingCart, Search, Factory, Megaphone, ListTodo, Building, Wallet, 
   Coins, PanelLeftClose, PanelLeftOpen, ShieldCheck, Clipboard, User, DollarSign,
-  Sun, Moon
+  Sun, Moon, Trophy
 } from 'lucide-react';
 
 // ----------------------------------------------------------------------
@@ -136,6 +136,12 @@ const MODULES = [
     label:'Rapports',
     icon: FileText,
     path:'/admin/rapport',
+  },
+  {
+    id: 'challenges',
+    label: 'Challenges',
+    icon: Trophy,
+    path: '/admin/challenges',
   },
   {
     id: 'settings',
@@ -504,7 +510,7 @@ export function AdminLayout({ children }) {
           pageTitle={pageTitle} 
         />
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 lg:p-8 scroll-smooth">
-          <div className="max-w-7xl mx-auto w-full">
+          <div className="w-full">
              {children}
              <Outlet />
           </div>

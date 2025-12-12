@@ -198,53 +198,44 @@ const ConfirmationTeamDashboard = () => {
     });
 
     // Filter orders by date, product, and pipeline
-    const relevantOrders = orders.filter(o => {
-      const orderDate = new Date(o.date);
-      const dateMatch = orderDate >= dateFrom && orderDate <= dateTo;
-      const prodMatch = product === 'all' || o.product === product;
-      const pipelineMatch = pipeline === 'all' || o.pipeline === pipeline;
-      
-      return dateMatch && prodMatch && pipelineMatch;
-    });
-
-    // Count orders for each employee
-    relevantOrders.forEach(o => {
-      if (!stats[o.emp]) {
-        stats[o.emp] = {
-          confirmed: 0,
-          scheduled: 0,
-          inTransit: 0,
-          delivered: 0,
-          returned: 0,
-          total: 0,
-          rate: 0
-        };
+    orders.forEach(order => {
+      const orderDate = new Date(order.date);
+      if (orderDate >= dateFrom && orderDate <= dateTo) {
+        const prodMatch = product === 'all' || order.product === product;
+        const pipelineMatch = pipeline === 'all' || order.pipeline === pipeline;
+        
+        if (prodMatch && pipelineMatch && stats[order.emp]) {
+          if (order.status === "Confirmé" || order.status === "Reporter") {
+            stats[order.emp].confirmed++;
+          } else if (order.status === "Confirmé avec date") {
+            stats[order.emp].scheduled++;
+          } else if (order.status === "Out for Delivery" || order.status === "Packaging") {
+            stats[order.emp].inTransit++;
+          } else if (order.status === "Livré") {
+            stats[order.emp].delivered++;
+          } else if (order.status === "Annulé" || order.status === "Retourné") {
+            stats[order.emp].returned++;
+          }
+          stats[order.emp].total++;
+        }
       }
-      
-      stats[o.emp].total++;
-      
-      if (o.status === "Confirmé" || o.status === "Reporter") stats[o.emp].confirmed++;
-      else if (o.status === "Confirmé avec date") stats[o.emp].scheduled++;
-      else if (o.status === "Out for Delivery" || o.status === "Packaging") stats[o.emp].inTransit++;
-      else if (o.status === "Livré") stats[o.emp].delivered++;
-      else if (o.status === "Annulé" || o.status === "Retourné") stats[o.emp].returned++;
     });
 
-    // Calculate success rate for each employee
-    Object.keys(stats).forEach(emp => {
-      const totalClosed = stats[emp].delivered + stats[emp].returned;
-      stats[emp].rate = totalClosed > 0 ? Math.round((stats[emp].delivered / totalClosed) * 100) : 0;
+    // Calculate delivery rate for each employee
+    const empStats = Object.entries(stats).map(([name, data]) => {
+      const totalClosed = data.delivered + data.returned;
+      const rate = totalClosed > 0 ? Math.round((data.delivered / totalClosed) * 100) : 0;
+      return {
+        name,
+        ...data,
+        rate
+      };
     });
 
-    // Convert to array and sort by delivered count
-    const sortedStats = Object.keys(stats)
-      .map(name => ({ name, ...stats[name] }))
-      .sort((a, b) => b.delivered - a.delivered);
-
-    setEmployeeStats(sortedStats);
+    setEmployeeStats(empStats);
   };
 
-  // Update chart
+  // Initialize or update the chart
   const updateChart = () => {
     if (!chartRef.current) return;
 
@@ -391,7 +382,7 @@ const ConfirmationTeamDashboard = () => {
         </header>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-blue-500">
             <div className="flex justify-between items-start mb-2">
               <div className="text-xs font-bold text-gray-500 uppercase">Commandes Confirmées</div>
@@ -408,15 +399,6 @@ const ConfirmationTeamDashboard = () => {
             </div>
             <div className="text-2xl font-bold text-purple-600">{formatNumber(kpis.scheduled)}</div>
             <div className="text-xs text-gray-500 mt-1">Expédition future</div>
-          </div>
-          
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-amber-500">
-            <div className="flex justify-between items-start mb-2">
-              <div className="text-xs font-bold text-gray-500 uppercase">En Cours de Livraison</div>
-              <Truck className="text-amber-500" size={16} />
-            </div>
-            <div className="text-2xl font-bold text-amber-600">{formatNumber(kpis.inTransit)}</div>
-            <div className="text-xs text-gray-500 mt-1">Avec le distributeur</div>
           </div>
           
           <div className="bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-800">
@@ -447,16 +429,16 @@ const ConfirmationTeamDashboard = () => {
                 <div className="text-xs text-gray-600 mb-1">Confirmés</div>
                 <div className="text-xl font-bold text-blue-600">{formatNumber(kpisAmmex.confirmed)}</div>
               </div>
-              <div className="p-3 bg-amber-50 rounded-lg">
-                <div className="text-xs text-gray-600 mb-1">En Transit</div>
-                <div className="text-xl font-bold text-amber-600">{formatNumber(kpisAmmex.inTransit)}</div>
+              <div className="p-3 bg-purple-50 rounded-lg">
+                <div className="text-xs text-gray-600 mb-1">Reportés</div>
+                <div className="text-xl font-bold text-purple-600">{formatNumber(kpisAmmex.scheduled)}</div>
               </div>
               <div className="p-3 bg-green-50 rounded-lg">
                 <div className="text-xs text-gray-600 mb-1">Livrés</div>
                 <div className="text-xl font-bold text-green-600">{formatNumber(kpisAmmex.delivered)}</div>
               </div>
               <div className="p-3 bg-red-50 rounded-lg">
-                <div className="text-xs text-gray-600 mb-1">Annulés</div>
+                <div className="text-xs text-gray-600 mb-1">Retournés</div>
                 <div className="text-xl font-bold text-red-600">{formatNumber(kpisAmmex.returned)}</div>
               </div>
             </div>
@@ -478,23 +460,24 @@ const ConfirmationTeamDashboard = () => {
                 <div className="text-xs text-gray-600 mb-1">Confirmés</div>
                 <div className="text-xl font-bold text-blue-600">{formatNumber(kpisAgadir.confirmed)}</div>
               </div>
-              <div className="p-3 bg-amber-50 rounded-lg">
-                <div className="text-xs text-gray-600 mb-1">En Transit</div>
-                <div className="text-xl font-bold text-amber-600">{formatNumber(kpisAgadir.inTransit)}</div>
+              <div className="p-3 bg-purple-50 rounded-lg">
+                <div className="text-xs text-gray-600 mb-1">Reportés</div>
+                <div className="text-xl font-bold text-purple-600">{formatNumber(kpisAgadir.scheduled)}</div>
               </div>
               <div className="p-3 bg-green-50 rounded-lg">
                 <div className="text-xs text-gray-600 mb-1">Livrés</div>
                 <div className="text-xl font-bold text-green-600">{formatNumber(kpisAgadir.delivered)}</div>
               </div>
               <div className="p-3 bg-red-50 rounded-lg">
-                <div className="text-xs text-gray-600 mb-1">Annulés</div>
+                <div className="text-xs text-gray-600 mb-1">Retournés</div>
                 <div className="text-xl font-bold text-red-600">{formatNumber(kpisAgadir.returned)}</div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        {/* Performance Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-green-500">
             <div className="flex justify-between items-start mb-2">
               <div className="text-xs font-bold text-gray-500 uppercase">Livré (Delivered)</div>

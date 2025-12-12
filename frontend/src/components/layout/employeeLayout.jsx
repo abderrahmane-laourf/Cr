@@ -45,8 +45,9 @@ const MOCK_NOTIFICATIONS = [
 const MODULES = {
   confirmation: [
     { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/employee/confirmation/dashboard' },
-    { id: 'clients-ammex', label: 'Livraison Ammex', icon: Users, path: '/employee/confirmation/clients' },
+    { id: 'clients-ammex', label: 'STE de Livraison', icon: Users, path: '/employee/confirmation/clients' },
     { id: 'clients-agadir', label: 'Livraison Agadir', icon: MapPin, path: '/employee/confirmation/clientsagadir' },
+    { id: 'retourner', label: 'Retourner', icon: Package, path: '/employee/confirmation/retourner' },
     { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/confirmation/tasks' },
     { id: 'leaderboard', label: 'Leaderboard', icon: Trophy, path: '/employee/confirmation/leaderboard' }
   ],
@@ -421,7 +422,7 @@ export function EmployeeLayout({ children, mode = 'default' }) {
           onAccept={handleAcceptTask}
         />
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 lg:p-8 scroll-smooth">
-          <div className="max-w-7xl mx-auto w-full">
+          <div className="w-full">
              {children}
              <Outlet />
           </div>

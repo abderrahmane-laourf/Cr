@@ -34,6 +34,7 @@ import PetiteCaissePage from './page/admin/petitecaisse';
 import PetiteCaisseDashboard from './page/admin/petitecaisseDashboard';
 import ReportsPage from './page/admin/rapports';
 import TaskManager from './page/admin/listtask';
+import ChallengesPage from './page/admin/challenges';
 import ComingSoon from './components/comingSoon';
 import SettingsPage from './page/admin/settings';
 import AffectationsPage from './page/admin/affectations';
@@ -50,6 +51,7 @@ import { EmployeeLayout } from './components/layout/employeeLayout';
 import ConfirmationDashboard from './page/employee/confirmation/dashboard'; 
 import ConfirmationClients from './page/employee/confirmation/clients';
 import ConfirmationClientsAgadir from './page/employee/confirmation/clientsAgadir';
+import ConfirmationRetourner from './page/employee/confirmation/retourner';
 import Leaderboard from './page/employee/confirmation/leaderboard';
 import PackagingQueue from './page/employee/packaging/queue';
 import PackagingDashboard from './page/employee/packaging/dashboard';
@@ -136,6 +138,9 @@ export default function App() {
       <Route path="/admin/rapports" element={<AdminLayout><ReportsPage /></AdminLayout>} />
       <Route path="/admin/rapport" element={<AdminLayout><ReportsPage /></AdminLayout>} /> {/* Fallback route */}
 
+      {/* Challenges Routes */}
+      <Route path="/admin/challenges" element={<AdminLayout><ChallengesPage /></AdminLayout>} />
+
       {/* Sold / US Dollar Management */}
       <Route path="/admin/sold" element={<AdminLayout><SoldPage /></AdminLayout>} />
 
@@ -150,6 +155,7 @@ export default function App() {
       <Route path="/employee/confirmation/dashboard" element={<EmployeeLayout mode="confirmation"><ConfirmationDashboard /></EmployeeLayout>} />
       <Route path="/employee/confirmation/clients" element={<EmployeeLayout mode="confirmation"><ConfirmationClients /></EmployeeLayout>} />
       <Route path="/employee/confirmation/clientsagadir" element={<EmployeeLayout mode="confirmation"><ConfirmationClientsAgadir /></EmployeeLayout>} />
+      <Route path="/employee/confirmation/retourner" element={<EmployeeLayout mode="confirmation"><ConfirmationRetourner /></EmployeeLayout>} />
       <Route path="/employee/confirmation/tasks" element={<EmployeeLayout mode="confirmation"><EmployeeTaskPage /></EmployeeLayout>} />
       <Route path="/employee/confirmation/leaderboard" element={<EmployeeLayout mode="confirmation"><Leaderboard /></EmployeeLayout>} />
 

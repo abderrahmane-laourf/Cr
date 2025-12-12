@@ -206,7 +206,7 @@ export default function EmployeeTaskPage() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-20 font-sans">
+    <div className="w-full space-y-8 pb-20 font-sans px-4 sm:px-6 lg:px-8">
       
       {/* MODALE */}
       <ProofModal 
