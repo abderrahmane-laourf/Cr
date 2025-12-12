@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Calendar, Package, Truck, ArrowRight, ChevronDown, AlertCircle, Plus, X, Search
 } from 'lucide-react';
@@ -388,7 +388,7 @@ export default function StockTransferPage() {
             <tbody className="divide-y divide-slate-50 text-sm">
               {filteredTransfers.map((transfer) => (
                 <tr key={transfer.id} className="hover:bg-slate-50/80 transition-colors group">
-                  <td className="px-6 py-4 text-slate-500 font-medium">
+                  <td className="px-6 py-4 text-slate-600 font-medium">
                     {formatDate(transfer.date)}
                   </td>
                   <td className="px-6 py-4 font-semibold text-slate-700">

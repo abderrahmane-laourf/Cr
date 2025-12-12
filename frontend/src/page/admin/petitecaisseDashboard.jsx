@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, TrendingDown, Wallet, Smartphone, Users, 
   ArrowUpRight, ArrowDownLeft, Filter, Trophy, AlertTriangle, 
@@ -107,7 +107,7 @@ const PetiteCaisseDashboard = () => {
                             <BarChart3 className="text-indigo-600" size={32} />
                             Tableau de Bord Trésorerie
                         </h1>
-                        <p className="text-slate-500 font-medium mt-1">Suivi des Dépenses & Budget Téléphonie</p>
+                        <p className="text-slate-600 font-medium mt-1">Suivi des Dépenses & Budget Téléphonie</p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 bg-slate-50 p-2 rounded-2xl border border-slate-100">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Briefcase, DollarSign, CheckCircle, AlertTriangle, 
   FileText, Clock, Filter, Eye, X, List, Wallet
@@ -118,14 +118,14 @@ const DebtsDashboard = () => {
                  <Briefcase className="text-blue-600" size={32} />
                  Tableau de Bord Dettes & Chèques
               </h1>
-              <p className="text-slate-500 font-medium mt-1 text-lg">
+              <p className="text-slate-600 font-medium mt-1 text-lg">
                  Suivi des comptes fournisseurs et cycle de vie des chèques
               </p>
            </div>
         </div>
 
         {/* Control Panel (Filters) */}
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
            <div className="flex flex-col gap-1.5">
                <label className="text-xs font-bold text-slate-500">De (Date)</label>
                <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="w-full p-2.5 bg-slate-50 border rounded-xl font-medium" />

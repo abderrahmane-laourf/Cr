@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Search, Plus, Printer, X, Check, ChevronDown, 
   FileText, DollarSign, Trash2, Download, Paperclip, TrendingUp, TrendingDown 
@@ -661,7 +661,7 @@ export default function PaymentsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800">
+    <div className="w-full min-h-screen bg-slate-50 animate-[fade-in_0.6s_ease-out]/50 p-8 font-sans text-slate-800">
       
       {/* HEADER */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">

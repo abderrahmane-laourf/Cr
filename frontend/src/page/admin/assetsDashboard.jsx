@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
 } from 'recharts';
@@ -165,7 +165,7 @@ export default function AssetsDashboard() {
             <Building className="text-blue-600" size={32} />
             Tableau de Bord des Actifs
           </h1>
-          <p className="text-slate-500 font-medium mt-1">
+          <p className="text-slate-600 font-medium mt-1">
             Vue d'ensemble et analyse du patrimoine
           </p>
         </div>

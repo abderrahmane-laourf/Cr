@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   DollarSign, TrendingUp, TrendingDown, Calendar, 
   Filter, Plus, Trash2, Settings, Target, BarChart2 
@@ -169,7 +169,7 @@ const SoldPage = () => {
                       <DollarSign className="text-emerald-600" size={32} />
                       Gestionnaire Dollar
                    </h1>
-                   <p className="text-slate-500 font-medium mt-1">Suivi des taux de change et dépenses publicitaires</p>
+                   <p className="text-slate-600 font-medium mt-1">Suivi des taux de change et dépenses publicitaires</p>
                 </div>
                 <button onClick={handleGenerateMock} className="text-sm font-bold text-slate-400 hover:text-emerald-600 transition-colors">
                     🔄 Charger Données Démo
@@ -300,7 +300,7 @@ const SoldPage = () => {
             </div>
 
             {/* FILTERS BAR */}
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center mb-8">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center mb-8">
                 <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl border border-slate-100">
                     <Filter size={16} className="text-slate-400"/>
                     <span className="text-xs font-bold text-slate-500 uppercase">Filtres</span>

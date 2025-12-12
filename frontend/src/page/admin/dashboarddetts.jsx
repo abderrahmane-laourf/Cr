@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend 
 } from 'recharts';
@@ -132,7 +132,7 @@ export default function FinanceDashboard() {
                  <Briefcase className="text-blue-600" size={28} />
                  Tableau de Bord Financier
               </h1>
-              <p className="text-slate-500 font-medium mt-1">
+              <p className="text-slate-600 font-medium mt-1">
                  Suivi des Dettes Fournisseurs & Cycle de Vie des Chèques
               </p>
            </div>
@@ -315,7 +315,7 @@ export default function FinanceDashboard() {
 // Helper Components
 const SectionTitle = ({ icon, title }) => (
     <div className="flex items-center gap-2 mb-4 px-1">
-        <div className="p-1.5 bg-white rounded-lg shadow-sm border border-slate-100">{icon}</div>
+        <div className="p-1.5 bg-white rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100">{icon}</div>
         <h3 className="font-bold text-lg text-slate-800">{title}</h3>
     </div>
 );

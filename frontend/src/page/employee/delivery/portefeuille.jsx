@@ -345,7 +345,7 @@ export default function Portefeuille() {
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {orders.map((order, index) => (
-                  <tr key={index} className={`${getOrderRowClass(order.status)} hover:bg-slate-50 transition-colors`}>
+                  <tr key={index} className={`${getOrderRowClass(order.status)} hover:bg-slate-50/80 transition-colors duration-150`}>
                     <td className="py-4 px-6">
                       <span className="font-mono text-sm font-bold text-slate-900">#{order.id}</span>
                     </td>

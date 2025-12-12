@@ -115,7 +115,7 @@ const ProofModal = ({ isOpen, onClose, onSubmit, taskTitle }) => {
                   <div className="w-10 h-10 bg-slate-100 group-hover:bg-blue-100 rounded-full flex items-center justify-center mb-2 transition-colors">
                     <UploadCloud size={20} className="text-slate-400 group-hover:text-blue-500" />
                   </div>
-                  <p className="text-sm text-slate-500 font-medium">Cliquez pour ajouter une preuve</p>
+                  <p className="text-sm text-slate-600 font-medium">Cliquez pour ajouter une preuve</p>
                   <p className="text-xs text-slate-400 mt-1">JPG, PNG ou PDF</p>
                 </>
               )}
@@ -405,7 +405,7 @@ function EmptyState({ message, icon: Icon = Layout }) {
       <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
         <Icon className="w-8 h-8 text-slate-300" />
       </div>
-      <p className="text-slate-500 font-medium max-w-xs">{message}</p>
+      <p className="text-slate-600 font-medium max-w-xs">{message}</p>
     </div>
   );
 }

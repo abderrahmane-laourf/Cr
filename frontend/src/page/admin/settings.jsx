@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Settings, Save, Plus, Trash2, Edit2, RotateCw, CheckCircle, AlertCircle, 
@@ -127,7 +127,7 @@ const SettingsPage = () => {
     const navigate = useNavigate();
     return (
          <div className="min-h-screen bg-slate-50/50 p-8 font-sans">
-            <div className="max-w-7xl mx-auto space-y-8">
+            <div className="w-full space-y-8">
                 
                 {/* Header */}
                 <div>

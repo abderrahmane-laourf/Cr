@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Plus, GripVertical, Edit2, X, Trash2, AlertTriangle, RotateCw } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { pipelineAPI } from '../../services/api';
@@ -519,7 +519,7 @@ export default function PipelineSettings() {
       
       {/* MAIN CONTENT */}
       <div className="flex-1 min-w-0">
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full">
             {/* Header */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
             <div className="flex items-center justify-between">
@@ -547,7 +547,7 @@ export default function PipelineSettings() {
               <div className="flex items-center justify-center py-20">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-slate-500 font-medium">Chargement des pipelines...</p>
+                  <p className="text-slate-600 font-medium">Chargement des pipelines...</p>
                 </div>
               </div>
             ) : (

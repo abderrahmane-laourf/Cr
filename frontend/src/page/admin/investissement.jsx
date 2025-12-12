@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, TrendingDown, Wallet, AlertCircle, 
   Plus, Minus, Trash2, Calendar, FileText, CheckCircle, X, Search,
@@ -390,7 +390,7 @@ const InvestmentManagement = () => {
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Header */}
-        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4 bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <Building className="text-blue-600" />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Package, TrendingUp, AlertTriangle, DollarSign, 
   ShoppingCart, Layers, PieChart, BarChart3, CheckCircle
@@ -50,7 +50,7 @@ export default function ProductDashboard() {
         <div>
           <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">{title}</p>
           <h3 className={`text-4xl font-extrabold ${color} mb-1`}>{value}</h3>
-          {subtitle && <p className="text-xs text-slate-500 font-medium">{subtitle}</p>}
+          {subtitle && <p className="text-xs text-slate-600 font-medium">{subtitle}</p>}
         </div>
         <div className={`p-4 rounded-xl ${color.replace('text', 'bg')}/10 group-hover:scale-110 transition-transform`}>
           <Icon size={28} className={color} />
@@ -60,7 +60,7 @@ export default function ProductDashboard() {
   );
 
   const CategoryCard = ({ category, count }) => (
-    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-slate-600 text-xs font-bold uppercase mb-1">{category}</p>
@@ -76,7 +76,7 @@ export default function ProductDashboard() {
     const width = (count / totalProducts) * maxWidth;
     
     return (
-      <div className="bg-white p-4 rounded-xl border border-slate-200 hover:shadow-md transition-shadow">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-md transition-shadow">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-bold text-slate-700">{type}</span>
           <span className="text-xs font-bold text-slate-500">{count} produits</span>
@@ -139,7 +139,7 @@ export default function ProductDashboard() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Tableau de Bord Produits</h1>
-        <p className="text-slate-500 font-medium">Vue d'ensemble de votre catalogue produits</p>
+        <p className="text-slate-600 font-medium">Vue d'ensemble de votre catalogue produits</p>
       </div>
 
       {/* Stats Grid */}

@@ -107,7 +107,7 @@ export default function ManagerApprovals() {
           <AlertTriangle className="text-orange-600" size={24} />
           Approbations en Attente
         </h1>
-        <p className="text-sm sm:text-base text-slate-500 font-medium">
+        <p className="text-sm sm:text-base text-slate-600 font-medium">
           Validez les paiements des livreurs
         </p>
       </div>

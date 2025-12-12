@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Plus, RotateCw, X, Package, AlertTriangle, Eye, Calendar, 
   CheckCircle, Search as SearchIcon, Printer, MapPin, User, Truck, Building, Phone, Clock, ArrowRight
@@ -1054,14 +1054,14 @@ function TrackingModal({ colis, onClose, products, villes, handlePrint }) {
             </div>
           )}
           {activeTab === 'expediteur' && (
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+            <div className="bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 space-y-4">
               <InfoRow label="Entreprise / Business" value={colis.business || "Non spécifié"} />
               <InfoRow label="Responsable (Créateur)" value={colis.employee} />
               <InfoRow label="Date de création" value={new Date(colis.dateCreated).toLocaleDateString('fr-FR')} />
             </div>
           )}
           {activeTab === 'destinataire' && (
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+            <div className="bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 space-y-4">
               <InfoRow label="Nom Complet" value={colis.clientName} />
               <InfoRow label="Téléphone" value={colis.tel} />
               <InfoRow label="Ville" value={ville?.name || colis.ville} />
@@ -1069,14 +1069,14 @@ function TrackingModal({ colis, onClose, products, villes, handlePrint }) {
             </div>
           )}
           {activeTab === 'livreur' && (
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+            <div className="bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 space-y-4">
               <InfoRow label="Livreur Assigné" value={colis.employee || "En attente d'assignation"} />
               <InfoRow label="Statut Actuel" value={colis.stage} />
               <InfoRow label="Note / Commentaire" value={colis.commentaire || "Aucun commentaire"} />
             </div>
           )}
           {activeTab === 'produit' && (
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+            <div className="bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 space-y-4">
               <div className="flex gap-4">
                  {product?.image && <img src={product.image} alt="Produit" className="w-24 h-24 rounded-lg object-cover border" />}
                  <div className="flex-1 space-y-3">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { User, Package, Save, RotateCcw, DollarSign, TrendingUp } from 'lucide-react';
 import { employeeAPI, productAPI } from '../../services/api';
 import Swal from 'sweetalert2';
@@ -148,7 +148,7 @@ const CommissionsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans">
+    <div className="w-full min-h-screen bg-slate-50 animate-[fade-in_0.6s_ease-out]/50 p-8 font-sans">
       {/* Header */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

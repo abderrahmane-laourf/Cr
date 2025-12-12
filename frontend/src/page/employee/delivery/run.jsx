@@ -200,7 +200,7 @@ export default function DeliveryRunPage() {
               <Truck className="text-orange-600" size={28} />
               Livraison Agadir
             </h1>
-            <p className="text-sm text-slate-500 font-medium">Bonne route, {currentUser?.name} !</p>
+            <p className="text-sm text-slate-600 font-medium">Bonne route, {currentUser?.name} !</p>
           </div>
           <div className="flex gap-2">
               <button 

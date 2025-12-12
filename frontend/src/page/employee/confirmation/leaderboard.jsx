@@ -51,7 +51,7 @@ const PodiumCard = ({ user, rank }) => {
 
   return (
     <div className={`
-      relative flex flex-col items-center bg-white rounded-2xl shadow-sm border border-slate-100 p-6 transition-transform hover:-translate-y-1
+      relative flex flex-col items-center bg-white rounded-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 hover:shadow-lg transition-all duration-200 p-6 transition-transform hover:-translate-y-1
       ${isFirst ? 'order-1 md:-mt-8 w-full md:w-80 shadow-xl shadow-yellow-500/10 border-yellow-100 scale-105 z-10' : 'order-2 md:order-none w-full md:w-64'}
       ${isSecond ? 'order-2 md:mt-4' : ''}
       ${isThird ? 'order-3 md:mt-4' : ''}
@@ -194,7 +194,7 @@ export default function Leaderboard() {
       {/* Header */}
       <div className="text-center space-y-2 px-4 sm:px-6 lg:px-8 pt-4">
         <h1 className="text-3xl md:text-4xl font-black text-slate-900">Leaderboard</h1>
-        <p className="text-slate-500 font-medium">Classement par colis livrés</p>
+        <p className="text-slate-600 font-medium">Classement par colis livrés</p>
       </div>
 
       {/* Podium Section */}

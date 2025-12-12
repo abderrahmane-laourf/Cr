@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Search, Plus, Edit2, Trash2, Eye, X, Upload, Check, 
   User, FileText, Shield, ChevronLeft, ChevronRight, EyeOff, 
@@ -192,7 +192,7 @@ const Step2 = ({ isViewMode }) => (
     </div>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {['cin', 'contract', 'diploma', 'non_concurrence'].map(key => (
-          <div key={key} className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center ${isViewMode ? 'opacity-70 bg-gray-50' : 'hover:border-blue-400 cursor-pointer bg-white group'}`}>
+          <div key={key} className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center ${isViewMode ? 'opacity-70 bg-slate-50' : 'hover:border-blue-400 cursor-pointer bg-white group'}`}>
               <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><Upload size={20}/></div>
               <h4 className="text-sm font-bold text-slate-700 capitalize">{key}</h4>
           </div>
@@ -536,7 +536,7 @@ export default function EmployeesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800 relative">
+    <div className="w-full min-h-screen bg-slate-50 animate-[fade-in_0.6s_ease-out]/50 p-8 font-sans text-slate-800 relative">
       
       {/* Toast Notification */}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}

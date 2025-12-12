@@ -233,7 +233,7 @@ export default function Retourner() {
             {sortedColis.length === 0 ? (
               <div className="text-center py-12">
                 <RotateCcw size={48} className="mx-auto text-slate-300 mb-3" />
-                <p className="text-slate-500 font-medium">Aucun colis à retourner</p>
+                <p className="text-slate-600 font-medium">Aucun colis à retourner</p>
                 <p className="text-xs text-slate-400 mt-1">Les colis avec statut "Retourner" apparaîtront ici</p>
               </div>
             ) : (

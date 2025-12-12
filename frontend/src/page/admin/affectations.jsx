@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import {
   Search, Plus, Edit2, Trash2, X, Check,
   Phone, MessageCircle, AlertCircle, CheckCircle,
@@ -103,7 +103,7 @@ const AffectationDetailsModal = ({ isOpen, onClose, affectation, employees, prod
                     </div>
                     <div>
                         <p className="font-bold text-slate-800">{getProductName(affectation.productIdsActifs[0])}</p>
-                        <p className="text-xs text-slate-500 font-medium">Assigné le {new Date(affectation.date).toLocaleDateString()}</p>
+                        <p className="text-xs text-slate-600 font-medium">Assigné le {new Date(affectation.date).toLocaleDateString()}</p>
                     </div>
                 </div>
               ) : (
@@ -258,7 +258,7 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
             
             {/* Left Column: Core Info */}
             <div className="space-y-6">
-               <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+               <div className="bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100">
                   <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <User size={18} className="text-blue-500"/> Informations Principales
                   </h3>
@@ -293,7 +293,7 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
                   </div>
                </div>
 
-               <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+               <div className="bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100">
                   <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <Briefcase size={18} className="text-indigo-500"/> Matériel de Travail
                   </h3>
@@ -316,7 +316,7 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
 
             {/* Right Column: Products & Contact */}
             <div className="space-y-6">
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+              <div className="bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100">
                  <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                    <Package size={18} className="text-emerald-500"/> Stock à Vendre
                  </h3>
@@ -350,7 +350,7 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
                  </div>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+              <div className="bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100">
                   <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <Phone size={18} className="text-slate-700"/> Coordonnées
                   </h3>
@@ -477,20 +477,20 @@ export default function AffectationsPage() {
   const getProduct = (id) => products.find(p => p.id == id);
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-6 md:p-10 font-sans text-slate-800">
+    <div className="w-full min-h-screen bg-slate-50 animate-[fade-in_0.6s_ease-out]/50 p-6 md:p-10 font-sans text-slate-800">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       
       <div className="max-w-[1600px] mx-auto space-y-8">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-8 rounded-3xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100">
            <div className="flex items-center gap-5">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
                  <Briefcase size={32} />
               </div>
               <div>
                  <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Affectations</h1>
-                 <p className="text-slate-500 font-medium mt-1">Gérez et suivez les ressources assignées aux équipes.</p>
+                 <p className="text-slate-600 font-medium mt-1">Gérez et suivez les ressources assignées aux équipes.</p>
               </div>
            </div>
            

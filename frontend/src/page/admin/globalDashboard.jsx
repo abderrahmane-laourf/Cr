@@ -168,10 +168,10 @@ const GlobalDashboard = () => {
 
   if (loading || !data) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Chargement...</p>
+          <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-600 border-t-transparent mx-auto mb-4 shadow-lg"></div>
+          <p className="text-slate-700 font-semibold text-lg">Chargement des données...</p>
         </div>
       </div>
     );
@@ -198,32 +198,34 @@ const GlobalDashboard = () => {
   const COLORS_FIN = ['#8b5cf6', '#f59e0b', '#ef4444', '#64748b'];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="w-full min-h-screen bg-slate-50 animate-[fade-in_0.6s_ease-out]">
       {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
+      <div className="bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border-b border-slate-100 sticky top-0 z-10">
+        <div className="w-full px-4 sm:px-6 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
-                  <Activity className="text-white" size={24} />
-                </div>
-                Tableau de Bord Global
-              </h1>
-              <p className="text-sm text-gray-500 mt-1">Analyses complètes de l'activité en temps réel</p>
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-blue-600 rounded-xl shadow-md shadow-blue-500/20">
+                <Activity className="text-white" size={32} />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+                  Tableau de Bord Global
+                </h1>
+                <p className="text-sm text-slate-600 mt-1">Analyses complètes de l'activité en temps réel</p>
+              </div>
             </div>
             <button 
               onClick={generateDashboardData}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 active:scale-95 flex items-center gap-2 shadow-md shadow-blue-500/20"
             >
-              <RefreshCw size={18} />
+              <RefreshCw size={20} />
               Actualiser
             </button>
           </div>
         </div>
       </div>
 
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="w-full px-4 sm:px-6 py-8 space-y-8">
         
         {/* 1. Marketing Section */}
         <Section title="📢 Marketing" subtitle="Analyses Marketing">
@@ -462,9 +464,11 @@ const GlobalDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             {/* Financial Block */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col">
-              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-2 border-b border-gray-100">
-                <BarChart3 size={20} className="text-blue-600" />
+            <div className="bg-white rounded-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 p-6 flex flex-col hover:shadow-lg transition-all duration-200">
+              <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-3 pb-3 border-b-2 border-slate-100">
+                <div className="p-2 bg-blue-50 rounded-lg">
+                  <BarChart3 size={20} className="text-blue-600" />
+                </div>
                 Détails Financiers
               </h3>
               
@@ -518,9 +522,11 @@ const GlobalDashboard = () => {
             </div>
 
             {/* Logistics Block */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col">
-              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 pb-2 border-b border-gray-100">
-                <Activity size={20} className="text-green-600" />
+            <div className="bg-white rounded-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 p-6 flex flex-col hover:shadow-lg transition-all duration-200">
+              <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-3 pb-3 border-b-2 border-slate-100">
+                <div className="p-2 bg-emerald-50 rounded-lg">
+                  <Activity size={20} className="text-emerald-600" />
+                </div>
                 Performance Logistique
               </h3>
 
@@ -566,69 +572,85 @@ const GlobalDashboard = () => {
 
 // Section Component
 const Section = ({ title, subtitle, children }) => (
-  <div className="space-y-4">
-    <div className="flex items-center justify-between">
+  <div className="space-y-5">
+    <div className="bg-white rounded-xl p-5 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100">
       <div>
-        <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-        <p className="text-sm text-gray-500">{subtitle}</p>
+        <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <div className="w-1 h-6 bg-blue-600 rounded-full"></div>
+          {title}
+        </h2>
+        <p className="text-sm text-slate-600 mt-1">{subtitle}</p>
       </div>
     </div>
-    {children}
+    <div>{children}</div>
   </div>
 );
 
 // KPI Card Component
 const KPICard = ({ label, value, color, icon, trend }) => {
-  const colors = {
-    blue: 'border-blue-500 bg-blue-50',
-    purple: 'border-purple-500 bg-purple-50',
-    green: 'border-green-500 bg-green-50',
-    orange: 'border-orange-500 bg-orange-50',
-    red: 'border-red-500 bg-red-50'
+  const gradients = {
+    blue: 'from-blue-500 to-indigo-500',
+    purple: 'from-purple-500 to-pink-500',
+    green: 'from-emerald-500 to-teal-500',
+    orange: 'from-orange-500 to-amber-500',
+    red: 'from-red-500 to-rose-500'
+  };
+
+  const bgColors = {
+    blue: 'bg-blue-50',
+    purple: 'bg-purple-50',
+    green: 'bg-emerald-50',
+    orange: 'bg-orange-50',
+    red: 'bg-red-50'
   };
 
   const iconColors = {
     blue: 'text-blue-600',
     purple: 'text-purple-600',
-    green: 'text-green-600',
+    green: 'text-emerald-600',
     orange: 'text-orange-600',
     red: 'text-red-600'
   };
 
   return (
-    <div className={`bg-white rounded-lg p-5 border-t-4 ${colors[color]} shadow-sm hover:shadow-md transition-shadow duration-200`}>
-      <div className="flex items-start justify-between mb-2">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</div>
-        {icon && <div className={iconColors[color]}>{icon}</div>}
-        {trend === 'up' && <ArrowUp size={16} className="text-green-600" />}
-        {trend === 'down' && <ArrowDown size={16} className="text-red-600" />}
+    <div className="bg-white rounded-xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 relative overflow-hidden">
+      <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${gradients[color]}`}></div>
+      <div className="flex items-start justify-between mb-3">
+        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">{label}</div>
+        {icon && (
+          <div className={`p-2 ${bgColors[color]} rounded-lg`}>
+            <div className={iconColors[color]}>{icon}</div>
+          </div>
+        )}
+        {trend === 'up' && <ArrowUp size={18} className="text-emerald-600" />}
+        {trend === 'down' && <ArrowDown size={18} className="text-red-600" />}
       </div>
-      <div className="text-2xl font-bold text-gray-900">{value}</div>
+      <div className="text-3xl font-black text-slate-900">{value}</div>
     </div>
   );
 };
 
 // Top vs Flop Card Component
 const TopFlopCard = ({ title, topName, topValue, flopName, flopValue }) => (
-  <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-    <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">{title}</div>
-    <div className="grid grid-cols-2 gap-2">
+  <div className="bg-white rounded-xl p-5 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 hover:shadow-lg transition-all duration-200">
+    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">{title}</div>
+    <div className="grid grid-cols-2 gap-3">
       {/* Top */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-        <div className="text-xs font-bold px-2 py-1 bg-green-600 text-white rounded mb-2 inline-block">
-          Top
+      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-4">
+        <div className="text-xs font-bold px-3 py-1.5 bg-emerald-600 text-white rounded-lg mb-3 inline-block shadow-md">
+          🏆 Top
         </div>
-        <div className="text-xs font-medium text-gray-700 truncate mb-1">{topName || '--'}</div>
-        <div className="text-sm font-bold text-green-700">{topValue}</div>
+        <div className="text-xs font-semibold text-slate-700 truncate mb-2">{topName || '--'}</div>
+        <div className="text-lg font-black text-emerald-700">{topValue}</div>
       </div>
       
       {/* Flop */}
-      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-        <div className="text-xs font-bold px-2 py-1 bg-red-600 text-white rounded mb-2 inline-block">
-          Flop
+      <div className="bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200 rounded-xl p-4">
+        <div className="text-xs font-bold px-3 py-1.5 bg-red-600 text-white rounded-lg mb-3 inline-block shadow-md">
+          📉 Flop
         </div>
-        <div className="text-xs font-medium text-gray-700 truncate mb-1">{flopName || '--'}</div>
-        <div className="text-sm font-bold text-red-700">{flopValue}</div>
+        <div className="text-xs font-semibold text-slate-700 truncate mb-2">{flopName || '--'}</div>
+        <div className="text-lg font-black text-red-700">{flopValue}</div>
       </div>
     </div>
   </div>

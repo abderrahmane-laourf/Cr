@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Search, Plus, Filter, FileText, CheckCircle, AlertCircle, 
   Calendar, User, DollarSign, Clock, Paperclip, Check, X,
@@ -294,7 +294,7 @@ const PaymentProofModal = ({ isOpen, onClose, onConfirm }) => {
                             <div className={`w-12 h-12 rounded-full flex items-center justify-center ${file ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>
                                 {file ? <Check size={24} /> : <Paperclip size={24} />}
                             </div>
-                            <span className="text-sm text-slate-500 font-medium truncate max-w-[200px]">
+                            <span className="text-sm text-slate-600 font-medium truncate max-w-[200px]">
                                 {file ? file.name : "Cliquez pour déposer un fichier"}
                             </span>
                             <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => setFile(e.target.files[0])} />

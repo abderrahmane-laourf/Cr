@@ -116,7 +116,7 @@ export default function DeliveryDashboard() {
           <Truck className="text-orange-600" size={24} />
           Livraison Agadir
         </h1>
-        <p className="text-sm sm:text-base text-slate-500 font-medium">Bonjour {currentUser?.name || 'Livreur'}, prêt pour la tournée ?</p>
+        <p className="text-sm sm:text-base text-slate-600 font-medium">Bonjour {currentUser?.name || 'Livreur'}, prêt pour la tournée ?</p>
       </div>
 
       {/* MOTIVATION STATISTICS PANEL */}

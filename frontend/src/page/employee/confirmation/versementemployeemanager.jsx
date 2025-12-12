@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle, XCircle, Package, DollarSign, User, Calendar, 
   Filter, Clock, Truck, FileText, AlertTriangle, Eye
@@ -193,7 +193,7 @@ export default function VersementEmployeeManager() {
       {/* Header */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 mb-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center shadow-lg">
+          <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
             <DollarSign className="text-white" size={24} />
           </div>
           <div>
@@ -208,20 +208,20 @@ export default function VersementEmployeeManager() {
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
-          <div className="bg-orange-50 p-4 rounded-xl">
+          <div className="bg-blue-600 p-4 rounded-xl">
             <div className="flex items-center gap-2 mb-2">
-              <Clock className="text-orange-600" size={18} />
-              <p className="text-xs font-bold text-orange-900 uppercase">Versements en attente</p>
+              <Clock className="text-slate-600" size={18} />
+              <p className="text-xs font-bold text-slate-600 uppercase">Versements en attente</p>
             </div>
-            <p className="text-2xl font-extrabold text-orange-600">{pendingSettlements.toFixed(2)} DH</p>
+            <p className="text-2xl font-extrabold text-slate-600">{pendingSettlements.toFixed(2)} DH</p>
           </div>
 
-          <div className="bg-emerald-50 p-4 rounded-xl">
+          <div className="bg-blue-600 p-4 rounded-xl">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="text-emerald-600" size={18} />
-              <p className="text-xs font-bold text-emerald-900 uppercase">Collecté aujourd'hui</p>
+              <CheckCircle className="text-slate-900" size={18} />
+              <p className="text-xs font-bold text-slate-900 uppercase">Collecté aujourd'hui</p>
             </div>
-            <p className="text-2xl font-extrabold text-emerald-600">
+            <p className="text-2xl font-extrabold text-slate-900">
               {approvedToday.toFixed(2)} DH
             </p>
           </div>
@@ -274,19 +274,19 @@ export default function VersementEmployeeManager() {
               key={batch.id} 
               className={`bg-white rounded-xl shadow-sm border overflow-hidden transition-all duration-200 ${
                 isOverdue(batch.dateTime) && batch.status === "En attente" 
-                  ? 'border-red-500 shadow-red-100' 
+                  ? 'border-blue-200 shadow-red-100' 
                   : 'border-slate-200'
               }`}
             >
               {/* Batch Header */}
               <div className={`px-4 py-3 flex items-center justify-between ${
                 batch.status === "Terminé" 
-                  ? 'bg-emerald-500' 
+                  ? 'bg-blue-600' 
                   : batch.status === "Rejeté" 
-                    ? 'bg-red-500' 
+                    ? 'bg-blue-600' 
                     : isOverdue(batch.dateTime) 
-                      ? 'bg-red-500' 
-                      : 'bg-green-500'
+                      ? 'bg-blue-600' 
+                      : 'bg-blue-600'
               }`}>
                 <span className="text-white font-bold">Lot #{batch.id}</span>
                 <div className="flex items-center gap-2">
@@ -332,7 +332,7 @@ export default function VersementEmployeeManager() {
                     <DollarSign className="text-slate-400" size={16} />
                     <div>
                       <p className="text-xs text-slate-500">Commission</p>
-                      <p className="font-bold text-emerald-600">{batch.driverCommission} DH</p>
+                      <p className="font-bold text-slate-900">{batch.driverCommission} DH</p>
                     </div>
                   </div>
                 </div>
@@ -340,10 +340,10 @@ export default function VersementEmployeeManager() {
                 {/* Status Badge */}
                 <div className={`p-3 rounded-lg ${
                   batch.status === "Terminé" 
-                    ? 'bg-emerald-50 text-emerald-700' 
+                    ? 'bg-blue-600 text-slate-900' 
                     : batch.status === "Rejeté" 
-                      ? 'bg-red-50 text-red-700' 
-                      : 'bg-orange-50 text-orange-700'
+                      ? 'bg-blue-600 text-slate-900' 
+                      : 'bg-blue-600 text-slate-600'
                 }`}>
                   <div className="flex items-center justify-between">
                     <div>
@@ -356,13 +356,13 @@ export default function VersementEmployeeManager() {
                       )}
                     </div>
                     {batch.status === "Terminé" && (
-                      <CheckCircle className="text-emerald-600" size={20} />
+                      <CheckCircle className="text-slate-900" size={20} />
                     )}
                     {batch.status === "Rejeté" && (
-                      <XCircle className="text-red-600" size={20} />
+                      <XCircle className="text-slate-900" size={20} />
                     )}
                     {batch.status === "En attente" && (
-                      <Clock className="text-orange-600" size={20} />
+                      <Clock className="text-slate-600" size={20} />
                     )}
                   </div>
                 </div>
@@ -381,14 +381,14 @@ export default function VersementEmployeeManager() {
                     <>
                       <button
                         onClick={() => handleApproveBatch(batch.id)}
-                        className="flex-1 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-2 font-bold"
+                        className="flex-1 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-600 flex items-center justify-center gap-2 font-bold"
                       >
                         <CheckCircle size={16} />
                         Accepter
                       </button>
                       <button
                         onClick={() => handleRejectBatch(batch.id)}
-                        className="flex-1 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 flex items-center justify-center gap-2 font-bold"
+                        className="flex-1 py-2.5 bg-blue-600 text-slate-900 rounded-xl hover:bg-blue-600 flex items-center justify-center gap-2 font-bold"
                       >
                         <XCircle size={16} />
                         Rejeter
@@ -420,15 +420,15 @@ export default function VersementEmployeeManager() {
             {/* Modal Content */}
             <div className="flex-1 overflow-y-auto p-6">
               {/* Summary Header */}
-              <div className="bg-green-50 p-4 rounded-xl mb-6">
+              <div className="bg-blue-600 p-4 rounded-xl mb-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-green-700 font-bold">Montant attendu</p>
-                    <p className="text-xl font-extrabold text-green-600">{selectedBatch.totalCash} DH</p>
+                    <p className="text-sm text-slate-900 font-bold">Montant attendu</p>
+                    <p className="text-xl font-extrabold text-slate-900">{selectedBatch.totalCash} DH</p>
                   </div>
                   <div>
-                    <p className="text-sm text-emerald-700 font-bold">Commission du livreur</p>
-                    <p className="text-xl font-extrabold text-emerald-600">{selectedBatch.driverCommission} DH</p>
+                    <p className="text-sm text-slate-900 font-bold">Commission du livreur</p>
+                    <p className="text-xl font-extrabold text-slate-900">{selectedBatch.driverCommission} DH</p>
                   </div>
                 </div>
               </div>
