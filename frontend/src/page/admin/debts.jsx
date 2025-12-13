@@ -2,9 +2,10 @@
 import { 
   Search, Plus, Filter, FileText, CheckCircle, AlertCircle, 
   Calendar, User, DollarSign, Clock, Paperclip, Check, X,
-  ChevronDown, ArrowRight, Eye, Trash2
+  ChevronDown, ArrowRight, Eye, Trash2, Printer
 } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { settingsAPI } from '../../services/api';
 
 // --- 1. UTILITY COMPONENTS ---
 
@@ -27,7 +28,7 @@ const Toast = ({ message, type = 'success', onClose }) => {
 
 const InputField = ({ label, type = "text", placeholder, value, onChange, disabled }) => (
   <div className="group">
-    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
+    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-[#018790] transition-colors">
       {label} {!disabled && <span className="text-red-400">*</span>}
     </label>
     <div className="relative">
@@ -35,7 +36,7 @@ const InputField = ({ label, type = "text", placeholder, value, onChange, disabl
         type={type} 
         disabled={disabled}
         placeholder={placeholder}
-        className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500`}
+        className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500`}
         value={value}
         onChange={onChange}
       />
@@ -46,11 +47,11 @@ const InputField = ({ label, type = "text", placeholder, value, onChange, disabl
 const SelectField = ({ label, options, value, onChange, disabled, onAdd }) => (
     <div className="group">
       <div className="flex justify-between items-center mb-1.5 ml-1">
-        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
+        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider group-focus-within:text-[#018790] transition-colors">
             {label} {!disabled && <span className="text-red-400">*</span>}
         </label>
         {onAdd && !disabled && (
-            <button type="button" onClick={onAdd} className="text-[10px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1">
+            <button type="button" onClick={onAdd} className="text-[10px] font-bold text-[#018790] hover:text-[#005461] flex items-center gap-1">
                 <Plus size={10} /> Nouveau
             </button>
         )}
@@ -58,7 +59,7 @@ const SelectField = ({ label, options, value, onChange, disabled, onAdd }) => (
       <div className="relative">
         <select 
             disabled={disabled}
-            className={`w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer`}
+            className={`w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer`}
             value={value}
             onChange={onChange}
         >
@@ -122,7 +123,7 @@ const DebtModal = ({ isOpen, onClose, onSave, mode = 'add', initialData = null }
 
     return (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 border border-slate-100">
                 <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
                     <div>
                         <h2 className="text-2xl font-bold text-slate-800">
@@ -204,7 +205,7 @@ const DebtModal = ({ isOpen, onClose, onSave, mode = 'add', initialData = null }
                                 Preuve / Fichier
                             </label>
                             <label className={`flex items-center gap-3 w-full p-3 rounded-xl bg-slate-50 border border-dashed border-slate-300 ${!isViewOnly ? 'cursor-pointer hover:bg-slate-100' : ''} transition-colors`}>
-                                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-full bg-[#018790]/10 text-[#018790] flex items-center justify-center">
                                     <Paperclip size={16} />
                                 </div>
                                 <span className="text-sm text-slate-500 truncate">
@@ -222,7 +223,7 @@ const DebtModal = ({ isOpen, onClose, onSave, mode = 'add', initialData = null }
                         <textarea 
                             rows="2"
                             disabled={isViewOnly}
-                            className="w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all resize-none disabled:bg-slate-100 disabled:text-slate-500"
+                            className="w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all resize-none disabled:bg-slate-100 disabled:text-slate-500"
                             placeholder="Notes supplémentaires..."
                             value={formData.note}
                             onChange={(e) => handleChange('note', e.target.value)}
@@ -240,7 +241,7 @@ const DebtModal = ({ isOpen, onClose, onSave, mode = 'add', initialData = null }
                             </button>
                             <button 
                                 type="submit"
-                                className="px-8 py-2.5 rounded-xl text-white font-semibold flex items-center gap-2 bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all"
+                                className="px-8 py-2.5 rounded-xl text-white font-semibold flex items-center gap-2 bg-[#018790] hover:bg-[#005461] shadow-lg shadow-[#018790]/30 transition-all"
                             >
                                 <Check size={18} /> Enregistrer
                             </button>
@@ -272,7 +273,7 @@ const PaymentProofModal = ({ isOpen, onClose, onConfirm }) => {
 
     return (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[60] p-4">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md flex flex-col animate-in zoom-in-95 duration-200">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md flex flex-col animate-in zoom-in-95 duration-200 border border-slate-100">
                 <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
                     <div>
                         <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -291,7 +292,7 @@ const PaymentProofModal = ({ isOpen, onClose, onConfirm }) => {
                             Preuve de paiement (Reçu/Virement) <span className="text-red-400">*</span>
                         </label>
                         <label className={`flex flex-col items-center justify-center gap-3 w-full h-32 rounded-xl bg-slate-50 border-2 border-dashed ${file ? 'border-emerald-500 bg-emerald-50/30' : 'border-slate-300 hover:bg-slate-100'} cursor-pointer transition-all`}>
-                            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${file ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${file ? 'bg-emerald-100 text-emerald-600' : 'bg-[#018790]/10 text-[#018790]'}`}>
                                 {file ? <Check size={24} /> : <Paperclip size={24} />}
                             </div>
                             <span className="text-sm text-slate-600 font-medium truncate max-w-[200px]">
@@ -335,6 +336,7 @@ const DebtsPage = () => {
   
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [pendingDebtId, setPendingDebtId] = useState(null);
+  const [selectedDebts, setSelectedDebts] = useState([]);
 
   // Load from LocalStorage
   const [debts, setDebts] = useState(() => {
@@ -427,6 +429,108 @@ const DebtsPage = () => {
       return { label: `Dans ${diffDays}j`, color: 'text-emerald-600 bg-emerald-50 border-emerald-100' };
   };
 
+  const handleSelectDebt = (id) => {
+      setSelectedDebts(prev => 
+          prev.includes(id) ? prev.filter(dId => dId !== id) : [...prev, id]
+      );
+  };
+
+  const handleSelectAll = () => {
+      if (selectedDebts.length === filteredDebts.length) {
+          setSelectedDebts([]);
+      } else {
+          setSelectedDebts(filteredDebts.map(d => d.id));
+      }
+  };
+
+  const handlePrintSelected = async () => {
+      if (selectedDebts.length === 0) {
+          setToast({ message: "Veuillez sélectionner au moins une dette.", type: "error" });
+          return;
+      }
+
+      const config = await settingsAPI.getDebtPrintConfig();
+      const debtsToPrint = debts.filter(d => selectedDebts.includes(d.id));
+      
+      const printWindow = window.open('', '_blank');
+      const currentDate = new Date().toLocaleDateString('fr-FR');
+
+      const rows = debtsToPrint.map(debt => `
+          <tr>
+              ${config.showDate ? `<td>${debt.date}</td>` : ''}
+              ${config.showSupplier ? `<td><strong>${debt.supplier}</strong><br/><span style="font-size:10px;color:#666">${debt.project}</span></td>` : ''}
+              ${config.showDescription ? `<td>${debt.note || '-'}</td>` : ''}
+              ${config.showAmount ? `<td style="text-align:right;font-weight:bold">${debt.amount.toLocaleString()} MAD</td>` : ''}
+              ${config.showStatus ? `<td style="text-align:center">${debt.status}</td>` : ''}
+          </tr>
+      `).join('');
+
+      const headers = `
+          <tr>
+              ${config.showDate ? '<th>Date</th>' : ''}
+              ${config.showSupplier ? '<th>Fournisseur</th>' : ''}
+              ${config.showDescription ? '<th>Description</th>' : ''}
+              ${config.showAmount ? '<th style="text-align:right">Montant</th>' : ''}
+              ${config.showStatus ? '<th style="text-align:center">Statut</th>' : ''}
+          </tr>
+      `;
+
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Impression Dettes</title>
+          <style>
+            body { font-family: 'Arial', sans-serif; padding: 40px; color: #333; }
+            .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #018790; padding-bottom: 20px; }
+            .company-name { font-size: 24px; font-weight: bold; color: #018790; margin-bottom: 5px; }
+            .report-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+            .meta { font-size: 12px; color: #666; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+            th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+            th { background-color: #f8f9fa; font-weight: bold; color: #444; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            .footer { margin-top: 50px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #eee; padding-top: 20px; }
+            @media print {
+              button { display: none; }
+              body { padding: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="company-name">${config.companyName || 'Société'}</div>
+            <div class="report-title">Liste des Dettes Sélectionnées</div>
+            <div class="meta">Généré le ${currentDate}</div>
+          </div>
+
+          <table>
+            <thead>${headers}</thead>
+            <tbody>${rows}</tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="${Object.values(config).filter(v => v === true).length}" style="text-align:right;font-weight:bold;padding:15px;">
+                        Total: ${debtsToPrint.reduce((sum, d) => sum + d.amount, 0).toLocaleString()} MAD
+                    </td>
+                </tr>
+            </tfoot>
+          </table>
+
+          <div class="footer">
+            ${config.footerText || ''}
+          </div>
+
+          <script>
+            window.onload = function() { window.print(); }
+          </script>
+        </body>
+        </html>
+      `;
+
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+  };
+
   const filteredDebts = debts.filter(d => {
       const matchesSearch = d.supplier.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesTab = activeTab === 'open' ? d.status === 'Ouvert' : d.status === 'Payé';
@@ -437,59 +541,74 @@ const DebtsPage = () => {
   const sortedDebts = [...filteredDebts].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800 relative">
+    <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out]">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestion des Dettes</h1>
-            <p className="text-slate-500 mt-1 font-medium">Suivi des factures fournisseurs et échéances.</p>
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
+        <div>
+          <h1 className="text-2xl font-extrabold text-[#018790]">Gestion des Dettes</h1>
+          <p className="text-slate-500">Suivi des factures fournisseurs et échéances.</p>
+        </div>
+        <div className="flex gap-3">
+            <button 
+                onClick={handlePrintSelected}
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all font-semibold"
+            >
+                <Printer size={20} /> Imprimer
+            </button>
+            <button 
+                onClick={handleOpenAdd}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-[#018790] text-white rounded-xl hover:bg-[#005461] transition-all shadow-lg shadow-[#018790]/30 font-semibold"
+            >
+                <Plus size={20} /> Ajouter une dette
+            </button>
+        </div>
+      </div>
+      
+      {/* Controls */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row gap-4 items-end">
+           <div className="relative flex-1 w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+              <input 
+                  type="text" 
+                  placeholder="Rechercher par fournisseur..." 
+                  value={searchTerm} 
+                  onChange={(e) => setSearchTerm(e.target.value)} 
+                  className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] transition-all" 
+              />
           </div>
-          <button 
-            onClick={handleOpenAdd}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
-          >
-            <Plus size={20} /> Ajouter une dette
-          </button>
-        </div>
-        
-        <div className="flex flex-col md:flex-row gap-4 mt-6 items-end">
-             <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                <input 
-                    type="text" 
-                    placeholder="Rechercher par fournisseur..." 
-                    value={searchTerm} 
-                    onChange={(e) => setSearchTerm(e.target.value)} 
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" 
-                />
-            </div>
-            
-            <div className="flex bg-slate-100 p-1 rounded-xl">
-                <button 
-                    onClick={() => setActiveTab('open')}
-                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'open' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                    En Cours
-                </button>
-                <button 
-                    onClick={() => setActiveTab('history')}
-                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'history' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                    Historique
-                </button>
-            </div>
-        </div>
+          
+          <div className="flex bg-slate-100 p-1 rounded-xl">
+              <button 
+                  onClick={() => setActiveTab('open')}
+                  className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'open' ? 'bg-white text-[#018790] shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                  En Cours
+              </button>
+              <button 
+                  onClick={() => setActiveTab('history')}
+                  className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'history' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                  Historique
+              </button>
+          </div>
       </div>
 
       {/* List */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-100">
+            <thead className="bg-slate-50/50 border-b border-slate-100">
               <tr>
+                <th className="w-10 px-6 py-4">
+                    <input 
+                        type="checkbox" 
+                        checked={selectedDebts.length === filteredDebts.length && filteredDebts.length > 0}
+                        onChange={handleSelectAll}
+                        className="rounded border-slate-300 text-[#018790] focus:ring-[#018790]"
+                    />
+                </th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Fournisseur / Projet</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Montant</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Dates</th>
@@ -501,7 +620,7 @@ const DebtsPage = () => {
             <tbody className="divide-y divide-slate-50">
               {sortedDebts.length === 0 ? (
                  <tr>
-                    <td colSpan="6" className="p-10 text-center text-slate-400">
+                    <td colSpan="7" className="p-10 text-center text-slate-400">
                         <div className="flex flex-col items-center">
                             <FileText size={40} className="mb-2 opacity-20" />
                             <p>Aucune dette trouvée dans cet onglet</p>
@@ -514,13 +633,21 @@ const DebtsPage = () => {
                   return (
                     <tr key={debt.id} className="hover:bg-slate-50/80 transition-colors group">
                         <td className="px-6 py-4">
+                            <input 
+                                type="checkbox" 
+                                checked={selectedDebts.includes(debt.id)}
+                                onChange={() => handleSelectDebt(debt.id)}
+                                className="rounded border-slate-300 text-[#018790] focus:ring-[#018790]"
+                            />
+                        </td>
+                        <td className="px-6 py-4">
                             <div className="flex flex-col">
                                 <span className="font-bold text-slate-800 text-sm">{debt.supplier}</span>
                                 <span className="text-xs text-slate-400">{debt.project}</span>
                             </div>
                         </td>
                         <td className="px-6 py-4">
-                             <span className="font-mono font-bold text-slate-900">{debt.amount.toLocaleString()} MAD</span>
+                             <span className="font-mono font-bold text-[#018790]">{debt.amount.toLocaleString()} MAD</span>
                         </td>
                         <td className="px-6 py-4">
                             <div className="flex flex-col gap-1">
@@ -560,7 +687,7 @@ const DebtsPage = () => {
                                         <CheckCircle size={18} />
                                     </button>
                                 )}
-                                <button onClick={() => handleOpenView(debt)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir les détails">
+                                <button onClick={() => handleOpenView(debt)} className="p-2 text-slate-400 hover:text-[#018790] hover:bg-[#018790]/10 rounded-lg transition" title="Voir les détails">
                                     <Eye size={18} />
                                 </button>
                                 <button onClick={() => handleDelete(debt.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer">

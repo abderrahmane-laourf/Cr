@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { employeeAPI } from '../../services/api';
 import {  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import SpotlightCard from '../../util/SpotlightCard';
 
 const PetiteCaisseDashboard = () => {
     // Note: Same key as petitecaisse.jsx for shared data
@@ -97,44 +98,41 @@ const PetiteCaisseDashboard = () => {
     }, {})).sort((a, b) => new Date(a.date) - new Date(b.date));
 
     return (
-        <div className="min-h-screen bg-slate-50/50 p-6 md:p-8 font-sans text-slate-800">
+        <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out]">
             
             {/* HEADER & FILTERS */}
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 mb-8">
-                <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
-                    <div>
-                        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
-                            <BarChart3 className="text-indigo-600" size={32} />
-                            Tableau de Bord Trésorerie
-                        </h1>
-                        <p className="text-slate-600 font-medium mt-1">Suivi des Dépenses & Budget Téléphonie</p>
-                    </div>
+            <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
+                <div>
+                    <h1 className="text-2xl font-extrabold text-[#018790] flex items-center gap-3">
+                        Tableau de Bord Trésorerie
+                    </h1>
+                    <p className="text-slate-500 mt-1">Suivi des Dépenses & Budget Téléphonie</p>
+                </div>
 
-                    <div className="flex flex-wrap items-center gap-3 bg-slate-50 p-2 rounded-2xl border border-slate-100">
-                        <div className="bg-white px-3 py-2 rounded-xl border border-slate-200 flex items-center gap-2 shadow-sm">
-                            <Calendar size={16} className="text-slate-400"/>
-                            <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="bg-transparent text-xs font-bold outline-none font-mono"/>
-                            <span className="text-slate-300">-</span>
-                            <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="bg-transparent text-xs font-bold outline-none font-mono"/>
-                        </div>
-                        
-                        <div className="bg-white px-3 py-2 rounded-xl border border-slate-200 flex items-center gap-2 shadow-sm">
-                            <Users size={16} className="text-slate-400"/>
-                            <select 
-                                value={selectedEmployee} 
-                                onChange={e => setSelectedEmployee(e.target.value)}
-                                className="bg-transparent text-xs font-bold outline-none w-32"
-                            >
-                                <option value="All">Tous les employés</option>
-                                {employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-                            </select>
-                        </div>
+                <div className="flex flex-wrap items-center gap-3 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
+                    <div className="bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 flex items-center gap-2">
+                        <Calendar size={16} className="text-slate-400"/>
+                        <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="bg-transparent text-xs font-bold outline-none font-mono text-slate-600"/>
+                        <span className="text-slate-300">-</span>
+                        <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="bg-transparent text-xs font-bold outline-none font-mono text-slate-600"/>
+                    </div>
+                    
+                    <div className="bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 flex items-center gap-2">
+                        <Users size={16} className="text-slate-400"/>
+                        <select 
+                            value={selectedEmployee} 
+                            onChange={e => setSelectedEmployee(e.target.value)}
+                            className="bg-transparent text-xs font-bold outline-none w-32 text-slate-600"
+                        >
+                            <option value="All">Tous les employés</option>
+                            {employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+                        </select>
                     </div>
                 </div>
             </div>
 
             {/* SECTION A: General Treasury */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <KpiCard 
                     title="Total Entrées (Income)" 
                     amount={totalIncome} 
@@ -157,93 +155,99 @@ const PetiteCaisseDashboard = () => {
                     title="Solde Net (Cash)" 
                     amount={netBalance} 
                     icon={Wallet} 
-                    color="text-blue-700" 
-                    bg="bg-blue-50" 
-                    border="border-blue-100"
+                    color="text-[#018790]" 
+                    bg="bg-[#018790]/10" 
+                    border="border-[#018790]/20"
                     trend="Available Cash"
                 />
             </div>
 
             {/* SECTION B: TELECOM & BUDGET */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 {/* 1. Budget Monitoring */}
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 flex flex-col justify-between relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-violet-500 to-fuchsia-500"></div>
-                    <div>
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-3 rounded-xl bg-violet-100 text-violet-600">
-                                <Smartphone size={24} />
+                <SpotlightCard theme="light" className="bg-white border-slate-100">
+                    <div className="flex flex-col justify-between h-full relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#018790] to-emerald-500"></div>
+                        <div>
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-3 rounded-xl bg-[#018790]/10 text-[#018790]">
+                                    <Smartphone size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-slate-800">Budget Téléphonie</h3>
+                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Consommation Mensuelle</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-slate-800">Budget Téléphonie</h3>
-                                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Consommation Mensuelle</p>
-                            </div>
-                        </div>
 
-                        <div className="mb-2 flex justify-between items-end">
-                            <span className="text-4xl font-black text-slate-800">{totalTelecomSpent.toLocaleString()} <span className="text-sm font-bold text-slate-400">MAD</span></span>
-                            <span className="text-sm font-bold text-slate-500">/ {PHONE_BUDGET.toLocaleString()} MAD</span>
-                        </div>
-
-                        {/* Progress Bar */}
-                        <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden mb-4 border border-slate-100">
-                            <div 
-                                className={`h-full rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-1
-                                    ${budgetUsage > 90 ? 'bg-gradient-to-r from-red-500 to-red-600' : 'bg-gradient-to-r from-violet-500 to-fuchsia-500'}
-                                `}
-                                style={{ width: `${budgetUsage}%` }}
-                            >
+                            <div className="mb-2 flex justify-between items-end">
+                                <span className="text-4xl font-black text-slate-800">{totalTelecomSpent.toLocaleString()} <span className="text-sm font-bold text-slate-400">MAD</span></span>
+                                <span className="text-sm font-bold text-slate-500">/ {PHONE_BUDGET.toLocaleString()} MAD</span>
                             </div>
+
+                            {/* Progress Bar */}
+                            <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden mb-4 border border-slate-100">
+                                <div 
+                                    className={`h-full rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-1
+                                        ${budgetUsage > 90 ? 'bg-gradient-to-r from-red-500 to-red-600' : 'bg-gradient-to-r from-[#018790] to-emerald-500'}
+                                    `}
+                                    style={{ width: `${budgetUsage}%` }}
+                                >
+                                </div>
+                            </div>
+                            <p className={`text-xs font-bold ${budgetUsage > 90 ? 'text-red-500' : 'text-slate-400'}`}>
+                                {budgetUsage > 100 ? 'Budget Dépassé !' : `Vous avez utilisé ${budgetUsage.toFixed(1)}% du budget.`}
+                            </p>
                         </div>
-                        <p className={`text-xs font-bold ${budgetUsage > 90 ? 'text-red-500' : 'text-slate-400'}`}>
-                            {budgetUsage > 100 ? 'Budget Dépassé !' : `Vous avez utilisé ${budgetUsage.toFixed(1)}% du budget.`}
-                        </p>
                     </div>
-                </div>
+                </SpotlightCard>
 
                 {/* 2. Top Consumer (The "Winner") */}
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 flex items-center justify-between group hover:border-red-200 transition-colors">
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Highest Spender</p>
-                        {topConsumer ? (
-                            <>
-                                <h3 className="text-2xl font-black text-slate-800 mb-1">{topConsumer.name}</h3>
-                                <p className="text-red-600 font-bold bg-red-50 px-2 py-1 rounded-lg inline-block">-{topConsumer.amount.toLocaleString()} MAD</p>
-                            </>
-                        ) : (
-                            <p className="text-slate-400 italic">Aucune donnée</p>
-                        )}
+                <SpotlightCard theme="light" className="bg-white border-slate-100 group hover:border-red-200 transition-colors">
+                    <div className="flex items-center justify-between h-full">
+                        <div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Highest Spender</p>
+                            {topConsumer ? (
+                                <>
+                                    <h3 className="text-2xl font-black text-slate-800 mb-1">{topConsumer.name}</h3>
+                                    <p className="text-red-600 font-bold bg-red-50 px-2 py-1 rounded-lg inline-block">-{topConsumer.amount.toLocaleString()} MAD</p>
+                                </>
+                            ) : (
+                                <p className="text-slate-400 italic">Aucune donnée</p>
+                            )}
+                        </div>
+                        <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                            <TrendingDown size={32} />
+                        </div>
                     </div>
-                    <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
-                        <TrendingDown size={32} />
-                    </div>
-                </div>
+                </SpotlightCard>
 
                 {/* 3. Bottom Consumer (The "Saver") */}
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 flex items-center justify-between group hover:border-emerald-200 transition-colors">
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Most Economical</p>
-                        {lowConsumer ? (
-                            <>
-                                <h3 className="text-2xl font-black text-slate-800 mb-1">{lowConsumer.name}</h3>
-                                <p className="text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-lg inline-block">-{lowConsumer.amount.toLocaleString()} MAD</p>
-                            </>
-                        ) : (
-                            <p className="text-slate-400 italic">Aucune donnée</p>
-                        )}
+                <SpotlightCard theme="light" className="bg-white border-slate-100 group hover:border-emerald-200 transition-colors">
+                    <div className="flex items-center justify-between h-full">
+                        <div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Most Economical</p>
+                            {lowConsumer ? (
+                                <>
+                                    <h3 className="text-2xl font-black text-slate-800 mb-1">{lowConsumer.name}</h3>
+                                    <p className="text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-lg inline-block">-{lowConsumer.amount.toLocaleString()} MAD</p>
+                                </>
+                            ) : (
+                                <p className="text-slate-400 italic">Aucune donnée</p>
+                            )}
+                        </div>
+                        <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                            <Trophy size={32} />
+                        </div>
                     </div>
-                    <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-                        <Trophy size={32} />
-                    </div>
-                </div>
+                </SpotlightCard>
             </div>
 
             {/* SECTION C: CHART & LIST */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                  {/* Chart */}
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
-                    <h3 className="font-bold text-lg text-slate-800 mb-6">Aperçu Financier</h3>
+                <SpotlightCard theme="light" className="bg-white border-slate-100">
+                    <h3 className="font-bold text-lg text-[#005461] mb-6">Aperçu Financier</h3>
                     <div className="h-64 w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData}>
@@ -259,13 +263,13 @@ const PetiteCaisseDashboard = () => {
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-                </div>
+                </SpotlightCard>
 
                 {/* Top 5 Consumers List */}
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center">
-                        <h3 className="font-bold text-lg text-slate-800">Top Consommation (Téléphone)</h3>
-                        <button className="text-xs font-bold text-indigo-600 hover:text-indigo-800">Voir tout</button>
+                <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 className="font-bold text-lg text-[#005461]">Top Consommation (Téléphone)</h3>
+                        <button className="text-xs font-bold text-[#018790] hover:text-[#005461]">Voir tout</button>
                     </div>
                     <div className="p-0">
                         {rankedConsumers.slice(0, 5).map((r, idx) => (
@@ -290,7 +294,7 @@ const PetiteCaisseDashboard = () => {
 };
 
 const KpiCard = ({ title, amount, icon: Icon, color, bg, border, trend }) => (
-    <div className={`p-6 rounded-3xl shadow-sm border ${border} ${bg} flex flex-col justify-between hover:shadow-md transition-all`}>
+    <SpotlightCard theme="light" className={`p-6 rounded-3xl shadow-sm border ${border} ${bg} flex flex-col justify-between hover:shadow-md transition-all`}>
         <div className="flex items-start justify-between mb-4">
             <div className={`p-3 rounded-2xl bg-white/60 backdrop-blur-sm ${color}`}>
                 <Icon size={24} />
@@ -301,7 +305,7 @@ const KpiCard = ({ title, amount, icon: Icon, color, bg, border, trend }) => (
             <p className={`text-xs font-bold uppercase tracking-widest opacity-70 mb-1 ${color}`}>{title}</p>
             <h3 className={`text-3xl font-black tracking-tight ${color}`}>{amount.toLocaleString()} <span className="text-sm opacity-60">MAD</span></h3>
         </div>
-    </div>
+    </SpotlightCard>
 );
 
 export default PetiteCaisseDashboard;

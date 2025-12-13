@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Factory, Package, DollarSign, TrendingUp, Calendar, AlertCircle, 
-  BarChart3, PieChart 
+  BarChart3, PieChart, ArrowRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -9,6 +9,7 @@ import {
   BarChart, Bar, Legend, Cell, PieChart as RePieChart, Pie
 } from 'recharts';
 import { productionAPI, productAPI } from '../../services/api';
+import SpotlightCard from '../../util/SpotlightCard';
 
 export default function ProductionDashboard() {
   const navigate = useNavigate();
@@ -99,13 +100,13 @@ export default function ProductionDashboard() {
     }
   };
 
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+  const COLORS = ['#018790', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
   const cards = [
-    { title: 'Total Productions', value: stats.totalProductions, icon: Factory, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-500/10' },
-    { title: 'Quantité Totale', value: stats.totalQuantity, icon: Package, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
-    { title: 'Coût Total', value: `${Math.round(stats.totalCost).toLocaleString()} DH`, icon: DollarSign, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-500/10' },
-    { title: 'Ce Mois', value: stats.thisMonthProductions, icon: Calendar, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-500/10' }
+    { title: 'Total Productions', value: stats.totalProductions, icon: Factory, color: 'text-[#018790]', bg: 'bg-[#018790]/10' },
+    { title: 'Quantité Totale', value: stats.totalQuantity, icon: Package, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { title: 'Coût Total', value: `${Math.round(stats.totalCost).toLocaleString()} DH`, icon: DollarSign, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { title: 'Ce Mois', value: stats.thisMonthProductions, icon: Calendar, color: 'text-orange-600', bg: 'bg-orange-50' }
   ];
 
   if (loading) {
@@ -113,52 +114,47 @@ export default function ProductionDashboard() {
   }
 
   return (
-    <div className="min-h-screen p-8 text-slate-800 font-sans">
+    <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out]">
       
       {/* Header */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-            Dashboard Production
-          </h1>
-          <p className="text-slate-500 mt-1 font-medium">
-            Vue d'ensemble et analytique de fabrication
-          </p>
+          <h1 className="text-2xl font-extrabold text-[#018790]">Dashboard Production</h1>
+          <p className="text-slate-500">Vue d'ensemble et analytique de fabrication</p>
         </div>
-        <div className="flex gap-2">
+        <div className="mt-4 sm:mt-0">
             <button 
                 onClick={() => navigate('/admin/production')}
-                className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-500/20"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-[#005461] hover:bg-[#016f76] text-white rounded-xl transition-all shadow-lg shadow-cyan-900/20 font-bold"
             >
-                Gérer Production
+                Gérer Production <ArrowRight size={18} />
             </button>
         </div>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card, idx) => (
-          <div key={idx} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${card.bg}`}>
-                <card.icon className={card.color} size={24} />
-              </div>
-              <TrendingUp className="text-slate-300" size={20} />
+          <SpotlightCard key={idx} theme="light" className="flex flex-col justify-between h-full">
+            <div className="flex justify-between items-start mb-2">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{card.title}</span>
+              <card.icon className={card.color} size={18} />
             </div>
-            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">{card.title}</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-1">{card.value}</h3>
-          </div>
+            <div>
+              <div className={`text-2xl font-black ${card.color === 'text-[#018790]' ? 'text-[#005461]' : 'text-slate-800'}`}>{card.value}</div>
+            </div>
+          </SpotlightCard>
         ))}
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Main Chart: Evolution */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+        <SpotlightCard theme="light" className="lg:col-span-2">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
-              <BarChart3 className="text-blue-500" size={20} />
+              <BarChart3 className="text-[#018790]" size={20} />
               Évolution des Coûts & Productions
             </h3>
           </div>
@@ -167,8 +163,8 @@ export default function ProductionDashboard() {
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorCost" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#018790" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#018790" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
@@ -178,14 +174,14 @@ export default function ProductionDashboard() {
                   contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }}
                   itemStyle={{ color: '#fff' }}
                 />
-                <Area type="monotone" dataKey="cost" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorCost)" name="Coût (DH)" />
+                <Area type="monotone" dataKey="cost" stroke="#018790" strokeWidth={3} fillOpacity={1} fill="url(#colorCost)" name="Coût (DH)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </SpotlightCard>
 
         {/* Pie Chart: Distribution */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+        <SpotlightCard theme="light">
            <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
               <PieChart className="text-emerald-500" size={20} />
@@ -215,17 +211,17 @@ export default function ProductionDashboard() {
               </RePieChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       {/* Recent Activity Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-6 border-b border-slate-200">
+      <SpotlightCard theme="light" className="overflow-hidden p-0">
+        <div className="p-6 border-b border-slate-100">
             <h3 className="font-bold text-lg text-slate-800">Dernières Productions</h3>
         </div>
         <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-500 uppercase font-bold text-xs">
+                <thead className="bg-[#005461]/5 text-[#005461] uppercase font-bold text-xs">
                     <tr>
                         <th className="px-6 py-4">Date</th>
                         <th className="px-6 py-4">Produit</th>
@@ -233,11 +229,11 @@ export default function ProductionDashboard() {
                         <th className="px-6 py-4 text-right">Coût Total</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-50">
                     {recentProductions.map((p, i) => {
                         const product = products.find(prod => prod.id == p.productId);
                         return (
-                            <tr key={i} className="hover:bg-slate-50 transition-colors">
+                            <tr key={i} className="hover:bg-slate-50/80 transition-colors">
                                 <td className="px-6 py-4 font-medium text-slate-900">
                                     {new Date(p.date).toLocaleDateString('fr-FR')}
                                 </td>
@@ -245,12 +241,12 @@ export default function ProductionDashboard() {
                                    <div className="w-8 h-8 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0">
                                       {product?.image && <img src={product.image} className="w-full h-full object-cover" alt="" />}
                                    </div>
-                                    <span className="text-slate-700">{product?.nom || 'Inconnu'}</span>
+                                    <span className="text-slate-700 font-semibold">{product?.nom || 'Inconnu'}</span>
                                 </td>
                                 <td className="px-6 py-4 text-slate-600">
                                     {p.quantity} <span className="text-xs text-slate-400">{product?.uniteCalcul}</span>
                                 </td>
-                                <td className="px-6 py-4 text-right font-bold text-blue-600">
+                                <td className="px-6 py-4 text-right font-bold text-[#018790]">
                                     {parseFloat(p.totalCost || 0).toFixed(2)} DH
                                 </td>
                             </tr>
@@ -259,7 +255,7 @@ export default function ProductionDashboard() {
                 </tbody>
             </table>
         </div>
-      </div>
+      </SpotlightCard>
 
     </div>
   );

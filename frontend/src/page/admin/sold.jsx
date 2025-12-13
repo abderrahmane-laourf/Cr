@@ -165,7 +165,7 @@ const SoldPage = () => {
             {/* HERADER */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                 <div>
-                   <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                   <h1 className="text-3xl font-extrabold text-[#025e6d] tracking-tight flex items-center gap-3">
                       <DollarSign className="text-emerald-600" size={32} />
                       Gestionnaire Dollar
                    </h1>

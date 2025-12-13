@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Wallet, Package, DollarSign, CheckCircle, Clock, FileText, Truck, AlertTriangle } from 'lucide-react';
+import { 
+  Wallet, Package, DollarSign, CheckCircle, Clock, 
+  FileText, Truck, AlertTriangle, TrendingUp, ArrowRight 
+} from 'lucide-react';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import SpotlightCard from '../../../util/SpotlightCard';
 
 export default function Portefeuille() {
   const [orders, setOrders] = useState([]);
@@ -301,64 +305,149 @@ export default function Portefeuille() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 px-4 sm:px-6">
-      {/* Header */}
-      <div className="flex flex-col gap-2 pt-6">
-        <h1 className="text-2xl font-extrabold text-slate-900 flex items-center gap-3">
-          <Wallet className="text-emerald-600" size={28} />
-          Portefeuille Livreur
-        </h1>
-        <p className="text-base text-slate-600 font-medium">
-          Gérez vos collectes et commissions
-        </p>
-      </div>
+    <div className="min-h-screen bg-slate-50/50 p-4 md:p-8 font-sans text-slate-800 pb-24">
+      <div className="max-w-7xl mx-auto space-y-6">
+        
+        {/* HEADER */}
+        <SpotlightCard className="bg-white border-slate-200 shadow-sm">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                <Wallet className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-800">Mon Portefeuille</h1>
+                <p className="text-slate-500 text-sm">Gérez vos versements et commissions</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <button 
+                onClick={generateSettlementPDF}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors text-sm font-bold shadow-sm"
+              >
+                <FileText size={16} />
+                <span>Bon de versement</span>
+              </button>
+            </div>
+          </div>
+        </SpotlightCard>
 
-      {/* Orders Table */}
-      <div className="mt-6 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-200">
-          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-            <Package className="text-slate-600" size={20} />
-            Toutes les Commandes
-          </h2>
-          <p className="text-slate-600 text-sm mt-1">
-            Liste complète de vos commandes avec leur statut financier
-          </p>
+        {/* STATS CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <SpotlightCard className="bg-white border-slate-200 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-emerald-50 rounded-lg">
+                <DollarSign className="w-5 h-5 text-emerald-600" />
+              </div>
+              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                À verser
+              </span>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-slate-500 font-medium">Montant à remettre</p>
+              <h3 className="text-2xl font-bold text-slate-800">{totals.totalCashToPay.toFixed(2)} DH</h3>
+            </div>
+          </SpotlightCard>
+
+          <SpotlightCard className="bg-white border-slate-200 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-blue-600" />
+              </div>
+              <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                Gains
+              </span>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-slate-500 font-medium">Mes Commissions</p>
+              <h3 className="text-2xl font-bold text-slate-800">{totals.totalEarnings.toFixed(2)} DH</h3>
+            </div>
+          </SpotlightCard>
+
+          <SpotlightCard className="bg-white border-slate-200 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-amber-50 rounded-lg">
+                <Package className="w-5 h-5 text-amber-600" />
+              </div>
+              <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
+                En attente
+              </span>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-slate-500 font-medium">Colis à verser</p>
+              <h3 className="text-2xl font-bold text-slate-800">{totals.count}</h3>
+            </div>
+          </SpotlightCard>
         </div>
 
-        {orders.length === 0 ? (
-          <div className="py-16 text-center">
-            <Package className="w-16 h-16 mx-auto text-slate-300" />
-            <h3 className="text-lg font-medium text-slate-900 mt-4">Aucune commande</h3>
-            <p className="text-slate-500 mt-1">Vous n'avez pas encore de commandes assignées</p>
+        {/* ACTION BANNER */}
+        {totals.count > 0 && (
+          <div className="bg-emerald-900 rounded-2xl p-6 text-white shadow-lg shadow-emerald-900/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10">
+                  <DollarSign className="w-6 h-6 text-emerald-300" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Prêt à verser ?</h3>
+                  <p className="text-emerald-200 text-sm">Vous avez {totals.count} commandes livrées en attente de versement.</p>
+                </div>
+              </div>
+              <button 
+                onClick={handleSettleAmount}
+                className="px-6 py-3 bg-white text-emerald-900 rounded-xl font-bold hover:bg-emerald-50 transition-all shadow-lg flex items-center gap-2 group"
+              >
+                <span>Demander le versement</span>
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
           </div>
-        ) : (
+        )}
+
+        {/* ORDERS LIST */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+            <h3 className="font-bold text-slate-800">Historique des commandes</h3>
+            <div className="text-sm text-slate-500">
+              {orders.length} commandes
+            </div>
+          </div>
+          
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50">
-                <tr>
-                  <th className="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">ID Commande</th>
-                  <th className="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Client</th>
-                  <th className="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Montant Collecté</th>
-                  <th className="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Commission</th>
-                  <th className="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Statut</th>
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50/50 border-b border-slate-100 text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                  <th className="p-4">Commande</th>
+                  <th className="p-4">Client</th>
+                  <th className="p-4">Date</th>
+                  <th className="p-4 text-right">Montant</th>
+                  <th className="p-4 text-right">Commission</th>
+                  <th className="p-4 text-center">Statut</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
-                {orders.map((order, index) => (
-                  <tr key={index} className={`${getOrderRowClass(order.status)} hover:bg-slate-50/80 transition-colors duration-150`}>
-                    <td className="py-4 px-6">
-                      <span className="font-mono text-sm font-bold text-slate-900">#{order.id}</span>
+              <tbody className="divide-y divide-slate-50">
+                {orders.map((order) => (
+                  <tr key={order.id} className="hover:bg-slate-50/50 transition-colors group">
+                    <td className="p-4">
+                      <span className="font-mono text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">
+                        {order.id}
+                      </span>
                     </td>
-                    <td className="py-4 px-6">
-                      <div className="font-medium text-slate-900">{order.clientName}</div>
+                    <td className="p-4">
+                      <div className="font-bold text-slate-700 text-sm">{order.clientName}</div>
                     </td>
-                    <td className="py-4 px-6">
-                      <div className="font-bold text-slate-900">{order.cashCollected.toFixed(2)} DH</div>
+                    <td className="p-4 text-sm text-slate-500">
+                      {new Date(order.date).toLocaleDateString('fr-FR')}
                     </td>
-                    <td className="py-4 px-6">
-                      <div className="font-bold text-emerald-600">{order.commission.toFixed(2)} DH</div>
+                    <td className="p-4 text-right font-bold text-slate-700">
+                      {order.cashCollected.toFixed(2)} DH
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="p-4 text-right font-bold text-emerald-600">
+                      +{order.commission.toFixed(2)} DH
+                    </td>
+                    <td className="p-4 text-center">
                       {getStatusBadge(order.status)}
                     </td>
                   </tr>
@@ -366,54 +455,15 @@ export default function Portefeuille() {
               </tbody>
             </table>
           </div>
-        )}
-      </div>
-
-      {/* Sticky Bottom Summary Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <div className="text-center sm:text-left">
-                <p className="text-sm text-slate-600">Total à verser</p>
-                <p className="text-xl font-bold text-slate-900">{totals.totalCashToPay.toFixed(2)} DH</p>
-              </div>
-              <div className="text-center sm:text-left">
-                <p className="text-sm text-slate-600">Vos commissions</p>
-                <p className="text-xl font-bold text-emerald-600">{totals.totalEarnings.toFixed(2)} DH</p>
-              </div>
-              <div className="text-center sm:text-left">
-                <p className="text-sm text-slate-600">Commandes concernées</p>
-                <p className="text-xl font-bold text-blue-600">{totals.count}</p>
-              </div>
+          
+          {orders.length === 0 && (
+            <div className="p-12 text-center text-slate-400">
+              <Package size={48} className="mx-auto mb-4 opacity-50" />
+              <p>Aucune commande trouvée</p>
             </div>
-            
-            <div className="flex gap-3 w-full sm:w-auto">
-              <button
-                onClick={generateSettlementPDF}
-                className="flex-1 sm:flex-none px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-colors"
-              >
-                <FileText size={20} />
-                <span className="hidden sm:inline">Bon de versement</span>
-                <span className="sm:hidden">Bon</span>
-              </button>
-              
-              <button
-                onClick={handleSettleAmount}
-                disabled={totals.count === 0}
-                className={`flex-1 sm:flex-none px-4 py-3 font-bold rounded-xl flex items-center justify-center gap-2 transition-colors ${
-                  totals.count === 0
-                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                    : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md'
-                }`}
-              >
-                <DollarSign size={20} />
-                <span className="hidden sm:inline">Verser le montant</span>
-                <span className="sm:hidden">Verser</span>
-              </button>
-            </div>
-          </div>
+          )}
         </div>
+
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   TrendingUp, TrendingDown, DollarSign, Calendar, 
-  PieChart as PieIcon, BarChart2, Filter, Download
+  PieChart as PieIcon, BarChart2, Filter, Download, Activity
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, Legend 
+  PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { clientAPI, productAPI, adsAPI } from '../../services/api';
 
@@ -18,6 +18,34 @@ const formatCurrency = (amount) => {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 const PIE_COLORS = ['#EF4444', '#F59E0B', '#3B82F6']; // Red (Ads), Orange (Shipping), Blue (Goods)
+
+// --- UI COMPONENTS ---
+const InputField = ({ label, type = "text", value, onChange, options, placeholder, className }) => (
+  <div className={`group flex flex-col gap-1.5 ${className}`}>
+    {label && <label className="text-xs font-bold text-slate-500 uppercase tracking-widest group-focus-within:text-[#018790] transition-colors">
+      {label}
+    </label>}
+    <div className="relative">
+      {options ? (
+        <select 
+          value={value}
+          onChange={onChange}
+          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-semibold focus:bg-white focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/10 outline-none transition-all appearance-none cursor-pointer"
+        >
+          {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
+      ) : (
+        <input 
+          type={type} 
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-semibold focus:bg-white focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/10 outline-none transition-all"
+        />
+      )}
+    </div>
+  </div>
+);
 
 const ReportsDashboard = () => {
   // State
@@ -150,32 +178,31 @@ const ReportsDashboard = () => {
     <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800">
       
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
         <div>
-           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Tableau de Bord Financier</h1>
-           <p className="text-slate-500 mt-1 font-medium">Analysez vos profits, dépenses et performances.</p>
+            <h1 className="text-3xl font-extrabold text-[#018790] flex items-center gap-3">
+                <Activity size={32} />
+                Rapports Financiers
+            </h1>
+            <p className="text-slate-500 mt-2 font-medium">Analyse détaillée des revenus, dépenses et marges bénéficiaires.</p>
         </div>
         
-        {/* Date Filter */}
-        <div className="bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-2">
-           <div className="px-3 py-2 bg-slate-50 rounded-lg border border-slate-100 flex items-center gap-2">
-              <Calendar size={16} className="text-slate-400"/>
-              <input 
+        <div className="flex flex-col md:flex-row gap-4 w-full xl:w-auto items-end">
+            <InputField 
+                label="Du"
                 type="date" 
                 value={dateRange.startDate}
-                onChange={(e) => setDateRange({...dateRange, startDate: e.target.value})}
-                className="bg-transparent text-sm font-bold text-slate-700 outline-none"
-              />
-           </div>
-           <span className="text-slate-300 font-bold">-</span>
-           <div className="px-3 py-2 bg-slate-50 rounded-lg border border-slate-100 flex items-center gap-2">
-              <input 
+                onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
+            />
+            <InputField 
+                label="Au"
                 type="date" 
                 value={dateRange.endDate}
-                onChange={(e) => setDateRange({...dateRange, endDate: e.target.value})}
-                className="bg-transparent text-sm font-bold text-slate-700 outline-none"
-              />
-           </div>
+                onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
+            />
+            <button className="h-[42px] px-6 bg-[#018790] text-white rounded-xl font-bold shadow-lg shadow-[#018790]/20 hover:bg-[#006a70] active:scale-95 transition-all flex items-center gap-2">
+                <Download size={18} /> Export
+            </button>
         </div>
       </div>
 

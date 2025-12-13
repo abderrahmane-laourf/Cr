@@ -2,10 +2,11 @@
 import { 
   Search, Plus, Edit2, Trash2, Eye, X, Upload, Check, 
   User, FileText, Shield, ChevronLeft, ChevronRight, EyeOff, 
-  Camera, AlertCircle, CheckCircle, Lock, ChevronDown 
+  Camera, AlertCircle, CheckCircle, Lock, ChevronDown, Briefcase 
 } from 'lucide-react';
 import { employeeAPI } from '../../services/api';
 import Swal from 'sweetalert2';
+import SpotlightCard from '../../util/SpotlightCard';
 
 // --- 1. CONSTANTES & DONNÉES ---
 
@@ -83,15 +84,15 @@ const Toast = ({ message, type = 'success', onClose }) => {
 
 const InputField = ({ label, type = "text", placeholder, options, value, onChange, disabled }) => (
   <div className="group">
-    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
-      {label} {!disabled && <span className="text-red-400">*</span>}
+    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-[#018790] transition-colors">
+      {label} {!disabled && <span className="text-rose-400">*</span>}
     </label>
     <div className="relative">
       {options ? (
         <div className="relative">
           <select 
             disabled={disabled}
-            className={`w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer`}
+            className={`w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer`}
             value={value}
             onChange={onChange}
           >
@@ -104,7 +105,7 @@ const InputField = ({ label, type = "text", placeholder, options, value, onChang
           type={type} 
           disabled={disabled}
           placeholder={placeholder}
-          className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500`}
+          className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500`}
           value={value}
           onChange={onChange}
         />
@@ -128,7 +129,7 @@ const Stepper = ({ step, setStep }) => {
   return (
     <div className="mb-8 px-4">
       <div className="relative h-1 bg-slate-100 rounded-full mb-6 mx-8 mt-2">
-        <div className="absolute top-0 left-0 h-full bg-blue-600 rounded-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
+        <div className="absolute top-0 left-0 h-full bg-[#018790] rounded-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
         <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 flex justify-between">
           {steps.map((s) => {
             const Icon = s.icon;
@@ -139,7 +140,7 @@ const Stepper = ({ step, setStep }) => {
                 // ICI : On rend l'icône cliquable pour naviguer
                 onClick={() => setStep(s.id)}
                 className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 z-10 cursor-pointer
-                  ${isActive ? 'bg-blue-600 border-blue-600 text-white shadow-lg scale-110' : 'bg-white border-slate-200 text-slate-300 hover:border-blue-300'}`}
+                  ${isActive ? 'bg-[#005461] border-[#005461] text-white shadow-lg scale-110' : 'bg-white border-slate-200 text-slate-300 hover:border-[#018790]/50'}`}
                 title={s.label}
               >
                 <Icon size={16} />
@@ -149,7 +150,7 @@ const Stepper = ({ step, setStep }) => {
         </div>
       </div>
       <div className="flex justify-between px-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-         {steps.map(s => <span key={s.id} className={`${step >= s.id ? 'text-blue-600' : ''}`}>{s.label}</span>)}
+         {steps.map(s => <span key={s.id} className={`${step >= s.id ? 'text-[#005461]' : ''}`}>{s.label}</span>)}
       </div>
     </div>
   );
@@ -163,7 +164,7 @@ const Step1 = ({ formData, handleInputChange, isViewMode, setFormData }) => (
            {formData.avatar ? <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" /> : <User size={40} className="text-slate-300" />}
         </div>
         {!isViewMode && (
-          <label className="absolute bottom-1 right-1 bg-blue-600 p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-blue-700 transition-all">
+          <label className="absolute bottom-1 right-1 bg-[#018790] p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-[#005461] transition-all">
             <Camera size={16} />
             <input type="button" className="hidden" onClick={() => setFormData(p => ({...p, avatar: 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random()*50)}))} />
           </label>
@@ -186,14 +187,14 @@ const Step1 = ({ formData, handleInputChange, isViewMode, setFormData }) => (
 
 const Step2 = ({ isViewMode }) => (
   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-     <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-start gap-3">
-      <AlertCircle className="text-blue-600 shrink-0 mt-0.5" size={18} />
-      <div><h4 className="text-sm font-bold text-blue-800">Documents</h4><p className="text-xs text-blue-600 mt-1">Gérer les documents ici (CIN, Contrat, Diplôme).</p></div>
+     <div className="bg-[#005461]/5 border border-[#005461]/10 rounded-xl p-4 mb-6 flex items-start gap-3">
+      <AlertCircle className="text-[#018790] shrink-0 mt-0.5" size={18} />
+      <div><h4 className="text-sm font-bold text-[#005461]">Documents</h4><p className="text-xs text-[#018790] mt-1">Gérer les documents ici (CIN, Contrat, Diplôme).</p></div>
     </div>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {['cin', 'contract', 'diploma', 'non_concurrence'].map(key => (
-          <div key={key} className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center ${isViewMode ? 'opacity-70 bg-slate-50' : 'hover:border-blue-400 cursor-pointer bg-white group'}`}>
-              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><Upload size={20}/></div>
+          <div key={key} className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center ${isViewMode ? 'opacity-70 bg-slate-50' : 'hover:border-[#018790] cursor-pointer bg-white group'}`}>
+              <div className="w-10 h-10 rounded-full bg-[#005461]/5 text-[#018790] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><Upload size={20}/></div>
               <h4 className="text-sm font-bold text-slate-700 capitalize">{key}</h4>
           </div>
       ))}
@@ -204,12 +205,12 @@ const Step2 = ({ isViewMode }) => (
 const Step3 = ({ formData, handleInputChange, isViewMode, showPassword, setShowPassword }) => (
   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
     <div className="bg-slate-50 p-6 rounded-2xl mb-6 border border-slate-100">
-      <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Shield size={16} className="text-blue-500"/> Connexion</h3>
+      <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Shield size={16} className="text-[#018790]"/> Connexion</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <InputField label="Login" value={formData.login} onChange={(e) => handleInputChange('login', e)} disabled={isViewMode} />
           <div className="relative">
               <InputField label="Mot de passe" type={showPassword ? "text" : "password"} value={formData.password} onChange={(e) => handleInputChange('password', e)} disabled={isViewMode} />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 bottom-3 text-slate-400 hover:text-blue-600"><Eye size={18}/></button>
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 bottom-3 text-slate-400 hover:text-[#018790]"><Eye size={18}/></button>
           </div>
           <div className="md:col-span-2">
               <InputField label="Rôle" type="select" options={["Employé", "Manager", "Admin"]} value={formData.role} onChange={(e) => handleInputChange('role', e)} disabled={isViewMode} />
@@ -245,7 +246,7 @@ const Step4 = ({ formData, toggleCategory, togglePermission, isViewMode }) => (
             >
               <h4 className="font-bold text-sm text-slate-700">{module.category}</h4>
               {!isViewMode && (
-                <span className={`text-xs px-2 py-0.5 rounded-full border ${allSelected ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-white text-slate-500 border-slate-200'}`}>
+                <span className={`text-xs px-2 py-0.5 rounded-full border ${allSelected ? 'bg-[#005461]/10 text-[#005461] border-[#005461]/20' : 'bg-white text-slate-500 border-slate-200'}`}>
                   {allSelected ? 'Tout' : 'Sélect'}
                 </span>
               )}
@@ -261,13 +262,13 @@ const Step4 = ({ formData, toggleCategory, togglePermission, isViewMode }) => (
                     onClick={() => togglePermission(item.id)}
                     className={`flex items-center gap-3 p-2 rounded-lg transition-all duration-200 select-none
                       ${isViewMode ? 'cursor-default' : 'cursor-pointer hover:bg-slate-50'}
-                      ${isChecked ? 'bg-blue-50/50' : ''}
+                      ${isChecked ? 'bg-[#005461]/5' : ''}
                     `}
                   >
                     <div className={`
                       w-5 h-5 rounded border flex items-center justify-center transition-colors
                       ${isChecked 
-                        ? 'bg-blue-600 border-blue-600 text-white' 
+                        ? 'bg-[#005461] border-[#005461] text-white' 
                         : 'bg-white border-slate-300 text-transparent'}
                     `}>
                       <Check size={12} strokeWidth={4} />
@@ -367,10 +368,10 @@ const EmployeeModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
-          <div><h2 className="text-2xl font-bold text-slate-800">{modalTitle}</h2></div>
-          <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors"><X size={24} /></button>
+      <SpotlightCard theme="light" className="w-full max-w-4xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 !p-0 !bg-white/80">
+        <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100/50">
+          <div><h2 className="text-2xl font-bold text-[#005461]">{modalTitle}</h2></div>
+          <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-500 rounded-full transition-colors"><X size={24} /></button>
         </div>
         
         <div className="p-8 overflow-y-auto flex-1 custom-scrollbar">
@@ -386,7 +387,7 @@ const EmployeeModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
           ) : <div />}
           
           {step < 3 ? (
-             <button onClick={() => setStep(step + 1)} className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all">Suivant <ChevronRight size={18} /></button>
+             <button onClick={() => setStep(step + 1)} className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-[#005461] hover:bg-[#016f76] shadow-lg shadow-cyan-900/20 transition-all">Suivant <ChevronRight size={18} /></button>
           ) : (
              !isViewMode && (
                 <button onClick={handleSubmit} className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all">
@@ -395,7 +396,7 @@ const EmployeeModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
              )
           )}
         </div>
-      </div>
+      </SpotlightCard>
     </div>
   );
 };
@@ -536,74 +537,93 @@ export default function EmployeesPage() {
   });
 
   return (
-    <div className="w-full min-h-screen bg-slate-50 animate-[fade-in_0.6s_ease-out]/50 p-8 font-sans text-slate-800 relative">
+    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-6 font-sans text-slate-800 relative space-y-8">
       
       {/* Toast Notification */}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestion des Employés</h1>
-            <p className="text-slate-500 mt-1 font-medium">Visualisez et gérez votre équipe efficacement.</p>
-          </div>
-          <button 
-            onClick={handleOpenAdd}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
-          >
-            <Plus size={20} /> Ajouter un membre
-          </button>
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
+        <div>
+          <h1 className="text-2xl font-extrabold text-[#018790]">Gestion des Employés</h1>
+          <p className="text-slate-500">Visualisez et gérez votre équipe efficacement.</p>
         </div>
-        
-        <div className="flex flex-col md:flex-row gap-4 mt-6">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-            <input type="text" placeholder="Rechercher par nom, tél ou CIN..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
-          </div>
-          
-          {/* Role Filter */}
-          <div className="relative">
-            <select 
-              value={roleFilter} 
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+        <div className="mt-4 sm:mt-0">
+            <button 
+                onClick={handleOpenAdd}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-[#005461] hover:bg-[#016f76] text-white rounded-xl transition-all shadow-lg shadow-cyan-900/20 font-bold"
             >
-              <option value="All">Tous les rôles</option>
-              <option value="Employé">Employé</option>
-              <option value="Manager">Manager</option>
-              <option value="Admin">Admin</option>
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-          </div>
-
-          {/* Business Filter */}
-          <div className="relative">
-            <select 
-              value={businessFilter} 
-              onChange={(e) => setBusinessFilter(e.target.value)}
-              className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="All">Tous les Business</option>
-              <option value="Herboclear">Herboclear</option>
-              <option value="Commit">Commit</option>
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-          </div>
+                <Plus size={20} /> Ajouter un membre
+            </button>
         </div>
       </div>
 
+      {/* Filter Bar */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            {/* Search */}
+            <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Search size={12}/> Recherche</label>
+                <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]/50" size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Nom, tél ou CIN..." 
+                        value={searchTerm} 
+                        onChange={(e) => setSearchTerm(e.target.value)} 
+                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all" 
+                    />
+                </div>
+            </div>
+            
+            {/* Role Filter */}
+            <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Shield size={12}/> Rôle</label>
+                <div className="relative">
+                    <select 
+                    value={roleFilter} 
+                    onChange={(e) => setRoleFilter(e.target.value)}
+                    className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all appearance-none cursor-pointer"
+                    >
+                    <option value="All">Tous les rôles</option>
+                    <option value="Employé">Employé</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Admin">Admin</option>
+                    </select>
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                </div>
+            </div>
+
+            {/* Business Filter */}
+            <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Briefcase size={12}/> Business</label>
+                <div className="relative">
+                    <select 
+                    value={businessFilter} 
+                    onChange={(e) => setBusinessFilter(e.target.value)}
+                    className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all appearance-none cursor-pointer"
+                    >
+                    <option value="All">Tous les Business</option>
+                    <option value="Herboclear">Herboclear</option>
+                    <option value="Commit">Commit</option>
+                    </select>
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                </div>
+            </div>
+         </div>
+      </div>
+
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <SpotlightCard theme="light" className="overflow-hidden p-0">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-100">
+            <thead className="bg-[#005461]/5 border-b border-[#005461]/10">
               <tr>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Employé</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Contact</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">CIN / Rôle</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Statut</th>
-                <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Employé</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Contact</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">CIN / Rôle</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Statut</th>
+                <th className="text-right px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -657,7 +677,7 @@ export default function EmployeesPage() {
             </div>
           )}
         </div>
-      </div>
+      </SpotlightCard>
 
       {/* Integration du Modal */}
       <EmployeeModal 

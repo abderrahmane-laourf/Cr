@@ -1,7 +1,31 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { User, Package, Save, RotateCcw, DollarSign, TrendingUp } from 'lucide-react';
+import { User, Package, Save, RotateCcw, DollarSign, TrendingUp, CheckCircle, AlertCircle, X, ChevronDown } from 'lucide-react';
 import { employeeAPI, productAPI } from '../../services/api';
 import Swal from 'sweetalert2';
+import SpotlightCard from '../../util/SpotlightCard';
+
+// --- COMPOSANTS UTILITAIRES ---
+
+const Toast = ({ message, type = 'success', onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => onClose(), 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="fixed top-6 right-6 z-[60] animate-in slide-in-from-right-10 fade-in duration-300">
+      <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border backdrop-blur-md
+        ${type === 'success' ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800' : 'bg-red-50/90 border-red-200 text-red-800'}`}>
+        {type === 'success' ? <CheckCircle size={24} className="text-emerald-500" /> : <AlertCircle size={24} className="text-red-500" />}
+        <div>
+          <h4 className="font-bold text-sm">{type === 'success' ? 'Succès' : 'Erreur'}</h4>
+          <p className="text-xs opacity-90">{message}</p>
+        </div>
+        <button onClick={onClose} className="ml-4 opacity-50 hover:opacity-100"><X size={16}/></button>
+      </div>
+    </div>
+  );
+};
 
 const CommissionsPage = () => {
   const [employees, setEmployees] = useState([]);
@@ -9,7 +33,7 @@ const CommissionsPage = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [commissions, setCommissions] = useState({});
   const [bulkValues, setBulkValues] = useState({ c1: '', c2: '', c3: '' });
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [toast, setToast] = useState(null);
   const [applySuccess, setApplySuccess] = useState(false);
 
   // Charger les données au montage
@@ -32,7 +56,12 @@ const CommissionsPage = () => {
       setCommissions(savedCommissions);
     } catch (error) {
       console.error('Erreur lors du chargement:', error);
+      showToast('Erreur lors du chargement des données', 'error');
     }
+  };
+
+  const showToast = (message, type) => {
+    setToast({ message, type });
   };
 
   // Charger le tableau pour un employé
@@ -65,7 +94,7 @@ const CommissionsPage = () => {
   const applyBulk = () => {
     if (!selectedEmployee) return;
     if (!bulkValues.c1 && !bulkValues.c2 && !bulkValues.c3) {
-      alert('Veuillez entrer au moins une valeur');
+      showToast('Veuillez entrer au moins une valeur', 'error');
       return;
     }
 
@@ -92,6 +121,7 @@ const CommissionsPage = () => {
 
     setCommissions(newCommissions);
     setApplySuccess(true);
+    showToast('Commissions appliquées avec succès !', 'success');
     setTimeout(() => setApplySuccess(false), 1500);
   };
 
@@ -102,20 +132,14 @@ const CommissionsPage = () => {
       text: 'Les modifications seront enregistrées',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#10b981',
-      cancelButtonColor: '#64748b',
+      confirmButtonColor: '#005461',
+      cancelButtonColor: '#d33',
       confirmButtonText: 'Oui, sauvegarder',
       cancelButtonText: 'Annuler'
     }).then((result) => {
       if (result.isConfirmed) {
         localStorage.setItem('sys_commissions', JSON.stringify(commissions));
-        Swal.fire({
-          title: 'Sauvegardé !',
-          text: 'Les commissions ont été enregistrées avec succès',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false
-        });
+        showToast('Les commissions ont été enregistrées avec succès', 'success');
       }
     });
   };
@@ -127,7 +151,7 @@ const CommissionsPage = () => {
       text: 'Cette action est irréversible !',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#ef4444',
+      confirmButtonColor: '#d33',
       cancelButtonColor: '#64748b',
       confirmButtonText: 'Oui, réinitialiser',
       cancelButtonText: 'Annuler'
@@ -136,146 +160,144 @@ const CommissionsPage = () => {
         setCommissions({});
         localStorage.removeItem('sys_commissions');
         setSelectedEmployee(null);
-        Swal.fire({
-          title: 'Réinitialisé !',
-          text: 'Toutes les commissions ont été supprimées',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false
-        });
+        showToast('Toutes les commissions ont été supprimées', 'success');
       }
     });
   };
 
   return (
-    <div className="w-full min-h-screen bg-slate-50 animate-[fade-in_0.6s_ease-out]/50 p-8 font-sans">
+    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 relative">
+      {/* Toast Notification */}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+      <SpotlightCard theme="light" className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-              <DollarSign className="text-blue-600" size={32} />
+            <h1 className="text-3xl font-extrabold text-[#018790] tracking-tight flex items-center gap-3">
+              <DollarSign className="text-[#005461]" size={32} />
               Gestion des Commissions
             </h1>
             <p className="text-slate-500 mt-1 font-medium">
-              Définissez les commissions par employé et par produit
+              Définissez les commissions par employé et par produit.
             </p>
           </div>
           <button
             onClick={resetData}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-all font-semibold shadow-sm"
+            className="flex items-center gap-2 px-6 py-3 bg-red-50 text-red-600 border border-red-100 rounded-xl hover:bg-red-100 transition-all font-semibold shadow-sm"
           >
             <RotateCcw size={18} />
             Réinitialiser
           </button>
         </div>
-      </div>
 
-      {/* Sélection employé */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-            <User className="text-blue-600" size={24} />
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-bold text-slate-700 mb-2">
+        {/* Sélection employé */}
+        <div className="mt-8">
+            <label className="block text-xs font-bold text-slate-500 mb-2 ml-1 uppercase tracking-wider">
               Sélectionner un employé
             </label>
+           <div className="relative max-w-md">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]">
+                <User size={20} />
+            </div>
             <select
-              value={selectedEmployee?.id || ''}
-              onChange={(e) => loadTable(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                value={selectedEmployee?.id || ''}
+                onChange={(e) => loadTable(e.target.value)}
+                className="w-full pl-11 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-semibold focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] focus:bg-white transition-all appearance-none cursor-pointer"
             >
-              <option value="">-- Choisir un employé --</option>
-              {employees.map(emp => (
+                <option value="">-- Choisir un employé --</option>
+                {employees.map(emp => (
                 <option key={emp.id} value={emp.id}>
-                  {emp.name} ({emp.role || 'Employé'})
+                    {emp.name} ({emp.role || 'Employé'})
                 </option>
-              ))}
+                ))}
             </select>
-          </div>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+           </div>
         </div>
-      </div>
+      </SpotlightCard>
 
       {/* Bulk Apply */}
       {selectedEmployee && (
-        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-6">
-          <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <TrendingUp className="text-blue-600" size={20} />
+        <SpotlightCard theme="light" className="mb-6 !bg-[#005461]/5 border-[#005461]/10">
+          <h3 className="text-lg font-bold text-[#005461] mb-6 flex items-center gap-2">
+            <TrendingUp className="text-[#018790]" size={20} />
             Application Rapide (Bulk Apply)
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Prix 1 */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-2">
+              <label className="block text-xs font-bold text-[#005461]/70 mb-2 ml-1">
                 Commission Prix 1
               </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  value={bulkValues.c1}
-                  onChange={(e) => setBulkValues({ ...bulkValues, c1: e.target.value })}
-                  placeholder="Ex: 10"
-                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
+              <input
+                type="number"
+                value={bulkValues.c1}
+                onChange={(e) => setBulkValues({ ...bulkValues, c1: e.target.value })}
+                placeholder="Ex: 10"
+                className="w-full px-4 py-3 bg-white border border-[#005461]/20 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all placeholder:text-slate-300"
+              />
             </div>
 
             {/* Prix 2 */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-2">
+              <label className="block text-xs font-bold text-[#005461]/70 mb-2 ml-1">
                 Commission Prix 2
               </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  value={bulkValues.c2}
-                  onChange={(e) => setBulkValues({ ...bulkValues, c2: e.target.value })}
-                  placeholder="Ex: 25"
-                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
+              <input
+                type="number"
+                value={bulkValues.c2}
+                onChange={(e) => setBulkValues({ ...bulkValues, c2: e.target.value })}
+                placeholder="Ex: 25"
+                className="w-full px-4 py-3 bg-white border border-[#005461]/20 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all placeholder:text-slate-300"
+              />
             </div>
 
             {/* Prix 3 */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-2">
+              <label className="block text-xs font-bold text-[#005461]/70 mb-2 ml-1">
                 Commission Prix 3
               </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  value={bulkValues.c3}
-                  onChange={(e) => setBulkValues({ ...bulkValues, c3: e.target.value })}
-                  placeholder="Ex: 40"
-                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
+              <input
+                type="number"
+                value={bulkValues.c3}
+                onChange={(e) => setBulkValues({ ...bulkValues, c3: e.target.value })}
+                placeholder="Ex: 40"
+                className="w-full px-4 py-3 bg-white border border-[#005461]/20 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all placeholder:text-slate-300"
+              />
             </div>
 
             {/* Bouton Apply */}
             <div className="flex items-end">
               <button
                 onClick={applyBulk}
-                className={`w-full py-3 rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 ${
+                className={`w-full py-3 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 ${
                   applySuccess
-                    ? 'bg-green-600 text-white'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-emerald-600 text-white shadow-emerald-500/30'
+                    : 'bg-[#005461] text-white hover:bg-[#016f76] shadow-cyan-900/20'
                 }`}
               >
-                {applySuccess ? '✅ Appliqué' : 'Appliquer à tous'}
+                {applySuccess ? (
+                    <>
+                        <CheckCircle size={18} /> Appliqué
+                    </>
+                ) : (
+                    <>
+                        <TrendingUp size={18} /> Appliquer à tous
+                    </>
+                )}
               </button>
             </div>
           </div>
-        </div>
+        </SpotlightCard>
       )}
 
       {/* Tableau */}
       {selectedEmployee ? (
-        <div className="space-y-4">
-          {/* Boutons d'action */}
-          <div className="flex items-center justify-between bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-800">Commissions par produit</h3>
+        <SpotlightCard theme="light" className="p-0 overflow-hidden">
+          {/* Boutons d'action Header Table */}
+          <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-[#005461]/5">
+            <h3 className="text-lg font-bold text-[#005461]">Commissions par produit</h3>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => loadTable(selectedEmployee.id)}
@@ -285,7 +307,7 @@ const CommissionsPage = () => {
               </button>
               <button
                 onClick={saveData}
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-semibold shadow-lg shadow-blue-500/30 flex items-center gap-2"
+                className="px-6 py-2.5 bg-[#018790] text-white rounded-lg hover:bg-[#005461] transition-all font-semibold shadow-lg shadow-cyan-900/20 flex items-center gap-2"
               >
                 <Save size={18} />
                 Sauvegarder
@@ -293,70 +315,69 @@ const CommissionsPage = () => {
             </div>
           </div>
 
-          {/* Tableau */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-slate-50 border-b border-slate-200">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Produit
+          <div className="overflow-x-auto">
+            <table className="w-full">
+                <thead className="bg-[#005461]/5 border-b border-[#005461]/10">
+                <tr>
+                    <th className="px-6 py-5 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">
+                    Produit
                     </th>
-                    <th className="px-6 py-4 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Prix 1
+                    <th className="px-6 py-5 text-center text-xs font-bold text-[#005461] uppercase tracking-wider">
+                    Prix 1
                     </th>
-                    <th className="px-6 py-4 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Prix 2
+                    <th className="px-6 py-5 text-center text-xs font-bold text-[#005461] uppercase tracking-wider">
+                    Prix 2
                     </th>
-                    <th className="px-6 py-4 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Prix 3
+                    <th className="px-6 py-5 text-center text-xs font-bold text-[#005461] uppercase tracking-wider">
+                    Prix 3
                     </th>
-                  </tr>
+                </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {products.map(product => (
-                    <tr key={product.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
-                            <Package className="text-slate-600" size={20} />
-                          </div>
-                          <div>
-                            <div className="font-semibold text-slate-900">{product.name || product.nom}</div>
-                            <div className="text-xs text-slate-500">{product.categorie || 'Produit'}</div>
-                          </div>
+                <tbody className="divide-y divide-slate-50">
+                {products.map(product => (
+                    <tr key={product.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-[#005461]/5 flex items-center justify-center text-[#018790]">
+                            <Package size={24} strokeWidth={1.5} />
                         </div>
-                      </td>
-                      {['c1', 'c2', 'c3'].map((col, idx) => (
+                        <div>
+                            <div className="font-bold text-slate-800 text-sm">{product.name || product.nom}</div>
+                            <div className="text-xs text-[#018790] font-medium">{product.categorie || 'Produit'}</div>
+                        </div>
+                        </div>
+                    </td>
+                    {['c1', 'c2', 'c3'].map((col, idx) => (
                         <td key={col} className="px-6 py-4">
-                          <div className="flex flex-col items-center gap-2">
-                            <span className="text-xs bg-slate-100 px-2 py-1 rounded text-slate-600 font-medium">
-                              Prix: {product[`price${idx + 1}`] || product.price || 0} DH
+                        <div className="flex flex-col items-center gap-2">
+                            <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-medium border border-slate-200">
+                             P.V: {product[`price${idx + 1}`] || product.price || 0} DH
                             </span>
-                            <div className="relative w-full max-w-[160px]">
-                              <input
+                            <div className="relative w-full max-w-[120px]">
+                            <input
                                 type="number"
                                 value={getCommission(selectedEmployee.id, product.id, col)}
                                 onChange={(e) => updateCommission(selectedEmployee.id, product.id, col, e.target.value)}
                                 placeholder="0"
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-blue-600 font-semibold text-center focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all"
-                              />
+                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[#005461] font-bold text-center focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] focus:bg-white transition-all shadow-sm placeholder:text-slate-300"
+                            />
                             </div>
-                          </div>
+                        </div>
                         </td>
-                      ))}
+                    ))}
                     </tr>
-                  ))}
+                ))}
                 </tbody>
-              </table>
-            </div>
+            </table>
           </div>
-        </div>
+        </SpotlightCard>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-16 text-center">
-          <User className="mx-auto text-slate-300 mb-4" size={64} />
-          <h3 className="text-xl font-bold text-slate-700 mb-2">Aucun employé sélectionné</h3>
-          <p className="text-slate-500">Veuillez sélectionner un employé pour commencer</p>
+        <div className="mt-8 flex flex-col items-center justify-center p-12 opacity-50">
+          <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+            <User className="text-slate-300" size={48} />
+          </div>
+          <h3 className="text-xl font-bold text-slate-400 mb-2">Aucun employé sélectionné</h3>
+          <p className="text-slate-400">Veuillez sélectionner un employé ci-dessus pour gérer ses commissions</p>
         </div>
       )}
     </div>

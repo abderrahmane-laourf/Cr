@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation, Outlet, NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, 
@@ -18,7 +18,12 @@ import {
   Settings,
   MapPin,
   Wallet,
-  DollarSign
+  DollarSign,
+  CircleArrowLeft,
+  Search,
+  History,
+  MessageSquare,
+  Loader2
 } from 'lucide-react';
 import { taskAPI } from '../../services/api';
 
@@ -87,51 +92,68 @@ const MODULES = {
 // COMPONENTS
 // ----------------------------------------------------------------------
 
-const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick, badgeCount }) => {
-  const location = useLocation();
+const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick, isSidebarFull, badgeCount }) => {
   const hasSubItems = item.subItems && item.subItems.length > 0;
-  const isParentActive = isActive; 
+  const showLabel = isSidebarFull; 
 
   if (hasSubItems) {
     return (
-      <div className="mb-1">
-        {/* PARENT ITEM */}
+      <div className="mb-1 group/item relative">
         <button
           onClick={toggleExpand}
-          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
-            ${isParentActive 
-              ? 'text-slate-800 bg-slate-100' 
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
+          className={`w-full flex items-center rounded-xl text-sm font-medium transition-all duration-200 py-2.5 relative group
+            ${isActive ? 'text-emerald-800 font-bold bg-emerald-50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 group-hover/sidebar:bg-gray-50'}
+            ${showLabel ? 'px-3 justify-between' : 'justify-center px-0'} 
+          `}
         >
-          <div className="flex items-center gap-3">
-            <item.icon size={20} className={isParentActive ? 'text-blue-600' : 'text-slate-400'} />
-            <span>{item.label}</span>
+          <div className={`flex items-center ${showLabel ? 'gap-3' : 'gap-0'}`}>
+            <div className="flex-shrink-0 flex items-center justify-center">
+               <item.icon size={22} className={isActive ? 'text-emerald-600' : 'text-gray-400'} />
+            </div>
+            {showLabel && (
+                <span className="truncate transition-opacity duration-200">{item.label}</span>
+            )}
           </div>
-          <ChevronRight 
-            size={16} 
-            className={`transition-transform duration-200 ${isExpanded ? 'rotate-90 text-slate-600' : 'text-slate-400'}`} 
-          />
+          {showLabel && (
+            <ChevronRight 
+                size={16} 
+                className={`transition-transform duration-200 ${isExpanded ? 'rotate-90 text-emerald-600' : 'text-gray-400'}`} 
+            />
+          )}
+
+          {/* === TOOLTIP RIGHT === */}
+          {!showLabel && (
+            <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-[100] shadow-lg">
+                {item.label}
+                <div className="absolute top-1/2 -left-1 -translate-y-1/2 border-y-4 border-r-4 border-y-transparent border-r-gray-900"></div>
+            </div>
+          )}
         </button>
         
-        {/* CHILD ITEMS */}
-        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+        <div className={`overflow-hidden transition-all duration-300 ease-in-out 
+          ${isExpanded && showLabel ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}`
+        }>
           <div className="pl-3 space-y-1 relative">
-            <div className="absolute left-[21px] top-0 bottom-0 w-px bg-slate-200" />
+            <div className={`absolute left-[21px] top-0 bottom-0 w-px ${isActive ? 'bg-emerald-200' : 'bg-gray-200'}`} />
             {item.subItems.map((sub) => (
               <NavLink
                 key={sub.id}
                 to={sub.path}
                 onClick={onClick}
+                end
                 className={({ isActive }) => `
                   relative flex items-center pl-9 pr-3 py-2 rounded-lg text-sm transition-all duration-200
-                  ${isActive ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}
+                  ${isActive ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}
                 `}
               >
-                {location.pathname === sub.path && (
-                  <span className="absolute left-[18px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-sm ring-4 ring-blue-50"></span>
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <span className="absolute left-[18px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-sm ring-4 ring-emerald-50/50"></span>
+                    )}
+                    <span className="truncate">{sub.label}</span>
+                  </>
                 )}
-                {sub.label}
               </NavLink>
             ))}
           </div>
@@ -140,30 +162,41 @@ const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick, badgeC
     );
   }
 
-  // TOP LEVEL ITEM
   return (
     <NavLink
       to={item.path}
       onClick={onClick}
+      end
       className={({ isActive }) => `
-        flex items-center justify-between px-3 py-2.5 mb-1 rounded-lg text-sm font-medium transition-all duration-200
-        ${isActive 
-          ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' 
-          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-        }
+        flex items-center mb-1 rounded-xl text-sm font-medium transition-all duration-200 group py-2.5 relative
+        ${isActive ? 'bg-emerald-100 text-emerald-900 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}
+        ${showLabel ? 'px-3 gap-3 justify-start' : 'px-0 gap-0 justify-center'}
       `}
     >
       {({ isActive }) => (
         <>
-          <div className="flex items-center gap-3">
-            <item.icon size={20} className={isActive ? 'text-white' : 'text-slate-400'} />
-            <span>{item.label}</span>
-          </div>
-          {badgeCount > 0 && (
-             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-white text-blue-600' : 'bg-red-500 text-white'}`}>
-               {badgeCount}
-             </span>
-          )}
+            <div className="flex-shrink-0 flex items-center justify-center relative">
+                <item.icon size={22} className={isActive ? 'text-emerald-700' : 'text-gray-400'} />
+                {badgeCount > 0 && !showLabel && (
+                   <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                )}
+            </div>
+            {showLabel && (
+                <span className="truncate transition-opacity duration-200 flex-1">{item.label}</span>
+            )}
+            {showLabel && badgeCount > 0 && (
+               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-white text-emerald-600' : 'bg-red-500 text-white'}`}>
+                 {badgeCount}
+               </span>
+            )}
+            
+            {/* === TOOLTIP RIGHT === */}
+            {!showLabel && (
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-[100] shadow-lg">
+                    {item.label}
+                    <div className="absolute top-1/2 -left-1 -translate-y-1/2 border-y-4 border-r-4 border-y-transparent border-r-gray-900"></div>
+                </div>
+            )}
         </>
       )}
     </NavLink>
@@ -173,7 +206,7 @@ const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick, badgeC
 // ----------------------------------------------------------------------
 // HEADER
 // ----------------------------------------------------------------------
-const Header = ({ isSidebarOpen, setSidebarOpen, pageTitle, notifications, onAccept }) => {
+const Header = ({ isSidebarOpen, setSidebarOpen, pageTitle, notifications, onAccept, toggleSidebarLock, isSidebarLocked }) => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -187,25 +220,52 @@ const Header = ({ isSidebarOpen, setSidebarOpen, pageTitle, notifications, onAcc
   };
 
   return (
-    <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
-      <div className="flex items-center gap-3">
+    <header className="h-16 bg-white flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 transition-all duration-300">
+      <div className="flex items-center gap-4 flex-1">
         <button 
           onClick={() => setSidebarOpen(!isSidebarOpen)}
           className="p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-lg lg:hidden transition-colors"
         >
           <Menu size={24} />
         </button>
-        <h1 className="text-lg font-bold text-slate-800 hidden sm:block">
+
+        <button 
+          onClick={toggleSidebarLock}
+          className="hidden lg:flex p-1.5 text-slate-400 hover:text-emerald-600 transition-colors"
+          title={isSidebarLocked ? "Unlock Sidebar" : "Lock Sidebar"}
+        >
+           <CircleArrowLeft strokeWidth={1.5} size={28} className={`transition-transform duration-300 ${!isSidebarLocked ? 'rotate-180' : ''}`} />
+        </button>
+
+        <h1 className="text-lg font-bold text-slate-800 hidden sm:block ml-2">
           {pageTitle}
         </h1>
+
+        <div className="relative hidden md:flex items-center max-w-md w-full ml-4">
+            <Search size={18} className="absolute left-3 text-slate-400" />
+            <input 
+                type="text"
+                placeholder="Rechercher..."
+                className="w-full bg-slate-50 border-none rounded-full py-2 pl-10 pr-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-emerald-100 transition-all"
+            />
+        </div>
       </div>
 
       <div className="flex items-center gap-3">
+        <button 
+            className="p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full transition-colors"
+            title="Messages"
+         >
+            <MessageSquare size={20} />
+        </button>
+
+        <div className="h-8 w-px bg-slate-200 mx-1 hidden sm:block" />
+
         {/* NOTIFICATIONS */}
         <div className="relative">
           <button 
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg relative transition-colors"
+            className="p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full relative transition-colors"
           >
             <Bell size={20} />
             {notifications.length > 0 && (
@@ -272,11 +332,11 @@ const Header = ({ isSidebarOpen, setSidebarOpen, pageTitle, notifications, onAcc
                   : 'Staff'}
               </div>
             </div>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 border-2 border-blue-100 overflow-hidden flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-slate-200 border-2 border-slate-100 overflow-hidden flex items-center justify-center">
               {user.avatar ? (
                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-white font-semibold text-sm">
+                <span className="text-slate-600 font-semibold text-sm">
                   {(user.name || 'E').charAt(0).toUpperCase()}
                 </span>
               )}
@@ -321,6 +381,14 @@ export function EmployeeLayout({ children, mode = 'default' }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState({});
   const [pendingTasks, setPendingTasks] = useState(MOCK_NOTIFICATIONS);
+  
+  // Sidebar State
+  const [isLocked, setIsLocked] = useState(() => {
+    const saved = localStorage.getItem('employeeSidebarLocked');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const [isHovered, setIsHovered] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -346,6 +414,14 @@ export function EmployeeLayout({ children, mode = 'default' }) {
     setExpandedMenu(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const toggleSidebarLock = () => {
+    setIsLocked(prev => {
+      const newState = !prev;
+      localStorage.setItem('employeeSidebarLocked', JSON.stringify(newState));
+      return newState;
+    });
+  };
+
   const handleAcceptTask = async (taskId) => {
     try {
         setPendingTasks(prev => prev.filter(t => t.id !== taskId));
@@ -359,8 +435,10 @@ export function EmployeeLayout({ children, mode = 'default' }) {
     }
   };
 
+  const isSidebarFull = isLocked || isHovered;
+
   return (
-    <div className="flex h-screen bg-slate-50 font-sans text-slate-800">
+    <div className="flex h-screen bg-white font-sans text-slate-800">
       
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
@@ -371,66 +449,76 @@ export function EmployeeLayout({ children, mode = 'default' }) {
       )}
 
       {/* SIDEBAR */}
-      <aside className={`
-        fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 shadow-xl lg:shadow-none lg:static transition-transform duration-300 ease-out flex flex-col
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
-        {/* Brand */}
-        <div className="h-16 flex items-center gap-3 px-6 border-b border-slate-200 flex-shrink-0">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-              <path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/>
-            </svg>
-          </div>
-          <span className="font-bold text-xl text-slate-800 tracking-tight">Platform</span>
-          <button onClick={() => setSidebarOpen(false)} className="ml-auto lg:hidden text-slate-400 hover:text-slate-600 transition-colors">
-            <X size={20} />
-          </button>
-        </div>
+      <aside 
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`
+          fixed inset-y-0 left-0 z-40 bg-white shadow-xl lg:shadow-none lg:static 
+          transition-[width,transform] duration-300 ease-in-out flex flex-col justify-between
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          ${isSidebarFull ? 'w-64' : 'w-20'}
+        `}
+      >
+        <div className="flex flex-col h-full overflow-hidden">
+            {/* Brand */}
+            <div className={`h-16 flex items-center flex-shrink-0 transition-all duration-300 ${isSidebarFull ? 'px-6 justify-start' : 'px-0 justify-center'}`}>
+                <div className="flex items-center gap-2">
+                    <div className="flex gap-2">
+                        <div className="w-3 h-3 rounded-full bg-[#FF5F57] hover:bg-red-600 transition-colors shadow-sm"></div>
+                        <div className="w-3 h-3 rounded-full bg-[#FEBC2E] hover:bg-yellow-500 transition-colors shadow-sm"></div>
+                        <div className="w-3 h-3 rounded-full bg-[#28C840] hover:bg-green-600 transition-colors shadow-sm"></div>
+                    </div>
+                    
+                    <span className={`font-bold text-xl text-slate-800 tracking-tight whitespace-nowrap transition-all duration-300 ${isSidebarFull ? 'opacity-100 ml-4' : 'opacity-0 w-0 overflow-hidden ml-0'}`}>
+                        Platform
+                    </span>
+                </div>
 
-        {/* Navigation Items */}
-        <div className="flex-1 overflow-y-auto p-4" style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#cbd5e1 #f1f5f9'
-        }}>
-          <style>{`
-            .sidebar-scroll::-webkit-scrollbar { width: 6px; }
-            .sidebar-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-            .sidebar-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-            .sidebar-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-          `}</style>
-          <div className="space-y-0.5 sidebar-scroll">
-            {currentModules.map((module) => {
-              const isActive = module.path === location.pathname || module.subItems?.some(s => s.path === location.pathname);
-              return (
-                <SidebarItem 
-                  key={module.id} 
-                  item={module} 
-                  isActive={isActive}
-                  isExpanded={expandedMenu[module.id]}
-                  toggleExpand={() => toggleExpand(module.id)}
-                  onClick={() => setSidebarOpen(false)} 
-                  badgeCount={module.id === 'tasks' ? pendingTasks.length : 0}
-                />
-              );
-            })}
-          </div>
+                <button onClick={() => setSidebarOpen(false)} className="ml-auto lg:hidden text-slate-400 hover:text-slate-600 transition-colors">
+                    <X size={20} />
+                </button>
+            </div>
+
+            {/* Navigation Items */}
+            <div className="flex-1 overflow-y-auto p-3 no-scrollbar group/sidebar" style={{ overflowX: 'hidden' }}>
+                <div className="space-y-1">
+                    {currentModules.map((module) => {
+                    const isActive = module.path === location.pathname || module.subItems?.some(s => s.path === location.pathname);
+                    return (
+                        <SidebarItem 
+                        key={module.id} 
+                        item={module} 
+                        isActive={isActive}
+                        isExpanded={expandedMenu[module.id]}
+                        toggleExpand={() => toggleExpand(module.id)}
+                        onClick={() => setSidebarOpen(false)} 
+                        isSidebarFull={isSidebarFull}
+                        badgeCount={module.id === 'tasks' ? pendingTasks.length : 0}
+                        />
+                    );
+                    })}
+                </div>
+            </div>
         </div>
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white">
         <Header 
           isSidebarOpen={isSidebarOpen} 
           setSidebarOpen={setSidebarOpen} 
           pageTitle={pageTitle} 
           notifications={pendingTasks}
           onAccept={handleAcceptTask}
+          toggleSidebarLock={toggleSidebarLock}
+          isSidebarLocked={isLocked}
         />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 lg:p-8 scroll-smooth">
-          <div className="w-full">
-             {children}
-             <Outlet />
+        <main className="flex-1 overflow-hidden bg-slate-50/50 rounded-tl-3xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] border-t border-l border-gray-200/50 relative">
+          <div className="h-full overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth no-scrollbar">
+            <div className="w-full">
+               {children}
+               <Outlet />
+            </div>
           </div>
         </main>
       </div>

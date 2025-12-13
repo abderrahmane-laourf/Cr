@@ -8,6 +8,10 @@ export default function Retourner() {
   const [villes, setVilles] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [searchDate, setSearchDate] = useState('');
+  const [filterVille, setFilterVille] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterBusiness, setFilterBusiness] = useState('');
+  const [filterEmployee, setFilterEmployee] = useState('');
 
   useEffect(() => {
     loadData();
@@ -61,6 +65,18 @@ export default function Retourner() {
         return false;
       }
     }
+
+    // Ville filter
+    if (filterVille && c.ville !== filterVille) return false;
+
+    // Category filter
+    if (filterCategory && c.category !== filterCategory) return false;
+
+    // Business filter
+    if (filterBusiness && c.storeName !== filterBusiness) return false;
+
+    // Employee filter
+    if (filterEmployee && c.livreurName !== filterEmployee) return false;
     
     return true;
   });
@@ -87,9 +103,9 @@ export default function Retourner() {
           </div>
 
           {/* Search Filters - In Header like Livraison Agadir */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-200">
-            <div className="flex-1">
-              <div className="relative">
+          <div className="flex flex-col gap-4 pt-4 border-t border-slate-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <div className="relative lg:col-span-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
                   type="text"
@@ -99,9 +115,53 @@ export default function Retourner() {
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                 />
               </div>
+              
+              <select
+                value={filterVille}
+                onChange={(e) => setFilterVille(e.target.value)}
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+              >
+                <option value="">Toutes les villes</option>
+                {villes.map(v => (
+                  <option key={v.id} value={v.name}>{v.name}</option>
+                ))}
+              </select>
+
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+              >
+                <option value="">Toutes les catégories</option>
+                {[...new Set(products.map(p => p.category))].filter(Boolean).map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+
+              <select
+                value={filterBusiness}
+                onChange={(e) => setFilterBusiness(e.target.value)}
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+              >
+                <option value="">Tous les business</option>
+                {[...new Set(colis.map(c => c.storeName))].filter(Boolean).map(store => (
+                  <option key={store} value={store}>{store}</option>
+                ))}
+              </select>
             </div>
-            
-            <div className="w-full sm:w-64">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+               <select
+                value={filterEmployee}
+                onChange={(e) => setFilterEmployee(e.target.value)}
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+              >
+                <option value="">Tous les employés</option>
+                {[...new Set(colis.map(c => c.livreurName))].filter(Boolean).map(emp => (
+                  <option key={emp} value={emp}>{emp}</option>
+                ))}
+              </select>
+
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input

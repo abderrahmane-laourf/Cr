@@ -22,8 +22,8 @@ const Toast = ({ message, type = 'success', onClose }) => {
   return (
     <div className="fixed top-6 right-6 z-[60] animate-in slide-in-from-right-10 fade-in duration-300">
       <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border backdrop-blur-md
-        ${type === 'success' ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800' : 'bg-blue-50/90 border-blue-200 text-blue-800'}`}>
-        {type === 'success' ? <CheckCircle size={24} className="text-emerald-500" /> : <AlertCircle size={24} className="text-blue-500" />}
+        ${type === 'success' ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800' : 'bg-[#018790]/10 border-[#018790]/20 text-[#018790]'}`}>
+        {type === 'success' ? <CheckCircle size={24} className="text-emerald-500" /> : <AlertCircle size={24} className="text-[#018790]" />}
         <div>
           <h4 className="font-bold text-sm">{type === 'success' ? 'Succès' : 'Info'}</h4>
           <p className="text-xs opacity-90">{message}</p>
@@ -113,12 +113,12 @@ const TransactionModal = ({ isOpen, onClose, onSave, mode, employees }) => {
     const getHeaderColor = () => {
         if (isIncome) return 'bg-emerald-50/50 text-emerald-700';
         if (isEspeceContext) return 'bg-amber-50/50 text-amber-700'; // Expense Espèce
-        return 'bg-blue-50/50 text-blue-700'; // Expense Virement
+        return 'bg-[#018790]/10 text-[#018790]'; // Expense Virement
     };
 
     return (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 border-t-4 border-t-slate-100">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 border border-slate-100">
                 
                 {/* Header */}
                 <div className={`flex justify-between items-center px-8 py-6 border-b border-slate-100 ${getHeaderColor()} rounded-t-3xl`}>
@@ -141,7 +141,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, mode, employees }) => {
                         <input 
                             type="date"
                             required
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none"
+                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none"
                             value={formData.date}
                             onChange={(e) => setFormData({...formData, date: e.target.value})}
                         />
@@ -149,12 +149,12 @@ const TransactionModal = ({ isOpen, onClose, onSave, mode, employees }) => {
 
                     {/* RECHARGE SPECIFIC FLOW (Only for OUT_VIREMENT) */}
                     {mode === 'OUT_VIREMENT' && (
-                        <div className="space-y-4 bg-blue-50/50 p-5 rounded-2xl border border-blue-100 animate-in slide-in-from-top-2">
+                        <div className="space-y-4 bg-[#018790]/5 p-5 rounded-2xl border border-[#018790]/10 animate-in slide-in-from-top-2">
                             <div className="group">
-                                <label className="block text-xs font-bold text-blue-800 mb-1.5 ml-1 uppercase tracking-wider">1. Sélectionner l'Employé</label>
+                                <label className="block text-xs font-bold text-[#005461] mb-1.5 ml-1 uppercase tracking-wider">1. Sélectionner l'Employé</label>
                                 <select 
                                     required
-                                    className="w-full px-4 py-3 rounded-xl bg-white border border-blue-200 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                    className="w-full px-4 py-3 rounded-xl bg-white border border-[#018790]/20 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#018790]/20"
                                     value={formData.employeeId}
                                     onChange={handleEmployeeChange}
                                 >
@@ -167,10 +167,10 @@ const TransactionModal = ({ isOpen, onClose, onSave, mode, employees }) => {
                             
                             {formData.employeeId && (
                                 <div className="group animate-in fade-in slide-in-from-top-1">
-                                    <label className="block text-xs font-bold text-blue-800 mb-2 ml-1 uppercase tracking-wider">2. Choisir le Numéro</label>
+                                    <label className="block text-xs font-bold text-[#005461] mb-2 ml-1 uppercase tracking-wider">2. Choisir le Numéro</label>
                                     <div className="space-y-2">
                                         {availablePhones.length > 0 ? availablePhones.map((phone, idx) => (
-                                            <label key={idx} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${formData.phoneNumber === phone ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white border-blue-100 text-slate-600 hover:border-blue-300'}`}>
+                                            <label key={idx} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${formData.phoneNumber === phone ? 'bg-[#018790] border-[#018790] text-white shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:border-[#018790]/50'}`}>
                                                 <input 
                                                     type="radio" 
                                                     name="phone" 
@@ -179,7 +179,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, mode, employees }) => {
                                                     checked={formData.phoneNumber === phone}
                                                     onChange={() => handlePhoneSelect(phone)}
                                                 />
-                                                <Smartphone size={18} className={formData.phoneNumber === phone ? 'text-white' : 'text-blue-400'} />
+                                                <Smartphone size={18} className={formData.phoneNumber === phone ? 'text-white' : 'text-[#018790]'} />
                                                 <span className="font-mono font-bold text-sm">{phone}</span>
                                             </label>
                                         )) : (
@@ -202,7 +202,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, mode, employees }) => {
                                     min="0.01"
                                     step="0.01"
                                     placeholder="0.00"
-                                    className="w-full pl-4 pr-12 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-lg font-mono font-bold focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                                    className="w-full pl-4 pr-12 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-lg font-mono font-bold focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all"
                                     value={formData.amount}
                                     onChange={(e) => setFormData({...formData, amount: e.target.value})}
                                 />
@@ -220,7 +220,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, mode, employees }) => {
                                 className={`w-full px-4 py-3 rounded-xl border text-slate-700 text-sm outline-none transition-all resize-none
                                     ${(mode === 'OUT_VIREMENT') 
                                         ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed' 
-                                        : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10'}`}
+                                        : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10'}`}
                                 value={formData.description}
                                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                             />
@@ -233,7 +233,7 @@ const TransactionModal = ({ isOpen, onClose, onSave, mode, employees }) => {
                             className={`w-full py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 shadow-lg transition-all transform active:scale-95
                                 ${isIncome ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/30' : ''}
                                 ${isEspeceContext && !isIncome ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-500/30' : ''}
-                                ${isVirementContext && !isIncome ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30' : ''}
+                                ${isVirementContext && !isIncome ? 'bg-[#018790] hover:bg-[#005461] shadow-[#018790]/30' : ''}
                             `}
                         >
                             {isIncome ? 'Confirmer Alimentation' : 'Confirmer Dépense'}
@@ -259,9 +259,9 @@ const StatCard = ({ title, amount, type, icon: Icon }) => {
         bgClass = 'bg-red-50 border-red-100';
         iconColor = 'text-red-500';
     } else {
-         colorClass = 'text-slate-800';
+         colorClass = 'text-[#005461]';
         bgClass = 'bg-white border-slate-200';
-        iconColor = 'text-slate-400';
+        iconColor = 'text-[#018790]';
     }
 
     return (
@@ -303,13 +303,13 @@ const EspeceDashboard = ({ transactions, searchTerm, onDelete }) => {
             </div>
 
             {/* List */}
-             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
                     <List size={20} className="text-slate-400"/>
                     <h3 className="font-bold text-slate-800">Historique Charge Espèce</h3>
                 </div>
                 <table className="w-full">
-                    <thead className="bg-slate-50 border-b border-slate-100">
+                    <thead className="bg-slate-50/50 border-b border-slate-100">
                         <tr>
                             <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
                             <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
@@ -402,14 +402,14 @@ const VirementDashboard = ({ transactions, employees, searchTerm, onDelete }) =>
             {/* Breakdown Table */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* List of Transactions */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
                         <History size={20} className="text-slate-400"/>
                         <h3 className="font-bold text-slate-800">Historique Virement</h3>
                     </div>
                     <div className="overflow-y-auto max-h-[400px] custom-scrollbar">
                         <table className="w-full">
-                            <thead className="bg-slate-50 border-b border-slate-100 sticky top-0">
+                            <thead className="bg-slate-50/50 border-b border-slate-100 sticky top-0">
                                 <tr>
                                     <th className="text-left px-6 py-3 text-xs font-bold text-slate-500 uppercase">Date</th>
                                     <th className="text-left px-6 py-3 text-xs font-bold text-slate-500 uppercase">Description</th>
@@ -424,7 +424,7 @@ const VirementDashboard = ({ transactions, employees, searchTerm, onDelete }) =>
                                         <td className="px-6 py-3 text-sm text-slate-700">
                                             {t.type === 'IN' ? <span className="text-emerald-600 font-bold flex items-center gap-1"><Plus size={12}/> Alimentation</span> : t.description}
                                         </td>
-                                        <td className={`px-6 py-3 text-right font-mono font-bold text-sm ${t.type === 'IN' ? 'text-emerald-600' : 'text-blue-600'}`}>
+                                        <td className={`px-6 py-3 text-right font-mono font-bold text-sm ${t.type === 'IN' ? 'text-emerald-600' : 'text-[#018790]'}`}>
                                             {t.type === 'IN' ? '+' : '-'}{t.amount.toLocaleString()}
                                         </td>
                                         <td className="px-6 py-3 text-right">
@@ -440,14 +440,14 @@ const VirementDashboard = ({ transactions, employees, searchTerm, onDelete }) =>
                  </div>
 
                 {/* By Phone */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
                         <List size={20} className="text-slate-400"/>
                         <h3 className="font-bold text-slate-800">Détail par Numéro</h3>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-slate-50 border-b border-slate-100">
+                            <thead className="bg-slate-50/50 border-b border-slate-100">
                                 <tr>
                                     <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Numéro</th>
                                     <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Employé</th>
@@ -578,13 +578,13 @@ const PetiteCaissePage = ({ defaultTab = 'espece' }) => {
     const isLowBalance = currentBalance < 100;
 
     return (
-        <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800 relative">
+        <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out]">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
             {/* Header */}
-            <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                    <h1 className="text-2xl font-extrabold text-[#018790] tracking-tight">
                         {activeTab === 'espece' ? 'Gestion Charge Espèce' : 'Gestion Charge Virement'}
                     </h1>
                     <p className="text-slate-500 mt-1 font-medium">
@@ -631,7 +631,7 @@ const PetiteCaissePage = ({ defaultTab = 'espece' }) => {
                 <button 
                     onClick={() => setActiveTab('virement')}
                     className={`flex-1 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all
-                    ${activeTab === 'virement' ? 'bg-blue-100 text-blue-800 shadow-sm' : 'text-slate-500 hover:bg-slate-50'}`}
+                    ${activeTab === 'virement' ? 'bg-[#018790]/10 text-[#018790] shadow-sm' : 'text-slate-500 hover:bg-slate-50'}`}
                 >
                     <Smartphone size={18} /> Charge Virement
                 </button>
@@ -649,13 +649,13 @@ const PetiteCaissePage = ({ defaultTab = 'espece' }) => {
                             placeholder="Rechercher..." 
                             value={searchTerm} 
                             onChange={(e) => setSearchTerm(e.target.value)} 
-                            className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm" 
+                            className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] transition-all shadow-sm" 
                         />
                     </div>
                     <button 
                         onClick={() => handleOpenModal('OUT')}
                         className={`flex items-center gap-2 px-8 py-3 rounded-xl text-white font-bold shadow-lg transition-transform active:scale-95
-                             ${activeTab === 'espece' ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-500/20' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'}
+                             ${activeTab === 'espece' ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-500/20' : 'bg-[#018790] hover:bg-[#005461] shadow-[#018790]/20'}
                         `}
                     >
                         {activeTab === 'espece' ? <Banknote size={20}/> : <Smartphone size={20}/>}

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Package, AlertTriangle, AlertCircle, Truck, TrendingUp, TrendingDown,
-  Calendar, RefreshCw, Download, Search, Trophy, Ban, Warehouse
+  Package, AlertTriangle, Truck, TrendingUp, TrendingDown,
+  Warehouse, Box, DollarSign, Activity, AlertCircle, RefreshCw, Search
 } from 'lucide-react';
 import { 
   LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import Swal from 'sweetalert2';
+import SpotlightCard from '../../util/SpotlightCard';
 
 const InventoryDashboard = () => {
   const [dateFrom, setDateFrom] = useState(() => {
@@ -19,26 +20,29 @@ const InventoryDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [dashboardData, setDashboardData] = useState(null);
 
-  // Générer des données de test
+  // --- LOGIC: Data Generation & Calculation ---
+
   const handleRefresh = () => {
     Swal.fire({
       title: 'Régénérer les données ?',
       text: 'Cela va réinitialiser toutes les données du dashboard',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#0f172a',
+      confirmButtonColor: '#005461',
       cancelButtonColor: '#64748b',
       confirmButtonText: 'Oui, régénérer',
-      cancelButtonText: 'Annuler'
+      cancelButtonText: 'Annuler',
+      background: '#fff', 
+      borderRadius: '1rem'
     }).then((result) => {
       if (result.isConfirmed) {
         generateData();
         Swal.fire({
           title: 'Données régénérées !',
-          text: 'Le dashboard a été mis à jour',
           icon: 'success',
           timer: 2000,
-          showConfirmButton: false
+          showConfirmButton: false,
+          confirmButtonColor: '#005461'
         });
       }
     });
@@ -52,13 +56,13 @@ const InventoryDashboard = () => {
     ];
 
     const products = [
-      { id: "p1", name: "iPhone 15 Pro Max", price: 13500, dist: [5, 2, 1], alert: 2 },
-      { id: "p2", name: "Chargeur Anker 20W", price: 150, dist: [200, 50, 20], alert: 20 },
-      { id: "p3", name: "Machine à Café Pro", price: 25000, dist: [10, 0, 0], alert: 2 },
-      { id: "p4", name: "Sac Laptop Vintage", price: 200, dist: [40, 0, 0], alert: 5 },
-      { id: "p5", name: "Protection Écran", price: 15, dist: [300, 100, 50], alert: 50 },
-      { id: "p6", name: "Montre Connectée", price: 100, dist: [100, 50, 0], alert: 30 },
-      { id: "p7", name: "Écouteurs Bluetooth", price: 300, dist: [0, 0, 0], alert: 5 }
+      { id: "p1", name: "iPhone 15 Pro Max", price: 13500, dist: [5, 2, 1], alert: 2, catalogue: "Électronique" },
+      { id: "p2", name: "Chargeur Anker 20W", price: 150, dist: [200, 50, 20], alert: 20, catalogue: "Accessoires" },
+      { id: "p3", name: "Machine à Café Pro", price: 25000, dist: [10, 0, 0], alert: 2, catalogue: "Électroménager" },
+      { id: "p4", name: "Sac Laptop Vintage", price: 200, dist: [40, 0, 0], alert: 5, catalogue: "Accessoires" },
+      { id: "p5", name: "Protection Écran", price: 15, dist: [300, 100, 50], alert: 50, catalogue: "Accessoires" },
+      { id: "p6", name: "Montre Connectée", price: 100, dist: [100, 50, 0], alert: 30, catalogue: "Électronique" },
+      { id: "p7", name: "Écouteurs Bluetooth", price: 300, dist: [0, 0, 0], alert: 5, catalogue: "Électronique" }
     ];
 
     const orders = [];
@@ -101,29 +105,18 @@ const InventoryDashboard = () => {
     toDate.setHours(23, 59, 59);
 
     let kpi = {
-      totalQty: 0,
-      totalValue: 0,
-      alerts: 0,
-      damaged: 0,
-      transitValue: 0,
-      returnValue: 0,
-      damagedValue: 0,
-      inactiveValue: 0,
-      transitCount: 0
+      totalQty: 0, totalValue: 0, alerts: 0, damaged: 0,
+      transitValue: 0, returnValue: 0, damagedValue: 0, inactiveValue: 0, transitCount: 0
     };
 
     let warehouseData = {};
     let productStats = [];
     let dailySales = {};
     let matrixData = [];
+    let catalogueStats = {};
 
     warehouses.forEach(w => {
-      warehouseData[w.id] = {
-        name: w.name,
-        capacity: w.capacity,
-        items: [],
-        total: 0
-      };
+      warehouseData[w.id] = { name: w.name, capacity: w.capacity, items: [], total: 0 };
     });
 
     const thirtyDaysAgo = new Date();
@@ -145,7 +138,6 @@ const InventoryDashboard = () => {
       const stockValue = totalStock * p.price;
       kpi.totalQty += totalStock;
       kpi.totalValue += stockValue;
-      
       if (totalStock <= p.alert) kpi.alerts++;
 
       const filteredOrders = orders.filter(o => {
@@ -154,7 +146,6 @@ const InventoryDashboard = () => {
       });
 
       const productLosses = losses.filter(l => l.pid === p.id);
-
       let sold = 0, returned = 0, transit = 0, damaged = 0;
 
       filteredOrders.forEach(o => {
@@ -168,7 +159,6 @@ const InventoryDashboard = () => {
       });
 
       productLosses.forEach(l => damaged += l.qty);
-
       kpi.transitValue += transit * p.price;
       kpi.returnValue += returned * p.price;
       kpi.damagedValue += damaged * p.price;
@@ -178,26 +168,16 @@ const InventoryDashboard = () => {
       const allSales = orders.filter(o => o.pid === p.id && o.status === "delivered");
       const hasRecentSale = allSales.some(o => new Date(o.date) > thirtyDaysAgo);
       const isDead = !hasRecentSale && totalStock > 0;
-
       if (isDead) kpi.inactiveValue += stockValue;
 
-      productStats.push({
-        name: p.name,
-        price: p.price,
-        stock: totalStock,
-        value: stockValue,
-        sold,
-        returned,
-        isDead
-      });
+      productStats.push({ name: p.name, price: p.price, stock: totalStock, value: stockValue, sold, returned, isDead });
+      matrixData.push({ name: p.name, stock: totalStock, sold, returned, transit });
 
-      matrixData.push({
-        name: p.name,
-        stock: totalStock,
-        sold,
-        returned,
-        transit
-      });
+      const cat = p.catalogue || 'Autres';
+      if (!catalogueStats[cat]) catalogueStats[cat] = { name: cat, count: 0, stock: 0, value: 0 };
+      catalogueStats[cat].count += 1;
+      catalogueStats[cat].stock += totalStock;
+      catalogueStats[cat].value += stockValue;
     });
 
     const salesChartData = Object.keys(dailySales)
@@ -217,398 +197,388 @@ const InventoryDashboard = () => {
     const salesSorted = [...productStats].sort((a, b) => b.sold - a.sold);
     const valueSorted = [...productStats].sort((a, b) => b.value - a.value);
     const returnSorted = [...productStats].sort((a, b) => b.returned - a.returned);
-
     const deadItems = productStats.filter(s => s.isDead).sort((a, b) => b.value - a.value);
 
     setDashboardData({
-      kpi,
-      warehouses: warehouseData,
-      warehouseMeta: warehouses,
-      salesChart: salesChartData,
-      stockDistribution,
-      topSales: salesSorted[0] || {},
-      flopSales: salesSorted[salesSorted.length - 1] || {},
-      topValue: valueSorted[0] || {},
-      flopValue: valueSorted[valueSorted.length - 1] || {},
-      topReturn: returnSorted[0] || {},
-      flopReturn: returnSorted[returnSorted.length - 1] || {},
-      deadStock: deadItems[0] || null,
-      matrixData
+      kpi, warehouses: warehouseData, warehouseMeta: warehouses, salesChart: salesChartData, stockDistribution,
+      topSales: salesSorted[0] || {}, flopSales: salesSorted[salesSorted.length - 1] || {},
+      topValue: valueSorted[0] || {}, flopValue: valueSorted[valueSorted.length - 1] || {},
+      topReturn: returnSorted[0] || {}, flopReturn: returnSorted[returnSorted.length - 1] || {},
+      deadStock: deadItems[0] || null, matrixData,
+      catalogueData: Object.values(catalogueStats).sort((a,b) => b.stock - a.stock),
+      packagings: JSON.parse(localStorage.getItem('packagings') || '[]')
     });
   };
 
-  useEffect(() => {
-    calculateDashboard();
-  }, []);
+  useEffect(() => { calculateDashboard(); }, []);
 
   const fmt = (n) => parseFloat(n).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + " DH";
   const num = (n) => parseInt(n).toLocaleString('fr-FR');
 
-  if (!dashboardData) return <div className="p-8">Chargement...</div>;
+  if (!dashboardData) return (
+    <div className="min-h-screen bg-transparent flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#018790] border-t-transparent"></div>
+    </div>
+  );
 
   const { kpi, warehouses, warehouseMeta, salesChart, stockDistribution, topSales, flopSales, topValue, flopValue, topReturn, flopReturn, deadStock, matrixData } = dashboardData;
+  const filteredMatrix = matrixData.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
-  const filteredMatrix = matrixData.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // --- UI COMPONENTS ---
+  const Section = ({ title, icon: Icon, children }) => (
+    <div className="space-y-4">
+        <div className="flex items-center gap-3">
+            <div className="p-2 bg-[#005461]/10 rounded-lg text-[#005461]">
+                {Icon ? <Icon size={24} /> : <Activity size={24} />}
+            </div>
+            <h2 className="text-xl font-bold text-[#005461]">{title}</h2>
+        </div>
+        {children}
+    </div>
+  );
+
+  const StatCard = ({ label, value, icon: Icon, sub, color }) => (
+    <SpotlightCard theme="light" className="flex flex-col justify-between h-full border border-slate-200"> 
+        <div className="flex justify-between items-start mb-2">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{label}</span>
+            {Icon && <Icon size={18} className="text-[#018790]" />}
+        </div>
+        <div>
+            <div className={`text-2xl font-black ${color || 'text-slate-800'}`}>{value}</div>
+            {sub && <div className="text-xs text-slate-400 mt-1">{sub}</div>}
+        </div>
+    </SpotlightCard>
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 font-sans">
+    <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out]">
+      
       {/* Header */}
-      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-6">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 bg-transparent p-6 rounded-3xl border border-slate-100/50">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900">Tableau de Bord Central</h1>
+          <h1 className="text-3xl font-extrabold text-[#018790]">Tableau de Bord Central</h1>
           <p className="text-slate-500 mt-1">Système de Gestion Intelligente des Stocks</p>
         </div>
 
-        <div className="flex flex-wrap gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-bold text-slate-500 uppercase">Date Début</label>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-bold text-slate-500 uppercase">Date Fin</label>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50"
-            />
-          </div>
-          <button
-            onClick={calculateDashboard}
-            className="mt-auto px-5 py-2 bg-slate-900 text-white rounded-lg font-bold text-sm hover:bg-slate-800 transition-all"
-          >
-            Appliquer
-          </button>
-          <button
-            onClick={handleRefresh}
-            className="mt-auto px-5 py-2 border border-slate-900 text-slate-900 rounded-lg font-bold text-sm hover:bg-slate-50 transition-all flex items-center gap-2"
-          >
-            <RefreshCw size={16} /> Générer
-          </button>
-        </div>
-      </header>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-sm text-slate-500 font-semibold">📦 Stock Général</span>
-            <span className="w-2 h-2 rounded-full bg-blue-600"></span>
-          </div>
-          <div className="text-3xl font-black text-blue-600">{num(kpi.totalQty)}</div>
-          <div className="text-xs text-slate-500 mt-2">Total unités ({matrixData.length} produits)</div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-sm text-slate-500 font-semibold">⚠️ Alertes Stock</span>
-            <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-          </div>
-          <div className="text-3xl font-black text-orange-500">{kpi.alerts}</div>
-          <div className="text-xs text-slate-500 mt-2">Produits au seuil minimum</div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-sm text-slate-500 font-semibold">💔 Endommagés</span>
-            <span className="w-2 h-2 rounded-full bg-red-600"></span>
-          </div>
-          <div className="text-3xl font-black text-red-600">{kpi.damaged}</div>
-          <div className="text-xs text-slate-500 mt-2">Unités déclarées pertes</div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-sm text-slate-500 font-semibold">🚚 En Transit</span>
-            <span className="w-2 h-2 rounded-full bg-purple-600"></span>
-          </div>
-          <div className="text-3xl font-black text-purple-600">{kpi.transitCount}</div>
-          <div className="text-xs text-slate-500 mt-2">Commandes expédiées</div>
+        <div className="flex flex-wrap gap-3 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
+           <div className="flex flex-col gap-1">
+             <label className="text-[10px] font-bold text-slate-400 uppercase ml-2">Date Début</label>
+             <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 font-bold text-slate-700 outline-none focus:border-[#005461]" />
+           </div>
+           <div className="flex flex-col gap-1">
+             <label className="text-[10px] font-bold text-slate-400 uppercase ml-2">Date Fin</label>
+             <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 font-bold text-slate-700 outline-none focus:border-[#005461]" />
+           </div>
+           <button onClick={calculateDashboard} className="mt-auto px-5 py-2.5 bg-[#005461] text-white rounded-xl font-bold text-sm hover:bg-[#016f76] transition-all shadow-md shadow-cyan-900/20">Appliquer</button>
+           <button onClick={handleRefresh} className="mt-auto px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition-all"><RefreshCw size={18} /></button>
         </div>
       </div>
 
-      {/* Financial Summary + Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold">💰 Résumé Financier</h3>
-            <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold">MAD</span>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 bg-blue-50 border border-blue-100 rounded-xl p-4">
-              <div className="text-xs text-blue-600 mb-1">Valeur Totale Stock (Actifs)</div>
-              <div className="text-2xl font-black text-blue-600">{fmt(kpi.totalValue)}</div>
-            </div>
-            
-            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
-              <div className="text-xs text-slate-500 mb-1">Stock Dormant</div>
-              <div className="text-base font-bold text-slate-700">{fmt(kpi.inactiveValue)}</div>
-            </div>
-            
-            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
-              <div className="text-xs text-slate-500 mb-1">Endommagés (Perte)</div>
-              <div className="text-base font-bold text-red-600">{fmt(kpi.damagedValue)}</div>
-            </div>
-            
-            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
-              <div className="text-xs text-slate-500 mb-1">Marchandise Expédiée</div>
-              <div className="text-base font-bold text-purple-600">{fmt(kpi.transitValue)}</div>
-            </div>
-            
-            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
-              <div className="text-xs text-slate-500 mb-1">Retours</div>
-              <div className="text-base font-bold text-orange-500">{fmt(kpi.returnValue)}</div>
-            </div>
-          </div>
+      {/* 1. KPIs */}
+      <Section title="Indicateurs Clés" icon={Activity}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard label="Stock Général" value={num(kpi.totalQty)} icon={Package} sub={`${matrixData.length} Produits Distribués`} color="text-[#005461]" />
+            <StatCard label="Alertes Stock" value={kpi.alerts} icon={AlertTriangle} sub="Produits au seuil minimum" color="text-amber-500" />
+            <StatCard label="Endommagés" value={kpi.damaged} icon={AlertCircle} sub="Unités déclarées pertes" color="text-rose-500" />
+            <StatCard label="En Transit" value={kpi.transitCount} icon={Truck} sub="Expéditions en cours" color="text-indigo-500" />
         </div>
+      </Section>
 
-        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-          <h3 className="text-lg font-bold mb-6">📈 Analyse Graphique</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="h-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={salesChart}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="ventes" stroke="#2563eb" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-            
-            <div className="h-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={stockDistribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={70}
-                    paddingAngle={2}
-                    dataKey="value"
-                  >
-                    {stockDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => fmt(value)} />
-                  <Legend wrapperStyle={{ fontSize: '10px' }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+      {/* 2. PACKAGING OVERVIEW */}
+      <Section title="État des Emballages" icon={Box}>
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+             <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <StatCard label="Total Références" value={dashboardData.packagings?.length || 0} icon={Box} sub="Types d'emballages configurés" />
+                 <StatCard label="Alertes Critiques" value={dashboardData.packagings?.filter(p => {
+                      const prods = JSON.parse(localStorage.getItem('inv_products') || '[]');
+                      const product = prods.find(prod => prod.id == p.productId);
+                      const totalStock = product ? product.dist.reduce((a, b) => a + b, 0) : 0;
+                      return totalStock <= p.alertStock;
+                 }).length || 0} color="text-rose-500" sub="Emballages avec stock produit bas" />
+                 <StatCard label="Capacité Colisage" value={num(dashboardData.packagings?.reduce((acc, p) => {
+                       const prods = JSON.parse(localStorage.getItem('inv_products') || '[]');
+                       const product = prods.find(prod => prod.id == p.productId);
+                       const stock = product ? product.dist.reduce((a, b) => a + b, 0) : 0;
+                       return acc + Math.floor(stock / (p.piecesPerPackage || 1));
+                  }, 0) || 0)} color="text-emerald-500" sub="Est. Colis réalisables" />
+             </div>
+             
+             {/* List Widget */}
+             <SpotlightCard theme="light" className="p-0 border border-slate-200 overflow-hidden flex flex-col h-full">
+                 <div className="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                     <span className="text-xs font-bold text-[#005461] uppercase tracking-wide">Aperçu Rapide</span>
+                     <span className="text-xs font-bold bg-[#005461]/10 text-[#005461] px-2 py-0.5 rounded-full">{dashboardData.packagings?.length} Refs</span>
+                 </div>
+                 <div className="flex-1 overflow-y-auto max-h-[160px] custom-scrollbar p-2 space-y-1">
+                      {dashboardData.packagings?.map((p, idx) => {
+                          const prods = JSON.parse(localStorage.getItem('inv_products') || '[]');
+                          const product = prods.find(prod => prod.id == p.productId);
+                          const stock = product ? product.dist.reduce((a, b) => a + b, 0) : 0;
+                          return (
+                             <div key={idx} className="flex justify-between items-center px-3 py-2 bg-white border border-slate-100 rounded-lg hover:border-[#018790]/30 transition-colors">
+                                 <div className="flex flex-col">
+                                     <span className="text-sm font-bold text-slate-700">{p.name}</span>
+                                     <span className="text-[10px] text-slate-400 font-medium">Ref: {product?.name || 'N/A'}</span>
+                                 </div>
+                                 <span className="font-mono font-bold text-[#005461] bg-[#005461]/5 px-2 py-1 rounded">{stock}</span>
+                             </div>
+                          )
+                      })}
+                 </div>
+             </SpotlightCard>
+         </div>
+      </Section>
+
+      {/* 3. FINANCIALS & CHARTS */}
+      <Section title="Bilan & Analyse" icon={DollarSign}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              {/* Financial Box */}
+              <SpotlightCard theme="light" className="flex flex-col gap-6 border border-slate-200">
+                  <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+                      <h3 className="text-lg font-bold text-[#005461]">Résumé Financier</h3>
+                      <span className="bg-[#005461]/10 text-[#005461] px-3 py-1 rounded-lg text-xs font-bold">MAD</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                      <div className="col-span-2 bg-[#005461] text-white rounded-2xl p-5 shadow-lg shadow-[#005461]/20 relative overflow-hidden">
+                          <div className="relative z-10">
+                              <p className="text-emerald-100/80 text-xs font-bold uppercase tracking-wide mb-1">Valeur Totale Stock (Actifs)</p>
+                              <p className="text-3xl font-black">{fmt(kpi.totalValue)}</p>
+                          </div>
+                          <div className="absolute -right-4 -bottom-8 opacity-10"><DollarSign size={100}/></div>
+                      </div>
+                      
+                      <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                        <div className="text-xs text-slate-500 font-bold mb-1">Stock Dormant</div>
+                        <div className="text-lg font-black text-slate-700">{fmt(kpi.inactiveValue)}</div>
+                      </div>
+                      <div className="bg-rose-50 rounded-xl p-3 border border-rose-100">
+                        <div className="text-xs text-rose-500 font-bold mb-1">Pertes (Endommagé)</div>
+                        <div className="text-lg font-black text-rose-600">{fmt(kpi.damagedValue)}</div>
+                      </div>
+                      <div className="bg-indigo-50 rounded-xl p-3 border border-indigo-100">
+                        <div className="text-xs text-indigo-500 font-bold mb-1">En Transit</div>
+                        <div className="text-lg font-black text-indigo-600">{fmt(kpi.transitValue)}</div>
+                      </div>
+                      <div className="bg-orange-50 rounded-xl p-3 border border-orange-100">
+                        <div className="text-xs text-orange-500 font-bold mb-1">Retours</div>
+                        <div className="text-lg font-black text-orange-600">{fmt(kpi.returnValue)}</div>
+                      </div>
+                  </div>
+              </SpotlightCard>
+
+              {/* Charts Box */}
+              <SpotlightCard theme="light" className="flex flex-col gap-6 border border-slate-200">
+                  <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+                      <h3 className="text-lg font-bold text-[#005461]">Dynamique des Stocks</h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
+                       <div className="h-48 w-full">
+                          <p className="text-xs font-bold text-slate-400 mb-2 text-center">Évolution Ventes</p>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={salesChart}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                              <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                              <Tooltip contentStyle={{background: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff'}} />
+                              <Line type="monotone" dataKey="ventes" stroke="#018790" strokeWidth={3} dot={{r: 3, fill:'#018790'}} />
+                            </LineChart>
+                          </ResponsiveContainer>
+                       </div>
+                       <div className="h-48 w-full">
+                          <p className="text-xs font-bold text-slate-400 mb-2 text-center">Répartition Valeur</p>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie data={stockDistribution} cx="50%" cy="50%" innerRadius={40} outerRadius={60} paddingAngle={5} dataKey="value">
+                                {stockDistribution.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                              </Pie>
+                              <Tooltip />
+                            </PieChart>
+                          </ResponsiveContainer>
+                       </div>
+                  </div>
+              </SpotlightCard>
           </div>
-        </div>
+      </Section>
+
+      {/* 4. PERFORMANCE COMPARISON (Top/Flop) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+         <SpotlightCard theme="light" className="border-t-4 border-t-emerald-500 p-5">
+             <div className="flex justify-between items-start mb-4">
+                 <span className="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2 py-1 rounded">PERFORMANCE VENTES</span>
+                 <TrendingUp size={16} className="text-emerald-500"/>
+             </div>
+             <div className="space-y-4">
+                 <div className="flex justify-between items-center">
+                     <span className="font-bold text-slate-700 truncate max-w-[120px]">{topSales.name || '-'}</span>
+                     <span className="font-mono font-bold text-emerald-600">+{topSales.sold}</span>
+                 </div>
+                 <div className="h-px bg-slate-100 w-full"></div>
+                 <div className="flex justify-between items-center opacity-60">
+                     <span className="font-bold text-slate-700 truncate max-w-[120px]">{flopSales.name || '-'}</span>
+                     <span className="font-mono font-bold text-slate-500">{flopSales.sold}</span>
+                 </div>
+             </div>
+         </SpotlightCard>
+         
+         <SpotlightCard theme="light" className="border-t-4 border-t-blue-500 p-5">
+             <div className="flex justify-between items-start mb-4">
+                 <span className="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-1 rounded">VALEUR ACTIFS</span>
+                 <DollarSign size={16} className="text-blue-500"/>
+             </div>
+             <div className="space-y-4">
+                 <div className="flex justify-between items-center">
+                     <span className="font-bold text-slate-700 truncate max-w-[120px]">{topValue.name || '-'}</span>
+                     <span className="font-mono font-bold text-blue-600">{topValue.value ? (topValue.value > 1000 ? (topValue.value/1000).toFixed(1)+'k' : topValue.value) : 0}</span>
+                 </div>
+                 <div className="h-px bg-slate-100 w-full"></div>
+                 <div className="flex justify-between items-center opacity-60">
+                     <span className="font-bold text-slate-700 truncate max-w-[120px]">{flopValue.name || '-'}</span>
+                     <span className="font-mono font-bold text-slate-500">{flopValue.value ? (flopValue.value > 1000 ? (flopValue.value/1000).toFixed(1)+'k' : flopValue.value) : 0}</span>
+                 </div>
+             </div>
+         </SpotlightCard>
+
+         <SpotlightCard theme="light" className="border-t-4 border-t-rose-500 p-5">
+             <div className="flex justify-between items-start mb-4">
+                 <span className="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-1 rounded">TAUX RETOURS</span>
+                 <TrendingDown size={16} className="text-rose-500"/>
+             </div>
+             <div className="space-y-4">
+                 <div className="flex justify-between items-center">
+                     <span className="font-bold text-slate-700 truncate max-w-[120px]">{topReturn.name || '-'}</span>
+                     <span className="font-mono font-bold text-rose-600">{topReturn.returned}</span>
+                 </div>
+                 <div className="h-px bg-slate-100 w-full"></div>
+                 <div className="flex justify-between items-center opacity-60">
+                     <span className="font-bold text-slate-700 truncate max-w-[120px]">{flopReturn.name || '-'}</span>
+                     <span className="font-mono font-bold text-slate-500">{flopReturn.returned}</span>
+                 </div>
+             </div>
+         </SpotlightCard>
       </div>
 
-      {/* VS Comparisons */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-          <h4 className="text-sm text-slate-500 font-bold mb-4">🔥 Performance Ventes</h4>
-          <div className="flex gap-3">
-            <div className="flex-1 bg-gradient-to-b from-white to-green-50 border-b-4 border-green-500 rounded-lg p-3">
-              <span className="inline-block bg-green-100 text-green-600 text-xs font-bold px-2 py-1 rounded mb-2">TOP 1</span>
-              <div className="font-bold text-sm truncate">{topSales.name || '--'}</div>
-              <div className="text-xs text-slate-500 flex justify-between mt-1">
-                <span>Ventes</span>
-                <b className="text-slate-900">{topSales.sold || 0}</b>
-              </div>
-            </div>
-            <div className="flex-1 bg-gradient-to-b from-white to-red-50 border-b-4 border-red-500 rounded-lg p-3">
-              <span className="inline-block bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded mb-2">FLOP 1</span>
-              <div className="font-bold text-sm truncate">{flopSales.name || '--'}</div>
-              <div className="text-xs text-slate-500 flex justify-between mt-1">
-                <span>Ventes</span>
-                <b className="text-slate-900">{flopSales.sold || 0}</b>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-          <h4 className="text-sm text-slate-500 font-bold mb-4">💎 Valeur Actifs</h4>
-          <div className="flex gap-3">
-            <div className="flex-1 bg-gradient-to-b from-white to-blue-50 border-b-4 border-blue-500 rounded-lg p-3">
-              <span className="inline-block bg-blue-100 text-blue-600 text-xs font-bold px-2 py-1 rounded mb-2">PLUS CHER</span>
-              <div className="font-bold text-sm truncate">{topValue.name || '--'}</div>
-              <div className="text-xs text-slate-500 flex justify-between mt-1">
-                <span>Valeur</span>
-                <b className="text-slate-900">{topValue.value ? fmt(topValue.value) : '0'}</b>
-              </div>
-            </div>
-            <div className="flex-1 bg-gradient-to-b from-white to-slate-50 border-b-4 border-slate-300 rounded-lg p-3">
-              <span className="inline-block bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded mb-2">MOINS CHER</span>
-              <div className="font-bold text-sm truncate">{flopValue.name || '--'}</div>
-              <div className="text-xs text-slate-500 flex justify-between mt-1">
-                <span>Valeur</span>
-                <b className="text-slate-900">{flopValue.value ? fmt(flopValue.value) : '0'}</b>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-          <h4 className="text-sm text-slate-500 font-bold mb-4">↩️ Retours</h4>
-          <div className="flex gap-3">
-            <div className="flex-1 bg-gradient-to-b from-white to-red-50 border-b-4 border-red-500 rounded-lg p-3">
-              <span className="inline-block bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded mb-2">PLUS RETOURS</span>
-              <div className="font-bold text-sm truncate">{topReturn.name || '--'}</div>
-              <div className="text-xs text-slate-500 flex justify-between mt-1">
-                <span>Nombre</span>
-                <b className="text-slate-900">{topReturn.returned || 0}</b>
-              </div>
-            </div>
-            <div className="flex-1 bg-gradient-to-b from-white to-green-50 border-b-4 border-green-500 rounded-lg p-3">
-              <span className="inline-block bg-green-100 text-green-600 text-xs font-bold px-2 py-1 rounded mb-2">MOINS RETOURS</span>
-              <div className="font-bold text-sm truncate">{flopReturn.name || '--'}</div>
-              <div className="text-xs text-slate-500 flex justify-between mt-1">
-                <span>Nombre</span>
-                <b className="text-slate-900">{flopReturn.returned || 0}</b>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Dead Stock Alert */}
-      {deadStock ? (
-        <div className="bg-red-50 border-l-4 border-red-500 rounded-xl p-6 mb-8 flex justify-between items-center shadow-sm">
+       {/* Dead Stock Alert Banner */}
+       {deadStock ? (
+        <SpotlightCard theme="light" className="!bg-red-50 !border-red-200 flex justify-between items-center shadow-none">
           <div>
-            <h4 className="text-red-600 font-bold text-sm uppercase mb-1">Produit Inactif (Valeur Max)</h4>
-            <h2 className="text-2xl font-black text-slate-900">{deadStock.name}</h2>
-            <div className="text-sm text-slate-600 mt-2">
-              Quantité: <b>{deadStock.stock}</b> | Valeur Bloquée: <b>{fmt(deadStock.value)}</b>
+            <h4 className="text-red-600 font-bold text-xs uppercase mb-1 flex items-center gap-2"><AlertCircle size={14}/> Produit Inactif (Valeur Max)</h4>
+            <h2 className="text-xl font-black text-slate-800">{deadStock.name}</h2>
+            <div className="text-sm text-slate-700 font-medium mt-1">
+              Ce produit bloque <b>{fmt(deadStock.value)}</b> de trésorerie (Stock: {deadStock.stock})
             </div>
           </div>
-          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-md">
-            🕸️
-          </div>
-        </div>
+          <div className="hidden sm:flex w-12 h-12 bg-white rounded-full items-center justify-center text-2xl shadow-md">🕸️</div>
+        </SpotlightCard>
       ) : (
-        <div className="bg-green-50 border-l-4 border-green-500 rounded-xl p-6 mb-8 flex justify-between items-center shadow-sm">
+        <SpotlightCard theme="light" className="!bg-emerald-50 !border-emerald-200 flex justify-between items-center shadow-none">
           <div>
-            <h4 className="text-green-600 font-bold text-sm uppercase mb-1">Excellent</h4>
-            <h2 className="text-2xl font-black text-green-600">Aucun Stock Dormant</h2>
+            <h4 className="text-emerald-700 font-bold text-xs uppercase mb-1">Excellent</h4>
+            <h2 className="text-xl font-black text-emerald-800">Aucun Stock Dormant</h2>
           </div>
-          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-md">
-            ✨
-          </div>
-        </div>
+          <div className="hidden sm:flex w-12 h-12 bg-white rounded-full items-center justify-center text-2xl shadow-md">✨</div>
+        </SpotlightCard>
       )}
 
-      {/* Warehouses */}
-      <h3 className="text-2xl font-bold mb-6">🏭 Distribution Entrepôts</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {warehouseMeta.map(wh => {
-          const data = warehouses[wh.id];
-          const fillPercent = Math.round((data.total / data.capacity) * 100);
-          const barColor = fillPercent > 85 ? 'bg-red-500' : fillPercent > 50 ? 'bg-orange-500' : 'bg-green-500';
+      {/* 5. WAREHOUSES */}
+      <Section title="Distribution Entrepôts" icon={Warehouse}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {warehouseMeta.map(wh => {
+            const data = warehouses[wh.id];
+            const fillPercent = Math.round((data.total / data.capacity) * 100);
+            const barColor = fillPercent > 85 ? 'bg-red-500' : fillPercent > 50 ? 'bg-orange-500' : 'bg-[#018790]';
+            
+            return (
+              <SpotlightCard key={wh.id} theme="light" className="flex flex-col border border-slate-200">
+                <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                  <span className="font-bold flex items-center gap-2 text-[#005461]">
+                    <Warehouse size={18} /> {data.name}
+                  </span>
+                  <span className="bg-[#005461]/10 text-[#005461] px-2 py-1 rounded text-[10px] font-black">N°{wh.id}</span>
+                </div>
+
+                <div className="flex gap-3 mb-4">
+                  <div className="flex-1 bg-slate-50 rounded-lg p-3 text-center border border-slate-100">
+                    <div className="text-lg font-black text-[#005461]">{num(data.total)}</div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase mt-1">Total Unités</div>
+                  </div>
+                  <div className="flex-1 bg-slate-50 rounded-lg p-3 text-center border border-slate-100">
+                    <div className="text-lg font-black text-[#005461]">{data.items.length}</div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase mt-1">Types</div>
+                  </div>
+                </div>
+
+                <div className="max-h-24 overflow-y-auto bg-slate-50 rounded-lg border border-slate-100 mb-4 custom-scrollbar">
+                  {data.items.length > 0 ? (
+                    data.items.sort((a, b) => b.qty - a.qty).map((item, idx) => (
+                      <div key={idx} className="flex justify-between px-3 py-1.5 border-b border-slate-100 last:border-0 text-xs font-medium bg-white even:bg-slate-50">
+                        <span className="truncate">{item.name}</span>
+                        <b className="text-slate-700">{item.qty}</b>
+                      </div>
+                    ))
+                  ) : <div className="p-3 text-center text-slate-400 text-xs italic">Vide</div>}
+                </div>
+
+                <div className="mt-auto">
+                  <div className="flex justify-between text-[10px] font-bold text-slate-400 mb-1.5">
+                    <span>Remplissage: {fillPercent}%</span>
+                    <span>Capacité: {num(data.capacity)}</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className={`h-full ${barColor} transition-all duration-500`} style={{ width: `${fillPercent}%` }}></div>
+                  </div>
+                </div>
+              </SpotlightCard>
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* 6. DETAILED TABLE */}
+      <SpotlightCard theme="light" className="!p-0 border border-slate-200 overflow-hidden">
+        <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#005461]/5">
+          <h3 className="text-lg font-bold text-[#005461]">Matrice des Mouvements</h3>
           
-          return (
-            <div key={wh.id} className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-              <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-                <span className="font-bold flex items-center gap-2">
-                  <Warehouse size={18} className="text-blue-600" />
-                  {data.name}
-                </span>
-                <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-semibold">N°{wh.id}</span>
-              </div>
-
-              <div className="flex gap-3 mb-4">
-                <div className="flex-1 bg-slate-50 rounded-lg p-3 text-center">
-                  <div className="text-xl font-black text-blue-600">{num(data.total)}</div>
-                  <div className="text-xs text-slate-500 mt-1">Total Unités</div>
-                </div>
-                <div className="flex-1 bg-slate-50 rounded-lg p-3 text-center">
-                  <div className="text-xl font-black text-blue-600">{data.items.length}</div>
-                  <div className="text-xs text-slate-500 mt-1">Types Produits</div>
-                </div>
-              </div>
-
-              <div className="max-h-32 overflow-y-auto bg-slate-50 rounded-lg border border-slate-100 mb-4">
-                {data.items.length > 0 ? (
-                  data.items.sort((a, b) => b.qty - a.qty).map((item, idx) => (
-                    <div key={idx} className="flex justify-between px-3 py-2 border-b border-slate-100 last:border-0 text-sm bg-white even:bg-slate-50">
-                      <span className="truncate">{item.name}</span>
-                      <b>{item.qty}</b>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-3 text-center text-slate-400 text-sm">Vide</div>
-                )}
-              </div>
-
-              <div>
-                <div className="flex justify-between text-xs text-slate-500 mb-2">
-                  <span>Remplissage: {fillPercent}%</span>
-                  <span>Capacité: {num(data.capacity)}</span>
-                </div>
-                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div className={`h-full ${barColor} transition-all duration-500`} style={{ width: `${fillPercent}%` }}></div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Detailed Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-100">
-          <h3 className="text-xl font-bold mb-4">📋 Matrice Détaillée des Mouvements</h3>
-          
-          <div className="flex gap-3 items-center bg-slate-50 p-3 rounded-lg border border-slate-200">
-            <span className="text-sm font-bold text-slate-500">Filtrer:</span>
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-              <input
-                type="text"
-                placeholder="Rechercher un produit..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm"
-              />
-            </div>
+          <div className="relative w-full md:w-64">
+             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+             <input
+               type="text"
+               placeholder="Rechercher..."
+               value={searchTerm}
+               onChange={(e) => setSearchTerm(e.target.value)}
+               className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold focus:border-[#005461] outline-none"
+             />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto bg-white">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50">
+            <thead className="bg-slate-50 border-b border-slate-100">
               <tr>
-                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs">Nom Produit</th>
-                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs">Stock Restant</th>
-                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs">Livré (Sales)</th>
-                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs">Retourné</th>
-                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs">En Cours (Transit)</th>
-                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs">Statut</th>
+                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs tracking-wider">Nom Produit</th>
+                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs tracking-wider">Stock</th>
+                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs tracking-wider">Vendus</th>
+                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs tracking-wider">Retours</th>
+                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs tracking-wider">Transit</th>
+                <th className="px-6 py-4 text-left font-bold text-slate-500 uppercase text-xs tracking-wider">Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-50">
               {filteredMatrix.map((item, idx) => {
-                const dotColor = item.stock === 0 ? 'bg-red-500' : item.stock < 10 ? 'bg-purple-500' : 'bg-green-500';
-                
+                const dotColor = item.stock === 0 ? 'bg-red-500' : item.stock < 10 ? 'bg-amber-500' : 'bg-emerald-500';
                 return (
-                  <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-bold">{item.name}</td>
-                    <td className="px-6 py-4 text-blue-600">
-                      {item.stock}
-                      <span className={`inline-block w-2 h-2 rounded-full ml-2 ${dotColor}`}></span>
-                    </td>
-                    <td className="px-6 py-4">{item.sold}</td>
-                    <td className="px-6 py-4 text-red-600">{item.returned}</td>
-                    <td className="px-6 py-4 text-purple-600">{item.transit}</td>
+                  <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-6 py-4 font-bold text-slate-700">{item.name}</td>
                     <td className="px-6 py-4">
-                      <span className="text-xs text-slate-400">Actif</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${dotColor}`}></span>
+                        <span className="font-mono text-[#005461] font-bold">{item.stock}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 font-mono font-bold text-slate-600">{item.sold}</td>
+                    <td className="px-6 py-4 font-mono font-bold text-rose-500">{item.returned}</td>
+                    <td className="px-6 py-4 font-mono font-bold text-indigo-500">{item.transit}</td>
+                    <td className="px-6 py-4">
+                      <span className="px-2 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase rounded-md border border-emerald-100">Actif</span>
                     </td>
                   </tr>
                 );
@@ -616,7 +586,8 @@ const InventoryDashboard = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </SpotlightCard>
+
     </div>
   );
 };

@@ -5,6 +5,7 @@ import VerifyIdentity from './components/login/verifytocken';
 import NewPassword from './components/login/newpassword';
 import { AdminLayout } from './components/layout/layout';
 
+
 // Import Pages
 import EmployeesPage from './page/admin/employee';
 import BusinessPage from './page/admin/business';
@@ -16,6 +17,7 @@ import StockListPage from './page/admin/stock';
 import StockMovementsPage from './page/admin/stockMovements';
 import StockTransferPage from './page/admin/stockTransfer';
 import StockDashboard from './page/admin/stockDashboard';
+import PackagingPage from './page/admin/packaging';
 import ProductsPage from './page/admin/products';
 import ProductDashboard from './page/admin/productDashboard';
 import KanbanBoard from './page/admin/managementpipeline'; 
@@ -46,8 +48,10 @@ import HistoriquePaiementLivraison from './page/admin/historiquepaiementlivraiso
 import PipelineAgadir from './page/admin/pipelineAgadir';
 import TrackingLivreur from './page/admin/trackingLivreur';
 import Retourner from './page/admin/retourner';
+import ProtectedRetourner from './components/ProtectedRetourner';
 import SettlementManagement from './page/admin/settlementManagement';
 import InvestmentManagement from './page/admin/investissement';
+import AdminTrackingPackaging from './page/admin/trackingPackaging';
 
 // Employee Pages
 import { EmployeeLayout } from './components/layout/employeeLayout';
@@ -67,6 +71,8 @@ import GlobalDispatchPage from './page/employee/delivery/manager_dispatch';
 import Portefeuille from './page/employee/delivery/portefeuille';
 import ManagerApprovals from './page/employee/delivery/manager_approvals';
 import AdminApprovals from './page/admin/adminApprovals';
+import MarketingPage from './page/admin/marketing';
+
 
 export default function App() {
   return (
@@ -101,6 +107,8 @@ export default function App() {
       <Route path="/admin/stock" element={<AdminLayout><StockListPage /></AdminLayout>} />
       <Route path="/admin/stock/movements" element={<AdminLayout><StockMovementsPage /></AdminLayout>} />
       <Route path="/admin/stock/transfer" element={<AdminLayout><StockTransferPage /></AdminLayout>} />
+      <Route path="/admin/stock/packaging" element={<AdminLayout><PackagingPage /></AdminLayout>} />
+      <Route path="/admin/packaging/tracking" element={<AdminLayout><AdminTrackingPackaging /></AdminLayout>} />
       <Route path="/admin/losses" element={<AdminLayout><LossesPage /></AdminLayout>} />
       
       {/* Product Management Routes */}
@@ -119,7 +127,7 @@ export default function App() {
       <Route path="/admin/pipeline" element={<AdminLayout><KanbanBoard /></AdminLayout>} />
       <Route path="/admin/pipeline/dashboard" element={<AdminLayout><PipelineDashboard /></AdminLayout>} />
       <Route path="/admin/pipeline/list" element={<AdminLayout><ListPipeline /></AdminLayout>} />
-      <Route path="/admin/retourner" element={<AdminLayout><Retourner /></AdminLayout>} />
+      <Route path="/admin/retourner" element={<AdminLayout><ProtectedRetourner><Retourner /></ProtectedRetourner></AdminLayout>} />
       <Route path="/admin/tracking-livreur" element={<AdminLayout><TrackingLivreur /></AdminLayout>} />
       <Route path="/admin/approvals" element={<AdminLayout><AdminApprovals /></AdminLayout>} />
       <Route path="/admin/settlements" element={<AdminLayout><SettlementManagement /></AdminLayout>} />
@@ -131,6 +139,13 @@ export default function App() {
       {/* Ads Management Routes */}
       <Route path="/admin/ads/dashboard" element={<AdminLayout><AdsDashboard /></AdminLayout>} />
       <Route path="/admin/ads" element={<AdminLayout><AdsPage /></AdminLayout>} />
+      
+      {/* Marketing Routes */}
+      <Route path="/admin/marketing/whatsapp" element={<AdminLayout><MarketingPage platform="WhatsApp" /></AdminLayout>} />
+      <Route path="/admin/marketing/meta" element={<AdminLayout><MarketingPage platform="Meta" /></AdminLayout>} />
+      <Route path="/admin/marketing/tiktok" element={<AdminLayout><MarketingPage platform="TikTok" /></AdminLayout>} />
+      <Route path="/admin/marketing/google-ads" element={<AdminLayout><MarketingPage platform="Google Ads" /></AdminLayout>} />
+      
       <Route path="/admin/task" element={<AdminLayout><TaskManager /></AdminLayout>} />
       <Route path="/admin/task/dashboard" element={<AdminLayout><ComingSoon title="Task Dashboard" message="Le tableau de bord des tâches sera bientôt disponible." /></AdminLayout>} />
       
@@ -168,7 +183,7 @@ export default function App() {
       <Route path="/employee/confirmation/dashboard" element={<EmployeeLayout mode="confirmation"><ConfirmationDashboard /></EmployeeLayout>} />
       <Route path="/employee/confirmation/clients" element={<EmployeeLayout mode="confirmation"><ConfirmationClients /></EmployeeLayout>} />
       <Route path="/employee/confirmation/clientsagadir" element={<EmployeeLayout mode="confirmation"><ConfirmationClientsAgadir /></EmployeeLayout>} />
-      <Route path="/employee/confirmation/retourner" element={<EmployeeLayout mode="confirmation"><ConfirmationRetourner /></EmployeeLayout>} />
+      <Route path="/employee/confirmation/retourner" element={<EmployeeLayout mode="confirmation"><ProtectedRetourner><ConfirmationRetourner /></ProtectedRetourner></EmployeeLayout>} />
       <Route path="/employee/confirmation/tasks" element={<EmployeeLayout mode="confirmation"><EmployeeTaskPage /></EmployeeLayout>} />
       <Route path="/employee/confirmation/leaderboard" element={<EmployeeLayout mode="confirmation"><Leaderboard /></EmployeeLayout>} />
 

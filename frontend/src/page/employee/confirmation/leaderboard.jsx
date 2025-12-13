@@ -125,72 +125,7 @@ export default function Leaderboard() {
       
 
 
-      {/* --- CHALLENGES SLIDER --- */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 -mt-4">
-        <div className="w-full">
-            <div className="flex items-center justify-between mb-3 px-1">
-                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                    <Star size={14} /> Challenge Spécial
-                </h3>
-                <div className="flex gap-1">
-                    <button onClick={prevChallenge} className="p-1.5 hover:bg-white rounded-full text-slate-400 hover:text-slate-600 transition-colors">
-                        <ChevronLeft size={16} />
-                    </button>
-                    <button onClick={nextChallenge} className="p-1.5 hover:bg-white rounded-full text-slate-400 hover:text-slate-600 transition-colors">
-                        <ChevronRight size={16} />
-                    </button>
-                </div>
-            </div>
-
-            <div className={`relative overflow-hidden rounded-2xl shadow-lg bg-gradient-to-r ${currentChallenge.theme || 'from-violet-600 to-indigo-600'} text-white transition-all duration-500`}>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-20 -mt-20 blur-2xl"></div>
-                <div className="relative z-10 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="flex-1 text-center md:text-left space-y-3">
-                        <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white border border-white/20">
-                            <Timer size={12} />
-                            Fin le {currentChallenge.endDate ? new Date(currentChallenge.endDate).toLocaleDateString('fr-FR') : 'Bientôt'}
-                        </div>
-                        <h3 className="text-2xl md:text-3xl font-black leading-tight">
-                            {currentChallenge.title}
-                        </h3>
-                        <p className="text-white/90 text-sm max-w-lg">
-                            {currentChallenge.description}
-                        </p>
-                    </div>
-                    <div className="flex flex-col items-center gap-3">
-                        {/* Challenge Image */}
-                        {currentChallenge.image && (
-                          <div className="w-48 h-32 rounded-xl overflow-hidden shadow-xl border-2 border-white/30">
-                            <img 
-                              src={currentChallenge.image} 
-                              alt={currentChallenge.title}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-                        
-                        {/* Stats */}
-                        <div className="flex flex-wrap justify-center gap-3">
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-xl min-w-[100px] text-center">
-                                <div className="text-xl font-bold">{currentChallenge.target}</div>
-                                <div className="text-[10px] text-white/60 font-medium uppercase">Objectif</div>
-                            </div>
-                            <div className="bg-white text-slate-900 p-4 rounded-xl min-w-[100px] text-center shadow-xl transform scale-105">
-                                <div className="text-xl font-bold text-orange-600">{currentChallenge.reward}</div>
-                                <div className="text-[10px] text-slate-500 font-bold uppercase">Gain</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
-                    {challenges.map((_, idx) => (
-                        <div key={idx} className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentChallengeIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/40'}`} />
-                    ))}
-                </div>
-            </div>
-        </div>
-      </div>
-      
+   
       {/* Header */}
       <div className="text-center space-y-2 px-4 sm:px-6 lg:px-8 pt-4">
         <h1 className="text-3xl md:text-4xl font-black text-slate-900">Leaderboard</h1>

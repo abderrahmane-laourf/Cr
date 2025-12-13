@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Plus, X, Trash2, Calendar, DollarSign, Eye } from 'lucide-react';
+import { Package, Plus, X, Trash2, Calendar, DollarSign, Eye, Search, ArrowRight, Filter } from 'lucide-react';
 import { productionAPI, productAPI } from '../../services/api';
 import Swal from 'sweetalert2';
+import SpotlightCard from '../../util/SpotlightCard';
 
 export default function ProductionManagement() {
   const [productions, setProductions] = useState([]);
@@ -80,148 +81,145 @@ export default function ProductionManagement() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-4 sm:p-6 lg:p-8">
-      <div className="w-full">
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Package className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-                  Gestion de Production
-                </h1>
-                <p className="text-slate-500 mt-1 font-medium">
-                  Gérez vos opérations de fabrication
-                </p>
-              </div>
-            </div>
-            
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
+    <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out]">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
+        <div>
+          <h1 className="text-2xl font-extrabold text-[#018790]">Gestion de Production</h1>
+          <p className="text-slate-500">Gérez vos opérations de fabrication</p>
+        </div>
+        <div className="mt-4 sm:mt-0">
+            <button 
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-[#005461] hover:bg-[#016f76] text-white rounded-xl transition-all shadow-lg shadow-cyan-900/20 font-bold"
             >
-              <Plus className="w-4 h-4" />
-              Nouvelle Production
+                <Plus size={20} /> Nouvelle Production
             </button>
-          </div>
+        </div>
+      </div>
 
-          {/* Search Filters Row */}
-          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-200">
-            <div className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  placeholder="Rechercher par produit..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-                <svg className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
+      {/* Filter Bar */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            {/* Search */}
+            <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Search size={12}/> Recherche</label>
+                <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]/50" size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Rechercher par produit..." 
+                        value={searchText} 
+                        onChange={(e) => setSearchText(e.target.value)} 
+                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all" 
+                    />
+                </div>
             </div>
             
-            <div className="w-64">
-              <div className="relative">
+            {/* Date Filter */}
+            <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Calendar size={12}/> Date</label>
                 <input
                   type="date"
                   value={searchDate}
                   onChange={(e) => setSearchDate(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all"
                 />
-                <Calendar className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              </div>
             </div>
 
-            {/* Clear Filters Button */}
+            {/* Clear Filters */}
             {(searchText || searchDate) && (
               <button
                 onClick={() => {
                   setSearchText('');
                   setSearchDate('');
                 }}
-                className="px-4 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 text-sm font-semibold transition-all flex items-center gap-2"
+                className="px-4 py-2.5 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-100 text-sm font-bold transition-all flex items-center justify-center gap-2 h-[42px]"
               >
-                <X className="w-4 h-4" />
-                Effacer
+                <X size={16} />
+                Effacer les filtres
               </button>
             )}
-          </div>
-        </div>
+         </div>
+      </div>
 
-        {/* Productions Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Produit</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Quantité</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Coût Unitaire</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Coût Total</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200">
-                {filteredProductions.map((prod, index) => {
-                  const product = products.find(p => p.id === prod.productId);
-                  const totalCost = prod.unitCost * prod.quantity;
-                  
-                  return (
-                    <tr key={prod.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-slate-600">{index + 1}</td>
-                      <td className="px-6 py-4 text-sm text-slate-800 font-medium">
-                        {new Date(prod.date).toLocaleDateString('fr-FR')}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-800 font-medium">
-                        {product?.nom || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-800">{prod.quantity}</td>
-                      <td className="px-6 py-4 text-sm text-emerald-600 font-bold">
-                        {prod.unitCost.toFixed(2)} DH
-                      </td>
-                      <td className="px-6 py-4 text-sm text-blue-600 font-bold">
-                        {totalCost.toFixed(2)} DH
-                      </td>
-                      <td className="px-6 py-4">
+      {/* Productions Table */}
+      <SpotlightCard theme="light" className="overflow-hidden p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-[#005461]/5 border-b border-[#005461]/10">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">#</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">Date</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">Produit</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">Quantité</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">Coût Unitaire</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">Coût Total</th>
+                <th className="px-6 py-4 text-right text-xs font-bold text-[#005461] uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {filteredProductions.map((prod, index) => {
+                const product = products.find(p => p.id === prod.productId);
+                const totalCost = prod.unitCost * prod.quantity;
+                
+                return (
+                  <tr key={prod.id} className="hover:bg-slate-50/80 transition-colors group">
+                    <td className="px-6 py-4 text-sm text-slate-500 font-mono">{index + 1}</td>
+                    <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                      {new Date(prod.date).toLocaleDateString('fr-FR')}
+                    </td>
+                    <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleViewProduction(prod)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Voir détails"
-                          >
-                            <Eye size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduction(prod.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Supprimer"
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                <Package size={16} />
+                            </div>
+                            <span className="text-sm font-bold text-slate-700">{product?.nom || 'N/A'}</span>
                         </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {filteredProductions.length === 0 && (
-                  <tr>
-                    <td colSpan="7" className="px-6 py-12 text-center text-slate-400">
-                      Aucune production enregistrée
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-800 font-medium">
+                        {prod.quantity} <span className="text-xs text-slate-400">{product?.uniteCalcul}</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-emerald-600 font-bold">
+                      {prod.unitCost.toFixed(2)} DH
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#018790] font-bold">
+                      {totalCost.toFixed(2)} DH
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleViewProduction(prod)}
+                          className="p-2 text-slate-400 hover:text-[#018790] hover:bg-[#018790]/10 rounded-lg transition-colors"
+                          title="Voir détails"
+                        >
+                          <Eye size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduction(prod.id)}
+                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          title="Supprimer"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                );
+              })}
+              {filteredProductions.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="px-6 py-12 text-center text-slate-400">
+                    <Package className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                    <p>Aucune production trouvée</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      </div>
+      </SpotlightCard>
 
       {/* Add Production Modal */}
       {showAddModal && (
@@ -350,22 +348,22 @@ function AddProductionModal({ onClose, onAdd, products }) {
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-slate-200">
+      <SpotlightCard theme="light" className="w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col !p-0 !bg-white/90">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-[#005461]/5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Plus className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-[#005461]/10 rounded-lg flex items-center justify-center">
+              <Plus className="w-6 h-6 text-[#005461]" />
             </div>
-            <h2 className="text-xl font-bold text-slate-800">Nouvelle Production</h2>
+            <h2 className="text-xl font-bold text-[#005461]">Nouvelle Production</h2>
           </div>
-          <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
+          <button onClick={onClose} className="p-2 bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 rounded-full transition shadow-sm">
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-8 space-y-6 overflow-y-auto custom-scrollbar">
           {/* Date and Product Selection */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             <div>
               <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
                 Date de Production *
@@ -374,7 +372,7 @@ function AddProductionModal({ onClose, onAdd, products }) {
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all font-bold"
               />
             </div>
 
@@ -385,7 +383,7 @@ function AddProductionModal({ onClose, onAdd, products }) {
               <select
                 value={formData.productId}
                 onChange={(e) => setFormData({ ...formData, productId: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all font-bold"
               >
                 <option value="">Sélectionner un produit</option>
                 {finalProducts.map(p => (
@@ -404,17 +402,20 @@ function AddProductionModal({ onClose, onAdd, products }) {
               min="1"
               value={formData.quantity}
               onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all font-bold"
             />
           </div>
 
           {/* Raw Materials Section */}
-          <div className="border-t border-slate-200 pt-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Matières Premières Utilisées</h3>
+          <div className="border-t border-slate-100 pt-6">
+            <h3 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider flex items-center gap-2">
+                <Package size={16} className="text-[#018790]" />
+                Matières Premières Utilisées
+            </h3>
             
             {/* Add Material Form */}
-            <div className="bg-blue-50 rounded-xl p-4 mb-4">
-              <div className="grid grid-cols-2 gap-3">
+            <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
                     Matière Première
@@ -422,7 +423,7 @@ function AddProductionModal({ onClose, onAdd, products }) {
                   <select
                     value={currentMaterial.productId}
                     onChange={(e) => setCurrentMaterial({ ...currentMaterial, productId: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all"
+                    className="w-full px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/10 outline-none transition-all font-medium"
                   >
                     <option value="">Sélectionner</option>
                     {rawMaterialProducts.map(p => (
@@ -441,7 +442,7 @@ function AddProductionModal({ onClose, onAdd, products }) {
                       min="1"
                       value={currentMaterial.quantity}
                       onChange={(e) => setCurrentMaterial({ ...currentMaterial, quantity: parseFloat(e.target.value) })}
-                      className="flex-1 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all"
+                      className="flex-1 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/10 outline-none transition-all font-bold"
                     />
                     
                     {/* Stock disponible badge */}
@@ -451,7 +452,7 @@ function AddProductionModal({ onClose, onAdd, products }) {
                       const isLowStock = currentMaterial.quantity > stockActuel;
                       
                       return (
-                        <div className={`px-3 py-2.5 rounded-xl flex items-center gap-1.5 ${isLowStock ? 'bg-red-50 border border-red-200' : 'bg-emerald-50 border border-emerald-200'}`}>
+                        <div className={`px-3 py-2.5 rounded-xl flex items-center gap-1.5 border ${isLowStock ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
                           <Package size={16} className={isLowStock ? 'text-red-600' : 'text-emerald-600'} />
                           <span className={`text-xs font-bold ${isLowStock ? 'text-red-700' : 'text-emerald-700'}`}>
                             {stockActuel}
@@ -462,7 +463,7 @@ function AddProductionModal({ onClose, onAdd, products }) {
                     
                     <button
                       onClick={handleAddMaterial}
-                      className="px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all font-semibold"
+                      className="px-4 py-2.5 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] transition-all font-semibold shadow-lg shadow-cyan-900/20"
                     >
                       <Plus size={20} />
                     </button>
@@ -478,9 +479,9 @@ function AddProductionModal({ onClose, onAdd, products }) {
                 const cost = product ? product.prixAchat * material.quantity : 0;
 
                 return (
-                  <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                  <div key={index} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl shadow-sm">
                     <div className="flex-1">
-                      <span className="font-medium text-slate-800">{product?.nom}</span>
+                      <span className="font-bold text-slate-800">{product?.nom}</span>
                       <span className="text-sm text-slate-500 ml-2">
                         x {material.quantity} {product?.uniteCalcul}
                       </span>
@@ -491,7 +492,7 @@ function AddProductionModal({ onClose, onAdd, products }) {
                       </span>
                       <button
                         onClick={() => handleRemoveMaterial(index)}
-                        className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
                       >
                         <X size={18} />
                       </button>
@@ -503,10 +504,10 @@ function AddProductionModal({ onClose, onAdd, products }) {
           </div>
 
           {/* Cost Calculation */}
-          <div className="border-t border-slate-200 pt-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Calcul des Coûts</h3>
+          <div className="border-t border-slate-100 pt-6">
+            <h3 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">Calcul des Coûts</h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-emerald-50 rounded-xl p-4">
+              <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
                 <div className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">
                   Coût Total des Matières
                 </div>
@@ -515,11 +516,11 @@ function AddProductionModal({ onClose, onAdd, products }) {
                 </div>
               </div>
 
-              <div className="bg-blue-50 rounded-xl p-4">
-                <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">
+              <div className="bg-[#005461]/5 rounded-xl p-4 border border-[#005461]/10">
+                <div className="text-xs font-bold text-[#005461] uppercase tracking-wider mb-1">
                   Coût Unitaire du Produit
                 </div>
-                <div className="text-2xl font-black text-blue-700">
+                <div className="text-2xl font-black text-[#005461]">
                   {unitCost.toFixed(2)} DH
                 </div>
               </div>
@@ -527,22 +528,22 @@ function AddProductionModal({ onClose, onAdd, products }) {
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <button
               onClick={onClose}
-              className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 border border-slate-200 transition-all"
+              className="px-6 py-2.5 rounded-xl text-slate-600 font-bold hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all"
             >
               Annuler
             </button>
             <button
               onClick={handleSubmit}
-              className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold shadow-lg shadow-blue-500/30 transition-all"
+              className="px-6 py-2.5 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] font-bold shadow-lg shadow-cyan-900/20 transition-all"
             >
               Enregistrer Production
             </button>
           </div>
         </div>
-      </div>
+      </SpotlightCard>
     </div>
   );
 }
@@ -552,15 +553,15 @@ function ProductionDetailsModal({ production, products, onClose }) {
   
     return (
       <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-          <div className="flex items-center justify-between p-6 border-b border-slate-200">
+        <SpotlightCard theme="light" className="w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col !p-0 !bg-white/90">
+          <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-[#005461]/5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Package className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 bg-[#005461]/10 rounded-lg flex items-center justify-center">
+                <Package className="w-6 h-6 text-[#005461]" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-800">Détails de Production</h2>
-                <p className="text-sm text-slate-500">
+                <h2 className="text-xl font-bold text-[#005461]">Détails de Production</h2>
+                <p className="text-sm text-slate-500 font-medium">
                   {new Date(production.date).toLocaleDateString('fr-FR', {
                     weekday: 'long',
                     year: 'numeric',
@@ -570,12 +571,12 @@ function ProductionDetailsModal({ production, products, onClose }) {
                 </p>
               </div>
             </div>
-            <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
+            <button onClick={onClose} className="p-2 bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 rounded-full transition shadow-sm">
               <X className="w-6 h-6" />
             </button>
           </div>
   
-          <div className="p-6 space-y-8">
+          <div className="p-8 space-y-8 overflow-y-auto custom-scrollbar">
             {/* Header Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
@@ -588,36 +589,36 @@ function ProductionDetailsModal({ production, products, onClose }) {
               </div>
               <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Coût Total</span>
-                <div className="text-lg font-bold text-blue-600 mt-1">{(production.unitCost * production.quantity).toFixed(2)} DH</div>
+                <div className="text-lg font-bold text-[#018790] mt-1">{(production.unitCost * production.quantity).toFixed(2)} DH</div>
               </div>
             </div>
   
             {/* Materials List */}
             <div>
-              <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <Package className="w-5 h-5 text-blue-500" />
+              <h3 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider flex items-center gap-2">
+                <Package className="w-5 h-5 text-[#018790]" />
                 Matières Premières Utilisées
               </h3>
-              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+              <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
                 <table className="w-full">
-                  <thead className="bg-slate-50 border-b border-slate-200">
+                  <thead className="bg-slate-50 border-b border-slate-100">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Matière</th>
                       <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Quantité</th>
                       <th className="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Coût</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-50">
                     {production.rawMaterials?.map((material, index) => {
                       const matProduct = products.find(p => p.id === material.productId);
                       const cost = matProduct ? matProduct.prixAchat * material.quantity : 0;
                       
                       return (
                         <tr key={index} className="hover:bg-slate-50/50">
-                          <td className="px-6 py-4 text-sm font-medium text-slate-900">
+                          <td className="px-6 py-4 text-sm font-bold text-slate-800">
                             {matProduct?.nom}
                           </td>
-                          <td className="px-6 py-4 text-sm text-slate-600">
+                          <td className="px-6 py-4 text-sm text-slate-600 font-medium">
                             {material.quantity} {matProduct?.uniteCalcul}
                           </td>
                           <td className="px-6 py-4 text-sm font-bold text-slate-900 text-right">
@@ -634,7 +635,7 @@ function ProductionDetailsModal({ production, products, onClose }) {
                       </tr>
                     )}
                   </tbody>
-                  <tfoot className="bg-slate-50 border-t border-slate-200">
+                  <tfoot className="bg-slate-50 border-t border-slate-100">
                     <tr>
                       <td colSpan="2" className="px-6 py-4 text-sm font-bold text-slate-600 text-right">
                         Total Matières
@@ -649,15 +650,15 @@ function ProductionDetailsModal({ production, products, onClose }) {
             </div>
           </div>
   
-          <div className="p-6 border-t border-slate-200 bg-slate-50 rounded-b-3xl flex justify-end">
+          <div className="p-6 border-t border-slate-100 bg-slate-50/50 rounded-b-3xl flex justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-2.5 bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 font-semibold transition-all shadow-sm"
+              className="px-6 py-2.5 bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 font-bold transition-all shadow-sm"
             >
               Fermer
             </button>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
     );
   }

@@ -123,6 +123,9 @@ export const presenceAPI = {
   create(presenceData) {
     return asyncWrapper(() => storageService.add('presence', presenceData));
   },
+  update(id, presenceData) {
+    return asyncWrapper(() => storageService.update('presence', id, presenceData));
+  },
   delete(id) {
     return asyncWrapper(() => storageService.delete('presence', id));
   }
@@ -296,6 +299,7 @@ export const settingsAPI = {
   getStores: () => settingsAPI.getList('settings_stores', ['Magasin Principal', 'Magasin Secondaire', 'Entrepôt A', 'Entrepôt B']),
   getBusinesses: () => settingsAPI.getList('settings_businesses', ['Herboclear', 'Commit', 'Other']),
   getQuartiersAgadir: () => settingsAPI.getList('settings_quartiers_agadir', ['Talborjt', 'Founty', 'Agadir Centre', 'Inezgane', 'Anza']),
+  getPackagingTypes: () => settingsAPI.getList('settings_packaging_types', ['Carton Standard', 'Sachet Plastique', 'Enveloppe', 'Papier Bulle']),
   
   // Generic Updater
   updateList: (key, newList) => {
@@ -325,6 +329,34 @@ export const settingsAPI = {
     return new Promise((resolve) => {
       setTimeout(() => {
         localStorage.setItem('settings_delivery_config', JSON.stringify(config));
+        resolve(config);
+      }, 300);
+    });
+  },
+
+  // Debt Print Configuration
+  getDebtPrintConfig: () => {
+    const saved = localStorage.getItem('settings_debt_print_config');
+    if (!saved) {
+      const defaults = {
+        showDate: true,
+        showSupplier: true,
+        showAmount: true,
+        showStatus: true,
+        showDescription: true,
+        companyName: 'Ma Société',
+        footerText: 'Merci de votre confiance.'
+      };
+      localStorage.setItem('settings_debt_print_config', JSON.stringify(defaults));
+      return defaults;
+    }
+    return JSON.parse(saved);
+  },
+
+  updateDebtPrintConfig: (config) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        localStorage.setItem('settings_debt_print_config', JSON.stringify(config));
         resolve(config);
       }, 300);
     });

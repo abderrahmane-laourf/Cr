@@ -73,7 +73,7 @@ const MOCK_ORDERS = [
 
 const GLOBAL_PICKUP_TIME = '16:00'; 
 
-export default function PackagingQueue() {
+export default function AdminTrackingPackaging() {
   const [orders, setOrders] = useState(MOCK_ORDERS);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [activeStage, setActiveStage] = useState('prepare'); 
@@ -203,7 +203,7 @@ export default function PackagingQueue() {
         <div className="flex flex-col sm:flex-row justify-between items-end mb-2 gap-1">
           <div>
             <h1 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-                <Package className="text-[#018790]" /> Pipeline Packaging
+                <Package className="text-[#018790]" /> Suivi Packaging (Admin)
             </h1>
             <p className="text-sm text-slate-500 font-medium mt-1">
               <span className="text-slate-900 font-bold">{ordersDelivered.length}</span> / {totalOrders} commandes livrées aujourd'hui

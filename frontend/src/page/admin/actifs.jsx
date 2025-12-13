@@ -3,11 +3,13 @@ import {
   Search, Plus, Edit2, Trash2, Eye, X, Check, 
   MapPin, Calendar, Upload, AlertCircle, CheckCircle, 
   ChevronDown, Building, DollarSign, Camera, Phone,
-  AlertTriangle, Printer
+  AlertTriangle, Printer, FileText
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 
-// --- 1. UTILITY COMPONENTS ---
+// ============================================================================
+// 1. UTILITY COMPONENTS (Styled with #018790)
+// ============================================================================
 
 const Toast = ({ message, type = 'success', onClose }) => {
   useEffect(() => {
@@ -32,7 +34,7 @@ const Toast = ({ message, type = 'success', onClose }) => {
 
 const InputField = ({ label, type = "text", placeholder, value, onChange, disabled }) => (
   <div className="group">
-    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
+    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-[#018790] transition-colors">
       {label} {!disabled && <span className="text-red-400">*</span>}
     </label>
     <div className="relative">
@@ -40,7 +42,7 @@ const InputField = ({ label, type = "text", placeholder, value, onChange, disabl
         type={type} 
         disabled={disabled}
         placeholder={placeholder}
-        className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500`}
+        className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500`}
         value={value}
         onChange={onChange}
       />
@@ -50,13 +52,13 @@ const InputField = ({ label, type = "text", placeholder, value, onChange, disabl
 
 const SelectField = ({ label, options, value, onChange, disabled }) => (
     <div className="group">
-      <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
+      <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-[#018790] transition-colors">
         {label} {!disabled && <span className="text-red-400">*</span>}
       </label>
       <div className="relative">
         <select 
             disabled={disabled}
-            className={`w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer`}
+            className={`w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer`}
             value={value}
             onChange={onChange}
         >
@@ -70,7 +72,9 @@ const SelectField = ({ label, options, value, onChange, disabled }) => (
     </div>
 );
 
-// --- 2. MODAL FOR ASSETS (Styled like Employee Modal) ---
+// ============================================================================
+// 2. MODAL FOR ASSETS
+// ============================================================================
 
 const AssetModal = ({ isOpen, onClose, onSave, initialData, mode }) => {
     const isViewMode = mode === 'view';
@@ -93,7 +97,6 @@ const AssetModal = ({ isOpen, onClose, onSave, initialData, mode }) => {
             if (initialData) {
                 setFormData(initialData);
             } else {
-                // Reset for new entry
                 setFormData({
                     photo: '',
                     name: '',
@@ -150,7 +153,7 @@ const AssetModal = ({ isOpen, onClose, onSave, initialData, mode }) => {
                                 )}
                             </div>
                             {!isViewMode && (
-                                <label className="absolute -bottom-2 -right-2 bg-blue-600 p-2 rounded-full text-white cursor-pointer shadow-lg hover:bg-blue-700 transition-all">
+                                <label className="absolute -bottom-2 -right-2 bg-[#018790] p-2 rounded-full text-white cursor-pointer shadow-lg hover:bg-[#006a70] transition-all">
                                     <Upload size={16} />
                                     <input type="button" className="hidden" onClick={() => handleChange('photo', 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=150&q=80')} />
                                 </label>
@@ -208,7 +211,7 @@ const AssetModal = ({ isOpen, onClose, onSave, initialData, mode }) => {
 
                         <div className="md:col-span-2 border-t border-slate-100 pt-4 mt-2">
                              <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                <Building size={16} className="text-blue-500"/> Informations Fournisseur
+                                <Building size={16} className="text-[#018790]"/> Informations Fournisseur
                              </h3>
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <InputField 
@@ -238,7 +241,7 @@ const AssetModal = ({ isOpen, onClose, onSave, initialData, mode }) => {
                             </button>
                             <button 
                                 type="submit"
-                                className="px-8 py-2.5 rounded-xl text-white font-semibold flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all"
+                                className="px-8 py-2.5 rounded-xl text-white font-semibold flex items-center gap-2 bg-[#018790] hover:bg-[#006a70] shadow-lg shadow-teal-900/20 transition-all"
                             >
                                 <Check size={18} /> {mode === 'add' ? 'Enregistrer' : 'Modifier'}
                             </button>
@@ -250,7 +253,9 @@ const AssetModal = ({ isOpen, onClose, onSave, initialData, mode }) => {
     );
 };
 
-// --- 2.5 DAMAGE REPORT MODAL ---
+// ============================================================================
+// 2.5 DAMAGE REPORT MODAL
+// ============================================================================
 
 const DamageReportModal = ({ isOpen, onClose, asset, onSave }) => {
     const [formData, setFormData] = useState({
@@ -323,10 +328,12 @@ const DamageReportModal = ({ isOpen, onClose, asset, onSave }) => {
     );
 };
 
-// --- 3. MAIN PAGE COMPONENT ---
+// ============================================================================
+// 3. MAIN PAGE COMPONENT
+// ============================================================================
 
 const AssetsPage = () => {
-  const [assets, setAssets] = useState([]); // Start empty, load from LS
+  const [assets, setAssets] = useState([]); 
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDamageModalOpen, setIsDamageModalOpen] = useState(false);
@@ -334,6 +341,9 @@ const AssetsPage = () => {
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [toast, setToast] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // State for Checkboxes
+  const [selectedIds, setSelectedIds] = useState([]);
 
   // Load from LocalStorage
   useEffect(() => {
@@ -341,7 +351,6 @@ const AssetsPage = () => {
     if (saved) {
       setAssets(JSON.parse(saved));
     } else {
-        // Initial Mock Data if empty
         const initialData = [
             { id: 1, photo: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=150', name: 'MacBook Pro M1', category: 'Informatique', purchaseValue: 15000, date: '2024-01-15', project: 'Alpha', supplierName: 'Global Info', supplierPhone: '0661123456', status: 'Bon état', quantity: 1 },
             { id: 2, photo: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=150', name: 'Bureau Angle', category: 'Mobilier', purchaseValue: 2500, date: '2023-11-20', project: 'Beta', supplierName: 'Ikea Business', supplierPhone: '0522987654', status: 'Bon état', quantity: 5 },
@@ -357,6 +366,23 @@ const AssetsPage = () => {
         localStorage.setItem('assets_db', JSON.stringify(assets));
     }
   }, [assets]);
+
+  // Handle Select Logic
+  const handleSelectAll = (e) => {
+      if (e.target.checked) {
+          setSelectedIds(filteredAssets.map(a => a.id));
+      } else {
+          setSelectedIds([]);
+      }
+  };
+
+  const handleSelectOne = (id) => {
+      if (selectedIds.includes(id)) {
+          setSelectedIds(selectedIds.filter(selectedId => selectedId !== id));
+      } else {
+          setSelectedIds([...selectedIds, id]);
+      }
+  };
 
   const handleOpenAdd = () => {
     setModalMode('add');
@@ -387,8 +413,8 @@ const AssetsPage = () => {
           text: "Cette action est irréversible !",
           icon: 'warning',
           showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
+          confirmButtonColor: '#EF4444',
+          cancelButtonColor: '#94A3B8',
           confirmButtonText: 'Oui, supprimer !',
           cancelButtonText: 'Annuler'
       }).then((result) => {
@@ -411,24 +437,26 @@ const AssetsPage = () => {
   };
 
   const handleSaveDamage = (assetId, damageData) => {
-    // Update local state to reflect damage
     setAssets(assets.map(a => 
         a.id === assetId 
-        ? { ...a, status: 'Endommagé' } // Update status
+        ? { ...a, status: 'Endommagé' } 
         : a
     ));
     setIsDamageModalOpen(false);
     setToast({ message: "Avarie signalée avec succès ! Statut mis à jour.", type: "success" });
-    
-    // In a real app, you would also post to the damages endpoint here
   };
 
   const handlePrintContract = () => {
+    // Logic remains same, potentially use selectedIds to print only selected
     const printWindow = window.open('', '_blank');
     const currentDate = new Date().toLocaleDateString('ar-MA');
     
-    // Generate Rows
-    const rows = filteredAssets.map(asset => `
+    // Only print filtered or selected items
+    const itemsToPrint = selectedIds.length > 0 
+        ? assets.filter(a => selectedIds.includes(a.id)) 
+        : filteredAssets;
+
+    const rows = itemsToPrint.map(asset => `
       <tr>
         <td>${asset.name}</td>
         <td>${asset.category}</td>
@@ -465,10 +493,8 @@ const AssetsPage = () => {
           <div class="title">محضر تسليم واستلام عهدة</div>
           <div class="sub-title">Custody Handover Protocol</div>
         </div>
-
         <div class="content">
           <br /><br />
-          
           <table>
             <thead>
               <tr>
@@ -478,37 +504,21 @@ const AssetsPage = () => {
                 <th width="15%">الكود (Code)</th>
               </tr>
             </thead>
-            <tbody>
-              ${rows}
-            </tbody>
+            <tbody>${rows}</tbody>
           </table>
         </div>
-
         <div class="footer">
-          <div class="signature-section">
-            <p><strong>توقيع المستلم</strong></p>
-            <p>التاريخ: ${currentDate}</p>
-            <div class="signature-box"></div>
-          </div>
-          <div class="signature-section">
-            <p><strong>المسؤول الإداري</strong></p>
-            <p>التاريخ: ${currentDate}</p>
-            <div class="signature-box"></div>
-          </div>
+          <div class="signature-section"><p><strong>توقيع المستلم</strong></p><p>التاريخ: ${currentDate}</p><div class="signature-box"></div></div>
+          <div class="signature-section"><p><strong>المسؤول الإداري</strong></p><p>التاريخ: ${currentDate}</p><div class="signature-box"></div></div>
         </div>
-
-        <script>
-          window.onload = function() { window.print(); }
-        </script>
+        <script>window.onload = function() { window.print(); }</script>
       </body>
       </html>
     `;
-
     printWindow.document.write(htmlContent);
     printWindow.document.close();
   };
 
-  // Filter Logic
   const filteredAssets = assets.filter(a => 
       a.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       a.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -523,19 +533,29 @@ const AssetsPage = () => {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestion des Actifs</h1>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                <Building className="text-[#018790]" size={32}/> Gestion des Actifs
+            </h1>
             <p className="text-slate-500 mt-1 font-medium">Suivez votre inventaire, équipements et mobilier.</p>
           </div>
           <div className="flex gap-3">
+            {selectedIds.length > 0 && (
+                <button 
+                onClick={handlePrintContract}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition-all font-semibold"
+                >
+                <Printer size={20} /> Imprimer ({selectedIds.length})
+                </button>
+            )}
             <button 
               onClick={handlePrintContract}
               className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all font-semibold"
             >
-              <Printer size={20} /> Imprimer Contrat
+              <Printer size={20} /> Tout Imprimer
             </button>
             <button 
               onClick={handleOpenAdd}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#018790] text-white rounded-xl hover:bg-[#006a70] transition-all shadow-lg shadow-teal-900/20 font-semibold"
             >
               <Plus size={20} /> Ajouter un actif
             </button>
@@ -549,7 +569,7 @@ const AssetsPage = () => {
                 placeholder="Rechercher par nom, catégorie..." 
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} 
-                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" 
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] transition-all" 
             />
         </div>
       </div>
@@ -560,6 +580,15 @@ const AssetsPage = () => {
           <table className="w-full">
             <thead className="bg-slate-50 border-b border-slate-100">
               <tr>
+                {/* CHECKBOX COLUMN HEADER */}
+                <th className="px-6 py-4 text-left">
+                    <input 
+                        type="checkbox" 
+                        checked={selectedIds.length === filteredAssets.length && filteredAssets.length > 0}
+                        onChange={handleSelectAll}
+                        className="w-4 h-4 text-[#018790] rounded border-gray-300 focus:ring-[#018790] cursor-pointer accent-[#018790]"
+                    />
+                </th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actif</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Catégorie</th>
                 <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Valeur</th>
@@ -572,7 +601,7 @@ const AssetsPage = () => {
             <tbody className="divide-y divide-slate-50">
               {filteredAssets.length === 0 ? (
                  <tr>
-                    <td colSpan="7" className="p-10 text-center text-slate-400">
+                    <td colSpan="8" className="p-10 text-center text-slate-400">
                         <div className="flex flex-col items-center">
                             <Building size={40} className="mb-2 opacity-20" />
                             <p>Aucun actif trouvé</p>
@@ -582,6 +611,15 @@ const AssetsPage = () => {
               ) : (
                 filteredAssets.map((asset) => (
                   <tr key={asset.id} className="hover:bg-slate-50/80 transition-colors group">
+                    {/* CHECKBOX COLUMN ROW */}
+                    <td className="px-6 py-4">
+                        <input 
+                            type="checkbox" 
+                            checked={selectedIds.includes(asset.id)}
+                            onChange={() => handleSelectOne(asset.id)}
+                            className="w-4 h-4 text-[#018790] rounded border-gray-300 focus:ring-[#018790] cursor-pointer accent-[#018790]"
+                        />
+                    </td>
                     <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                             <img src={asset.photo} alt={asset.name} className="w-12 h-12 rounded-lg object-cover ring-1 ring-slate-100 bg-slate-50" />
@@ -623,7 +661,7 @@ const AssetsPage = () => {
                                 <AlertTriangle size={18} />
                             </button>
                         )}
-                        <button onClick={() => handleOpenView(asset)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir">
+                        <button onClick={() => handleOpenView(asset)} className="p-2 text-slate-400 hover:text-[#018790] hover:bg-[#018790]/10 rounded-lg transition" title="Voir">
                             <Eye size={18} />
                         </button>
                         <button onClick={() => handleOpenEdit(asset)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition" title="Modifier">

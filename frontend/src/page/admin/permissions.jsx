@@ -4,9 +4,10 @@ import {
   LayoutDashboard, Users, Box, Workflow, Package, ShoppingCart,
   Factory, Megaphone, ListTodo, Building, Wallet,
   Coins, FileText, Settings, Key, Lock, Shield,
-  Filter, Briefcase, UserSearch, Trophy,ShieldCheck , Zap, ScanBarcode,Truck
+  Filter, Briefcase, UserSearch, Trophy, ShieldCheck, Zap, ScanBarcode, Truck
 } from 'lucide-react';
 import { employeeAPI } from '../../services/api';
+import SpotlightCard from '../../util/SpotlightCard';
 
 // --- 1. CONFIGURATION DES ACTIONS ---
 const ACTION_TYPES = {
@@ -103,12 +104,12 @@ const ADMIN_MODULES = [
     ]
   },
   {
-     category: "Tâches & Rapports",
-     icon: ListTodo,
-     items: [
-       { id: 'task-list', label: 'Gestion des taches', actions: ['view', 'create', 'edit', 'delete'] },
-       { id: 'rapports-list', label: 'Rapports', actions: ['view', 'create'] },
-     ]
+    category: "Tâches & Rapports",
+    icon: ListTodo,
+    items: [
+      { id: 'task-list', label: 'Gestion des taches', actions: ['view', 'create', 'edit', 'delete'] },
+      { id: 'rapports-list', label: 'Rapports', actions: ['view', 'create'] },
+    ]
   },
   {
     category: "Workspace Confirmation",
@@ -141,13 +142,13 @@ const Toast = ({ message, type = 'success', onClose }) => {
   return (
     <div className="fixed top-6 right-6 z-[100] animate-in slide-in-from-right-10 fade-in duration-300">
       <div className={`flex items-center gap-3 px-6 py-4 rounded-xl shadow-lg border backdrop-blur-md
-        ${type === 'success' ? 'bg-slate-900 text-white border-slate-700' : 'bg-red-50 text-red-800 border-red-100'}`}>
-        <div className={`p-1 rounded-full ${type === 'success' ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
-           {type === 'success' ? <Check size={16} className="text-emerald-400" /> : <X size={16} className="text-red-500" />}
+        ${type === 'success' ? 'bg-[#005461] text-white border-[#005461]' : 'bg-red-50 text-red-800 border-red-100'}`}>
+        <div className={`p-1 rounded-full ${type === 'success' ? 'bg-white/20' : 'bg-red-500/20'}`}>
+           {type === 'success' ? <Check size={16} className="text-white" /> : <X size={16} className="text-red-500" />}
         </div>
         <div>
           <h4 className="font-semibold text-sm">{type === 'success' ? 'Succès' : 'Erreur'}</h4>
-          <p className="text-xs opacity-70 mt-0.5">{message}</p>
+          <p className="text-xs opacity-70 mt-0.5 text-white/80">{message}</p>
         </div>
       </div>
     </div>
@@ -208,25 +209,25 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
   const activeModuleData = modulesConfig.find(m => m.category === activeCategory);
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-[80vh] flex flex-col animate-in scale-95 duration-200 overflow-hidden border border-slate-100">
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all">
+      <SpotlightCard theme="light" className="w-full max-w-6xl h-[85vh] flex flex-col !p-0 overflow-hidden border border-slate-200">
         
         {/* Header - Simple & Clean */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
+        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+          <div className="flex items-center gap-5">
+            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border-2 border-slate-100 shadow-sm">
                 <img src={employee.avatar || "https://i.pravatar.cc/150"} alt={employee.name} className="w-full h-full object-cover" />
             </div>
             <div>
-              <h3 className="font-bold text-lg text-slate-800">{employee.name}</h3>
-              <p className="text-xs text-slate-400 font-medium">Gestion des accès</p>
+              <h3 className="font-bold text-xl text-[#005461]">{employee.name}</h3>
+              <p className="text-xs text-slate-400 font-bold uppercase tracking-wide">Configuration des accès</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-             <button onClick={selectAll} className="text-xs font-semibold text-slate-600 hover:bg-slate-50 px-3 py-2 rounded-lg transition-colors border border-slate-200">
+          <div className="flex items-center gap-3">
+             <button onClick={selectAll} className="text-xs font-bold text-slate-500 hover:text-[#005461] hover:bg-[#005461]/5 px-4 py-2.5 rounded-xl transition-colors border border-slate-200">
                Tout cocher / Décocher
              </button>
-             <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600 transition-colors">
+             <button onClick={onClose} className="p-2.5 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
                <X size={20} />
              </button>
           </div>
@@ -234,7 +235,7 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
 
         <div className="flex flex-1 overflow-hidden">
             {/* Sidebar Categories - Minimalist */}
-            <div className="w-64 bg-slate-50 border-r border-slate-100 overflow-y-auto p-2 space-y-0.5">
+            <div className="w-72 bg-slate-50/50 border-r border-slate-100 overflow-y-auto p-4 space-y-1">
                 {modulesConfig.map((module) => {
                     const Icon = module.icon;
                     const isActive = activeCategory === module.category;
@@ -244,17 +245,17 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
                         <button
                             key={module.category}
                             onClick={() => setActiveCategory(module.category)}
-                            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all
                                 ${isActive 
-                                    ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-100' 
-                                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'}`}
+                                    ? 'bg-white text-[#005461] shadow-md shadow-slate-200 border border-slate-100' 
+                                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700 border border-transparent'}`}
                         >
                             <div className="flex items-center gap-3">
-                                <Icon size={16} className={isActive ? 'text-slate-900' : 'text-slate-400'} />
+                                <Icon size={18} className={isActive ? 'text-[#018790]' : 'text-slate-400'} />
                                 <span>{module.category}</span>
                             </div>
                             {activeCount > 0 && (
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold ${isActive ? 'bg-slate-100 text-slate-600' : 'bg-slate-200 text-slate-500'}`}>
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${isActive ? 'bg-[#005461]/10 text-[#005461]' : 'bg-slate-200 text-slate-500'}`}>
                                     {activeCount}
                                 </span>
                             )}
@@ -264,28 +265,30 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 overflow-y-auto p-6 bg-white">
+            <div className="flex-1 overflow-y-auto p-8 bg-white/80">
                 {activeModuleData ? (
-                    <div className="space-y-6 animate-in fade-in duration-300">
-                        <div className="flex items-center gap-3 pb-4 border-b border-slate-50">
-                            <activeModuleData.icon size={20} className="text-slate-400" />
-                            <h2 className="text-lg font-bold text-slate-800">{activeModuleData.category}</h2>
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                        <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+                            <div className="p-2 bg-[#005461]/5 rounded-lg text-[#005461]">
+                                <activeModuleData.icon size={24} />
+                            </div>
+                            <h2 className="text-xl font-extrabold text-[#005461]">{activeModuleData.category}</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4">
+                        <div className="grid grid-cols-1 gap-6">
                             {activeModuleData.items.map((item) => {
                                 const allActive = item.actions.every(act => permissions.has(`${item.id}:${act}`));
                                 
                                 return (
-                                    <div key={item.id} className="p-4 rounded-xl border border-slate-100 hover:border-slate-300 transition-colors">
-                                        <div className="flex items-center gap-3 mb-4 cursor-pointer" onClick={() => toggleModuleAll(item)}>
-                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${allActive ? 'bg-slate-900 border-slate-900 text-white' : 'border-slate-300 bg-white'}`}>
-                                                {allActive && <Check size={12} strokeWidth={3} />}
+                                    <div key={item.id} className="p-6 rounded-2xl border border-slate-100 hover:border-[#018790]/30 hover:bg-[#005461]/[0.02] transition-colors bg-white">
+                                        <div className="flex items-center gap-4 mb-5 cursor-pointer" onClick={() => toggleModuleAll(item)}>
+                                            <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${allActive ? 'bg-[#005461] border-[#005461] text-white scale-110 shadow-lg shadow-[#005461]/20' : 'border-slate-300 bg-white hover:border-[#018790]'}`}>
+                                                {allActive && <Check size={14} strokeWidth={4} />}
                                             </div>
-                                            <span className="font-semibold text-slate-700">{item.label}</span>
+                                            <span className="font-bold text-lg text-slate-800">{item.label}</span>
                                         </div>
 
-                                        <div className="flex flex-wrap gap-2 pl-8">
+                                        <div className="flex flex-wrap gap-3 pl-10">
                                             {item.actions.map(actionType => {
                                                 const config = ACTION_TYPES[actionType];
                                                 if (!config) return null;
@@ -299,12 +302,13 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
                                                         key={actionType}
                                                         onClick={() => togglePermission(item.id, actionType)}
                                                         className={`
-                                                            px-3 py-1.5 rounded-md text-xs font-medium border transition-all
+                                                            px-4 py-2 rounded-lg text-xs font-bold border-2 transition-all duration-200 flex items-center gap-2
                                                             ${isActive 
-                                                                ? 'bg-slate-900 text-white border-slate-900' 
-                                                                : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:text-slate-700'}
+                                                                ? 'bg-[#005461] text-white border-[#005461] shadow-md shadow-[#005461]/20' 
+                                                                : 'bg-white text-slate-500 border-slate-200 hover:border-[#018790] hover:text-[#018790]'}
                                                         `}
                                                     >
+                                                        {isActive && <Check size={12} strokeWidth={3} />}
                                                         {config.label}
                                                     </button>
                                                 )
@@ -317,28 +321,28 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
                     </div>
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center text-slate-300">
-                    <LayoutDashboard size={32} className="mb-2" />
-                    <p className="text-sm">Sélectionnez une catégorie</p>
+                    <LayoutDashboard size={48} className="mb-4 opacity-50" />
+                    <p className="font-bold text-lg">Sélectionnez une catégorie à gauche</p>
                   </div>
                 )}
             </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 bg-white flex justify-end gap-3 shrink-0">
-          <button onClick={onClose} className="px-5 py-2 rounded-lg text-slate-600 font-medium hover:bg-slate-50 text-sm transition-colors">
+        <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3 shrink-0">
+          <button onClick={onClose} className="px-6 py-3 rounded-xl text-slate-600 font-bold hover:bg-white border border-transparent hover:border-slate-200 text-sm transition-all">
             Annuler
           </button>
           <button 
             onClick={() => { onSave(employee.id, Array.from(permissions)); onClose(); }} 
-            className="px-6 py-2 rounded-lg bg-slate-900 text-white font-semibold text-sm hover:bg-slate-800 shadow-lg shadow-slate-200 transition-all flex items-center gap-2"
+            className="px-8 py-3 rounded-xl bg-[#005461] text-white font-bold text-sm hover:bg-[#016f76] shadow-lg shadow-cyan-900/20 transition-all flex items-center gap-2"
           >
-            <Check size={16} />
-            Enregistrer
+            <Check size={18} />
+            Enregistrer les modifications
           </button>
         </div>
 
-      </div>
+      </SpotlightCard>
     </div>
   );
 };
@@ -391,59 +395,56 @@ export default function PermissionsPage() {
   const filteredEmployees = employees.filter(emp => emp.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] p-6 lg:p-10 font-sans text-slate-800">
+    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 relative">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <div className="max-w-[1800px] mx-auto space-y-8">
+      <div className="w-full space-y-8">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-8 rounded-[32px] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100">
-            <div className="flex items-center gap-6">
-                <div className="p-5 bg-slate-900 rounded-3xl shadow-xl shadow-slate-900/20 text-white">
-                    <ShieldCheck size={40} strokeWidth={1.5} />
-                </div>
-                <div>
-                    <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Gestion des Permissions</h1>
-                    <div className="flex items-center gap-3 mt-2">
-                        <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Système actif
-                        </span>
-                        <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
-                            {employees.length} collaborateurs
-                        </span>
-                    </div>
-                </div>
-            </div>
+          <SpotlightCard theme="light" className="mb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div>
+                 <h1 className="text-3xl font-extrabold text-[#018790] tracking-tight mb-2">Gestion des Permissions</h1>
+                 <div className="flex items-center gap-3">
+                    <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Système actif
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
+                        {employees.length} collaborateurs
+                    </span>
+                 </div>
+              </div>
 
-            <div className="relative group w-full md:w-96">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors" size={22} />
+              <div className="relative group w-full md:w-96">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]/50" size={20} />
                 <input 
                     type="text" 
                     placeholder="Rechercher un membre..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-14 pr-5 py-4 rounded-2xl bg-slate-50 border-2 border-slate-50 text-slate-800 font-bold focus:bg-white focus:border-slate-900/10 focus:ring-4 focus:ring-slate-900/5 outline-none transition-all placeholder:text-slate-400 text-sm"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all font-semibold"
                 />
+              </div>
             </div>
-          </div>
+          </SpotlightCard>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <SpotlightCard theme="light" className="!p-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50 border-b border-slate-100">
+                <thead className="bg-[#005461]/5 border-b border-[#005461]/10">
                   <tr>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Employé</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rôle</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Statut</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Permissions</th>
-                    <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Employé</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Rôle</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Statut</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Permissions</th>
+                    <th className="text-right px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {loading ? (
                      <tr>
                         <td colSpan="5" className="px-6 py-8 text-center text-slate-400">
-                           <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-200 border-t-slate-600"></div>
+                           <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-200 border-t-[#005461]"></div>
                         </td>
                      </tr>
                   ) : filteredEmployees.length === 0 ? (
@@ -463,13 +464,13 @@ export default function PermissionsPage() {
                                <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${employee.active ? 'bg-emerald-500' : 'bg-slate-300'}`}></span>
                             </div>
                             <div>
-                               <span className="block font-semibold text-slate-800">{employee.name}</span>
+                               <span className="block font-bold text-slate-800">{employee.name}</span>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border
-                              ${employee.role === 'Admin' ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 
+                              ${employee.role === 'Admin' ? 'bg-indigo-50 text-indigo-700 border-indigo-100' : 
                                 employee.role === 'confirmation' ? 'bg-orange-50 text-orange-700 border-orange-100' :
                                 employee.role === 'delivery' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                                 employee.role === 'delivery_manager' ? 'bg-slate-800 text-white border-slate-900' :
@@ -484,7 +485,7 @@ export default function PermissionsPage() {
                             </span>
                         </td>
                         <td className="px-6 py-4">
-                           <div className="flex items-center gap-2 text-slate-600 bg-slate-50 inline-flex px-3 py-1.5 rounded-lg border border-slate-100">
+                           <div className="flex items-center gap-2 text-slate-600 bg-slate-50 inline-flex px-3 py-1.5 rounded-lg border border-slate-100 group-hover:bg-white group-hover:border-[#018790]/20 transition-all">
                               <UnlockIcon hasPermissions={employee.permissions.length > 0} />
                               <span className="text-xs font-bold">{employee.permissions.length} accès configurés</span>
                            </div>
@@ -492,7 +493,7 @@ export default function PermissionsPage() {
                         <td className="px-6 py-4 text-right">
                            <button 
                              onClick={() => handleOpenModal(employee)} 
-                             className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all shadow-sm group-hover:shadow-md"
+                             className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-[#005461] hover:border-[#005461] hover:text-white transition-all shadow-sm group-hover:shadow-md"
                            >
                               <Settings size={14} />
                               Configurer
@@ -504,7 +505,7 @@ export default function PermissionsPage() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </SpotlightCard>
       </div>
 
       <PermissionsModal 
@@ -518,5 +519,5 @@ export default function PermissionsPage() {
 }
 
 const UnlockIcon = ({ hasPermissions }) => {
-    return hasPermissions ? <ShieldCheck size={20} /> : <Lock size={20} className="opacity-50" />;
+    return hasPermissions ? <ShieldCheck size={18} className="text-[#018790]" /> : <Lock size={18} className="opacity-50" />;
 }

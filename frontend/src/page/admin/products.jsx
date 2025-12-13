@@ -3,7 +3,7 @@ import {
   Search, Plus, Edit2, Trash2, Eye, X, Upload, Check, 
   Package, FileText, DollarSign, ChevronLeft, ChevronRight, 
   Camera, AlertCircle, CheckCircle, ChevronDown, Printer,
-  AlertTriangle, ShoppingCart, Info
+  AlertTriangle, ShoppingCart, Info, Layers, Tag, Box
 } from 'lucide-react';
 
 // ============================================
@@ -11,22 +11,23 @@ import {
 // ============================================
 import { productAPI, settingsAPI, warehouseAPI } from '../../services/api';
 import Swal from 'sweetalert2';
+import SpotlightCard from '../../util/SpotlightCard';
 
 // ============================================
-// UTILITY COMPONENTS
+// UTILITY COMPONENTS (Styled like Employee Page)
 // ============================================
 
 const InputField = ({ label, type = "text", placeholder, options, value, onChange, disabled, required = true, textarea = false }) => (
   <div className="group">
-    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
-      {label} {required && !disabled && <span className="text-red-400">*</span>}
+    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-[#018790] transition-colors">
+      {label} {required && !disabled && <span className="text-rose-400">*</span>}
     </label>
     <div className="relative">
       {options ? (
         <div className="relative">
           <select 
             disabled={disabled}
-            className={`w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer`}
+            className={`w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer`}
             value={value}
             onChange={onChange}
           >
@@ -39,7 +40,7 @@ const InputField = ({ label, type = "text", placeholder, options, value, onChang
         <textarea 
           disabled={disabled}
           placeholder={placeholder}
-          className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500 min-h-[100px] resize-y`}
+          className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500 min-h-[100px] resize-y`}
           value={value}
           onChange={onChange}
           rows={4}
@@ -49,7 +50,7 @@ const InputField = ({ label, type = "text", placeholder, options, value, onChang
           type={type} 
           disabled={disabled}
           placeholder={placeholder}
-          className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500`}
+          className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500`}
           value={value}
           onChange={onChange}
           step={type === 'number' ? '0.01' : undefined}
@@ -65,7 +66,7 @@ const CheckboxField = ({ label, checked, onChange, disabled }) => (
     <div 
       onClick={() => !disabled && onChange(!checked)}
       className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors cursor-pointer
-        ${checked ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-300 text-transparent'}
+        ${checked ? 'bg-[#018790] border-[#018790] text-white' : 'bg-white border-slate-300 text-transparent'}
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       <Check size={14} strokeWidth={4} />
@@ -93,7 +94,7 @@ const Stepper = ({ step, setStep }) => {
   return (
     <div className="mb-8 px-4">
       <div className="relative h-1 bg-slate-100 rounded-full mb-6 mx-8 mt-2">
-        <div className="absolute top-0 left-0 h-full bg-blue-600 rounded-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
+        <div className="absolute top-0 left-0 h-full bg-[#018790] rounded-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
         <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 flex justify-between">
           {steps.map((s) => {
             const Icon = s.icon;
@@ -104,7 +105,7 @@ const Stepper = ({ step, setStep }) => {
                 onClick={() => setStep(s.id)}
                 type="button"
                 className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 z-10 cursor-pointer
-                  ${isActive ? 'bg-blue-600 border-blue-600 text-white shadow-lg scale-110' : 'bg-white border-slate-200 text-slate-300 hover:border-blue-300'}`}
+                  ${isActive ? 'bg-[#005461] border-[#005461] text-white shadow-lg scale-110' : 'bg-white border-slate-200 text-slate-300 hover:border-[#018790]/50'}`}
                 title={s.label}
               >
                 <Icon size={16} />
@@ -114,7 +115,7 @@ const Stepper = ({ step, setStep }) => {
         </div>
       </div>
       <div className="flex justify-between px-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-         {steps.map(s => <span key={s.id} className={`${step >= s.id ? 'text-blue-600' : ''}`}>{s.label}</span>)}
+         {steps.map(s => <span key={s.id} className={`${step >= s.id ? 'text-[#005461]' : ''}`}>{s.label}</span>)}
       </div>
     </div>
   );
@@ -131,7 +132,7 @@ const Step1 = ({ formData, handleInputChange, isViewMode, setFormData, settings 
           <button 
             type="button"
             onClick={() => setFormData(p => ({...p, image: `https://images.unsplash.com/photo-${1556228720195 + Math.floor(Math.random()*1000)}?w=200&h=200&fit=crop`}))}
-            className="absolute bottom-1 right-1 bg-blue-600 p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-blue-700 transition-all border-none outline-none"
+            className="absolute bottom-1 right-1 bg-[#018790] p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-[#005461] transition-all border-none outline-none"
           >
             <Camera size={16} />
           </button>
@@ -152,9 +153,9 @@ const Step1 = ({ formData, handleInputChange, isViewMode, setFormData, settings 
 
 const Step2 = ({ formData, handleInputChange, isViewMode }) => (
   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-start gap-3">
-      <DollarSign className="text-blue-600 shrink-0 mt-0.5" size={18} />
-      <div><h4 className="text-sm font-bold text-blue-800">Tarification</h4><p className="text-xs text-blue-600 mt-1">Définissez le prix d'achat et les trois prix de vente.</p></div>
+    <div className="bg-[#005461]/5 border border-[#005461]/10 rounded-xl p-4 mb-6 flex items-start gap-3">
+      <DollarSign className="text-[#018790] shrink-0 mt-0.5" size={18} />
+      <div><h4 className="text-sm font-bold text-[#005461]">Tarification</h4><p className="text-xs text-[#018790] mt-1">Définissez le prix d'achat et les trois prix de vente.</p></div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
       <div className="md:col-span-2">
@@ -219,7 +220,7 @@ const Step4 = ({ formData, handleInputChange, isViewMode, setFormData }) => {
             onClick={() => setDetailsType('text')}
             className={`flex-1 py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${
               detailsType === 'text' 
-                ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                ? 'border-[#018790] bg-[#005461]/5 text-[#005461]' 
                 : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
             }`}
           >
@@ -321,28 +322,28 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[100] p-4">
+      <SpotlightCard theme="light" className="w-full max-w-4xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 !p-0 !bg-white/90">
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
           <div className="flex items-center gap-4">
             <img src={product.image} alt={product.nom} className="w-16 h-16 rounded-xl object-cover shadow-md" />
             <div>
-              <h2 className="text-2xl font-bold text-slate-800">{product.nom}</h2>
+              <h2 className="text-2xl font-bold text-[#005461]">{product.nom}</h2>
               <p className="text-slate-500 text-sm">{product.categorie} • {product.type}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors"><X size={24} /></button>
         </div>
         
-        <div className="p-8 overflow-y-auto flex-1 space-y-6">
+        <div className="p-8 overflow-y-auto flex-1 space-y-6 custom-scrollbar">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-4 rounded-xl border border-emerald-200">
               <p className="text-xs text-emerald-600 font-bold uppercase mb-1">Prix d'Achat</p>
               <p className="text-2xl font-bold text-emerald-700">{product.prixAchat} MAD</p>
             </div>
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
-              <p className="text-xs text-blue-600 font-bold uppercase mb-1">Prix Vente 1</p>
-              <p className="text-2xl font-bold text-blue-700">{product.prix1} MAD</p>
+            <div className="bg-gradient-to-br from-[#005461]/5 to-[#005461]/10 p-4 rounded-xl border border-[#005461]/20">
+              <p className="text-xs text-[#005461] font-bold uppercase mb-1">Prix Vente 1</p>
+              <p className="text-2xl font-bold text-[#018790]">{product.prix1} MAD</p>
             </div>
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
               <p className="text-xs text-purple-600 font-bold uppercase mb-1">Prix Vente 2</p>
@@ -382,7 +383,7 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
             <InfoSection icon={FileText} title="🗣️ Script de Vente" content={product.scriptVente} color="orange" />
           </div>
         </div>
-      </div>
+      </SpotlightCard>
     </div>
   );
 };
@@ -455,10 +456,10 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses =
 
   return (
     <div className={`fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-      <div className={`bg-white rounded-3xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[90vh] transition-all duration-300 ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
+      <SpotlightCard theme="light" className={`w-full max-w-4xl flex flex-col max-h-[90vh] transition-all duration-300 !p-0 !bg-white/90 ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">{modalTitle}</h2>
+            <h2 className="text-2xl font-bold text-[#005461]">{modalTitle}</h2>
             <p className="text-slate-500 text-sm mt-1">Gérez les détails de votre produit.</p>
           </div>
           <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors">
@@ -466,7 +467,7 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses =
           </button>
         </div>
 
-        <div className="p-8 overflow-y-auto flex-1">
+        <div className="p-8 overflow-y-auto flex-1 custom-scrollbar">
           <Stepper step={step} setStep={setStep} />
           {step === 1 && <Step1 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} setFormData={setFormData} settings={settings} />}
           {step === 2 && <Step2 formData={formData} handleInputChange={handleInputChange} isViewMode={isViewMode} />}
@@ -483,7 +484,7 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses =
           
           <div className="flex gap-3">
             {step < 4 ? (
-              <button onClick={() => setStep(s => s + 1)} className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold shadow-lg shadow-blue-500/30 transition-all flex items-center gap-2">
+              <button onClick={() => setStep(s => s + 1)} className="px-6 py-2.5 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] font-semibold shadow-lg shadow-cyan-900/20 transition-all flex items-center gap-2">
                 Suivant <ChevronRight size={18} />
               </button>
             ) : (
@@ -495,7 +496,7 @@ const ProductModal = ({ isOpen, onClose, mode, initialData, onSave, warehouses =
             )}
           </div>
         </div>
-      </div>
+      </SpotlightCard>
     </div>
   );
 };
@@ -621,20 +622,20 @@ export default function ProductsPage() {
   const lowStockCount = products.filter(p => parseFloat(p.stock) <= parseFloat(p.alerteStock || 10)).length;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-900">
+    <div className="w-full min-h-screen bg-transparent p-8 font-sans text-slate-800 animate-[fade-in_0.6s_ease-out]">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 print:hidden">
+        <SpotlightCard theme="light" className="mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestion des Produits</h1>
+              <h1 className="text-3xl font-extrabold text-[#018790] tracking-tight">Gestion des Produits</h1>
               <p className="text-slate-500 mt-1 font-medium">Gérez votre catalogue de produits efficacement.</p>
             </div>
             
             <button 
               onClick={handleOpenAdd}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#005461] hover:bg-[#016f76] text-white rounded-xl shadow-lg shadow-cyan-900/20 transition-all font-bold"
             >
               <Plus size={20} strokeWidth={2.5} />
               <span>Nouveau Produit</span>
@@ -643,13 +644,13 @@ export default function ProductsPage() {
 
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]/50" size={20} />
               <input 
                 type="text" 
                 placeholder="Rechercher par nom..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] transition-all"
               />
             </div>
 
@@ -657,7 +658,7 @@ export default function ProductsPage() {
               <select 
                 value={typeFilter} 
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+                className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] transition-all appearance-none cursor-pointer"
               >
                 <option value="Tous">Tous les types</option>
                 {settings.types.map(type => <option key={type} value={type}>{type}</option>)}
@@ -669,7 +670,7 @@ export default function ProductsPage() {
               <select 
                 value={categoryFilter} 
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+                className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] transition-all appearance-none cursor-pointer"
               >
                 <option value="Tous">Toutes catégories</option>
                 {settings.categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
@@ -681,7 +682,7 @@ export default function ProductsPage() {
               <select 
                 value={businessFilter} 
                 onChange={(e) => setBusinessFilter(e.target.value)}
-                className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+                className="w-full md:w-48 pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] transition-all appearance-none cursor-pointer"
               >
                 <option value="Tous">Tous Business</option>
                 {settings.businesses.map(biz => <option key={biz} value={biz}>{biz}</option>)}
@@ -689,20 +690,20 @@ export default function ProductsPage() {
               <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
             </div>
           </div>
-        </div>
+        </SpotlightCard>
 
         {/* Products Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden print:shadow-none print:border-none">
+        <SpotlightCard theme="light" className="overflow-hidden p-0">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200">
-                  <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Produit</th>
-                  <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Catégorie</th>
-                  <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Prix Unitaire</th>
-                  <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Business</th>
-                  <th className="px-6 py-5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Stock</th>
-                  <th className="px-6 py-5 text-right text-xs font-bold text-slate-500 uppercase tracking-wider print:hidden">Actions</th>
+                <tr className="bg-[#005461]/5 border-b border-[#005461]/10">
+                  <th className="px-6 py-5 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">Produit</th>
+                  <th className="px-6 py-5 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">Catégorie</th>
+                  <th className="px-6 py-5 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">Prix Unitaire</th>
+                  <th className="px-6 py-5 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">Business</th>
+                  <th className="px-6 py-5 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">Stock</th>
+                  <th className="px-6 py-5 text-right text-xs font-bold text-[#005461] uppercase tracking-wider print:hidden">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -747,7 +748,7 @@ export default function ProductsPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="font-bold text-slate-700">{product.prix1} MAD</div>
+                          <div className="font-bold text-[#018790]">{product.prix1} MAD</div>
                           <div className="text-xs text-slate-400">Achat: {product.prixAchat}</div>
                         </td>
                         <td className="px-6 py-4">
@@ -768,7 +769,7 @@ export default function ProductsPage() {
                         </td>
                         <td className="px-6 py-4 text-right print:hidden">
                           <div className="flex items-center justify-end gap-2">
-                            <button onClick={() => handleOpenView(product)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Voir"><Eye size={18} /></button>
+                            <button onClick={() => handleOpenView(product)} className="p-2 text-slate-400 hover:text-[#018790] hover:bg-[#005461]/5 rounded-lg transition-colors" title="Voir"><Eye size={18} /></button>
                             <button onClick={() => handleOpenEdit(product)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors" title="Modifier"><Edit2 size={18} /></button>
                             <button onClick={handlePrint} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Imprimer"><Printer size={18} /></button>
                             <button onClick={() => handleDelete(product.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Supprimer"><Trash2 size={18} /></button>
@@ -781,7 +782,7 @@ export default function ProductsPage() {
               </tbody>
             </table>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       <ProductModal 

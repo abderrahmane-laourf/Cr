@@ -198,64 +198,71 @@ export default function HistoriquePaiementLivraison() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800">
+    <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out]">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-              <Truck className="text-green-600" size={32} />
-              Historique Paiements Livraison
-            </h1>
-            <p className="text-slate-500 mt-1 font-medium">Suivi des paiements de livraison par colis</p>
-          </div>
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
+        <div>
+          <h1 className="text-2xl font-extrabold text-[#018790]">Historique Paiements Livraison</h1>
+          <p className="text-slate-500">Suivi des paiements de livraison par colis</p>
         </div>
-        
-        {/* Filters */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-            <input 
-              type="text" 
-              placeholder="Rechercher par client, téléphone ou ref..." 
-              value={searchTerm} 
-              onChange={(e) => setSearchTerm(e.target.value)} 
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" 
-            />
+      </div>
+      
+      {/* Filters */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Search size={12}/> Recherche</label>
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]/50" size={18} />
+              <input 
+                type="text" 
+                placeholder="Client, téléphone ou ref..." 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)} 
+                className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all" 
+              />
+            </div>
           </div>
 
-          <div className="relative">
-            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-            <input 
-              type="date" 
-              value={dateFilter} 
-              onChange={(e) => setDateFilter(e.target.value)} 
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" 
-            />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Calendar size={12}/> Date</label>
+            <div className="relative">
+              <input 
+                type="date" 
+                value={dateFilter} 
+                onChange={(e) => setDateFilter(e.target.value)} 
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 transition-all" 
+              />
+            </div>
           </div>
 
-          <div className="relative">
-            <Truck className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-            <select 
-              value={typeFilter} 
-              onChange={(e) => setTypeFilter(e.target.value)} 
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="">Tous les types</option>
-              <option value="Ammex">Ammex</option>
-              <option value="Agadir">Agadir</option>
-            </select>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Truck size={12}/> Type</label>
+            <div className="relative">
+              <select 
+                value={typeFilter} 
+                onChange={(e) => setTypeFilter(e.target.value)} 
+                className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all appearance-none cursor-pointer"
+              >
+                <option value="">Tous les types</option>
+                <option value="Ammex">Ammex</option>
+                <option value="Agadir">Agadir</option>
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <Package className="text-blue-600" size={24} />
+            <Package className="text-[#018790]" size={24} />
             <span className="text-xs font-bold text-slate-400 uppercase">Total Colis</span>
           </div>
           <div className="text-3xl font-extrabold text-slate-900">{stats.totalColis}</div>
@@ -282,15 +289,15 @@ export default function HistoriquePaiementLivraison() {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-100">
+            <thead className="bg-[#005461]/5 border-b border-[#005461]/10">
               <tr>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ref Colis</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Client</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Téléphone</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
-                <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Prix Colis</th>
-                <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Ref Colis</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Client</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Téléphone</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Date</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Type</th>
+                <th className="text-right px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Prix Colis</th>
+                <th className="text-right px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">

@@ -12,6 +12,14 @@ export default function Retourner() {
   const [searchText, setSearchText] = useState('');
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [selectedColisForTracking, setSelectedColisForTracking] = useState(null);
+  
+  // Filters
+  const [filterStartDate, setFilterStartDate] = useState('');
+  const [filterEndDate, setFilterEndDate] = useState('');
+  const [filterVille, setFilterVille] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterBusiness, setFilterBusiness] = useState('');
+  const [filterEmployee, setFilterEmployee] = useState('');
 
   // Get Current User
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -64,6 +72,29 @@ export default function Retourner() {
       const matchesProduct = c.productName?.toLowerCase().includes(searchLower);
       if (!matchesName && !matchesPhone && !matchesProduct) return false;
     }
+
+    // 4. Date Filter
+    if (filterStartDate || filterEndDate) {
+      const colisDate = new Date(c.dateCreated);
+      if (filterStartDate && colisDate < new Date(filterStartDate)) return false;
+      if (filterEndDate) {
+        const endDate = new Date(filterEndDate);
+        endDate.setHours(23, 59, 59, 999);
+        if (colisDate > endDate) return false;
+      }
+    }
+
+    // 5. Ville Filter
+    if (filterVille && c.ville !== filterVille) return false;
+
+    // 6. Category Filter
+    if (filterCategory && c.category !== filterCategory) return false;
+
+    // 7. Business Filter
+    if (filterBusiness && c.storeName !== filterBusiness) return false;
+
+    // 8. Employee Filter (UI)
+    if (filterEmployee && c.livreurName !== filterEmployee) return false;
 
     return true;
   });
@@ -195,17 +226,85 @@ export default function Retourner() {
             </div>
           </div>
           
-          {/* Search Filter */}
-          <div className="flex gap-3">
-            <div className="relative flex-1">
-              <SearchIcon className="absolute left-3 top-2.5 text-slate-400" size={16} />
-              <input 
-                type="text" 
-                value={searchText} 
-                onChange={e => setSearchText(e.target.value)} 
-                placeholder="Rechercher par nom, téléphone, produit..." 
-                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-100 transition-all placeholder:text-slate-400" 
-              />
+          {/* Search & Filter */}
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <div className="relative lg:col-span-2">
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                <input 
+                  type="text" 
+                  value={searchText} 
+                  onChange={e => setSearchText(e.target.value)} 
+                  placeholder="Rechercher par nom, téléphone, produit..." 
+                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-100 transition-all placeholder:text-slate-400" 
+                />
+              </div>
+
+              <select
+                value={filterVille}
+                onChange={(e) => setFilterVille(e.target.value)}
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              >
+                <option value="">Toutes les villes</option>
+                {villes.map(v => (
+                  <option key={v.id} value={v.name}>{v.name}</option>
+                ))}
+              </select>
+
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              >
+                <option value="">Toutes les catégories</option>
+                {[...new Set(products.map(p => p.category))].filter(Boolean).map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+
+              <select
+                value={filterBusiness}
+                onChange={(e) => setFilterBusiness(e.target.value)}
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              >
+                <option value="">Tous les business</option>
+                {[...new Set(colis.map(c => c.storeName))].filter(Boolean).map(store => (
+                  <option key={store} value={store}>{store}</option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Date Filters */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+               <select
+                value={filterEmployee}
+                onChange={(e) => setFilterEmployee(e.target.value)}
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              >
+                <option value="">Tous les employés</option>
+                {[...new Set(colis.map(c => c.livreurName))].filter(Boolean).map(emp => (
+                  <option key={emp} value={emp}>{emp}</option>
+                ))}
+              </select>
+
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                <input 
+                  type="date" 
+                  value={filterStartDate}
+                  onChange={(e) => setFilterStartDate(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-100 outline-none"
+                />
+              </div>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                <input 
+                  type="date" 
+                  value={filterEndDate}
+                  onChange={(e) => setFilterEndDate(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-100 outline-none"
+                />
+              </div>
             </div>
           </div>
         </div>

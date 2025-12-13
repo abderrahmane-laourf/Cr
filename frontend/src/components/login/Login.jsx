@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import loginImage from '../../assets/ChatGPT Image 10 déc. 2025, 19_09_49.png'
+import loginImage from '../../assets/fd9eb334-78c2-477d-8b87-1b4fc6d213ec.png'
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
@@ -171,7 +171,7 @@ export default function Login() {
           
           {/* Logo */}
           <div className="mb-10 flex items-center gap-2">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="text-[#1325ec] w-8 h-8">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="text-[#018790] w-8 h-8">
               <circle cx="12" cy="12" r="3" />
               <circle cx="12" cy="5" r="2" opacity="0.2" />
               <circle cx="12" cy="19" r="2" opacity="0.2" />
@@ -202,8 +202,8 @@ export default function Login() {
                   onKeyPress={handleKeyPress}
                   placeholder="Entrez votre login"
                   className={`w-full h-12 rounded-xl bg-white border ${
-                    errors.login ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 focus:ring-[#1325ec]/50'
-                  } text-slate-900 px-4 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-[#1325ec] transition-all shadow-sm`}
+                    errors.login ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 focus:ring-[#018790]/50'
+                  } text-slate-900 px-4 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-[#018790] transition-all shadow-sm`}
                 />
                 {errors.login && (
                   <div className="flex items-center gap-1 mt-1 text-red-500 text-xs ml-1">
@@ -230,8 +230,8 @@ export default function Login() {
                   onKeyPress={handleKeyPress}
                   placeholder="Entrez votre mot de passe"
                   className={`w-full h-12 rounded-xl bg-white border ${
-                    errors.password ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 focus:ring-[#1325ec]/50'
-                  } text-slate-900 px-4 pr-12 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-[#1325ec] transition-all shadow-sm`}
+                    errors.password ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 focus:ring-[#018790]/50'
+                  } text-slate-900 px-4 pr-12 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-[#018790] transition-all shadow-sm`}
                 />
                 <button
                   type="button"
@@ -292,7 +292,7 @@ export default function Login() {
                   e.preventDefault()
                   handleResetPassword() 
                 }} 
-                className="text-[#1325ec] text-sm font-bold hover:underline transition-colors"
+                className="text-[#018790] text-sm font-bold hover:underline transition-colors"
               >
                 Mot de passe oublié ?
               </a>
@@ -302,7 +302,7 @@ export default function Login() {
             <button
               type="button"
               onClick={handleLogin}
-              className="w-full h-12 mt-2 bg-[#1325ec] hover:bg-[#1325ec]/90 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 flex items-center justify-center gap-2"
+              className="w-full h-12 mt-2 bg-[#018790] hover:bg-[#018790]/90 text-white font-bold rounded-xl shadow-lg shadow-[#018790]/30 transition-all active:scale-95 flex items-center justify-center gap-2"
             >
               Se connecter
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

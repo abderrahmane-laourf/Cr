@@ -2,8 +2,10 @@
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
-import { Search, Filter, RotateCw, Download, Database, CheckCircle, Truck, Package, XCircle, User } from 'lucide-react';
+import Chart from 'react-apexcharts';
+import { Search, Filter, RotateCw, Download, Database, CheckCircle, Truck, Package, XCircle, User, Activity, Box } from 'lucide-react';
 import { employeeAPI, productAPI } from '../../services/api';
+import SpotlightCard from '../../util/SpotlightCard';
 
 export default function LogisticTrackingDashboard() {
   const [dateFrom, setDateFrom] = useState('');
@@ -139,102 +141,228 @@ export default function LogisticTrackingDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-6 md:p-10 font-sans text-slate-800">
+    <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out]">
       
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-1 flex items-center gap-3">
-              <Database className="text-blue-600" />
-              Tableau de Suivi Pipeline
-            </h1>
-            <p className="text-slate-600 font-medium text-sm">Vue d'ensemble des colis par étape et par produit</p>
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
+        <div>
+          <h1 className="text-2xl font-extrabold text-[#018790]">Tableau de Suivi Pipeline</h1>
+          <p className="text-slate-500">Vue d'ensemble des performances opérationnelles</p>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={loadData} className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-[#018790] rounded-xl hover:bg-slate-100 transition-colors font-bold border border-slate-200">
+            <RotateCw size={18} />
+            <span>Actualiser</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Filter Bar */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase">Date Début</label>
+            <input 
+              type="date" 
+              value={dateFrom} 
+              onChange={e => setDateFrom(e.target.value)}
+              className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 text-sm font-semibold transition-all text-slate-600" 
+            />
           </div>
-          <div className="flex gap-3">
-            <button onClick={loadData} className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-colors font-semibold">
-              <RotateCw size={18} />
-              <span>Actualiser</span>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase">Date Fin</label>
+            <input 
+              type="date" 
+              value={dateTo} 
+              onChange={e => setDateTo(e.target.value)}
+              className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 text-sm font-semibold transition-all text-slate-600" 
+            />
+          </div>
+           <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase">Produit</label>
+            <div className="relative">
+              <select 
+                value={productSearch} 
+                onChange={e => setProductSearch(e.target.value)}
+                className="w-full pl-3 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 text-sm font-semibold text-slate-600 appearance-none cursor-pointer transition-all shadow-sm"
+              >
+                <option value="">Tous les Produits</option>
+                {products.map(p => (
+                    <option key={p.id} value={p.nom}>{p.nom}</option>
+                ))}
+              </select>
+              <Package className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+            </div>
+          </div>
+          
+           <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-slate-500 uppercase">Employé</label>
+            <div className="relative">
+              <select 
+                value={selectedEmployee} 
+                onChange={e => setSelectedEmployee(e.target.value)}
+                className="w-full pl-3 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 text-sm font-semibold text-slate-600 appearance-none cursor-pointer transition-all shadow-sm"
+              >
+                <option value="All">Tous les employés</option>
+                {employees.map(emp => (
+                    <option key={emp} value={emp}>{emp}</option>
+                ))}
+              </select>
+              <User className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+            </div>
+          </div>
+
+          <div className="md:col-span-1"> 
+            <button 
+              onClick={loadData}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#018790] text-white rounded-xl hover:bg-[#005461] transition-all font-bold shadow-lg shadow-[#018790]/20 active:scale-95 transform duration-150"
+            >
+              <Filter size={18} />
+              <span>Filtrer</span>
             </button>
           </div>
         </div>
-
-        {/* Filter Bar integrated in Header */}
-        <div className="mt-8 pt-6 border-t border-slate-100">
-           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-600">Date Début</label>
-              <input 
-                type="date" 
-                value={dateFrom} 
-                onChange={e => setDateFrom(e.target.value)}
-                className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-semibold transition-all" 
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-600">Date Fin</label>
-              <input 
-                type="date" 
-                value={dateTo} 
-                onChange={e => setDateTo(e.target.value)}
-                className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-semibold transition-all" 
-              />
-            </div>
-             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-600">Produit</label>
-              <div className="relative">
-                <select 
-                  value={productSearch} 
-                  onChange={e => setProductSearch(e.target.value)}
-                  className="w-full pl-3 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-semibold text-slate-700 appearance-none cursor-pointer transition-all shadow-sm"
-                >
-                  <option value="">Tous les Produits</option>
-                  {products.map(p => (
-                      <option key={p.id} value={p.nom}>{p.nom}</option>
-                  ))}
-                </select>
-                <Package className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-              </div>
-            </div>
-            
-             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-600">Employé</label>
-              <div className="relative">
-                <select 
-                  value={selectedEmployee} 
-                  onChange={e => setSelectedEmployee(e.target.value)}
-                  className="w-full pl-3 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-semibold text-slate-700 appearance-none cursor-pointer transition-all shadow-sm"
-                >
-                  <option value="All">Tous les employés</option>
-                  {employees.map(emp => (
-                      <option key={emp} value={emp}>{emp}</option>
-                  ))}
-                </select>
-                <User className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-              </div>
-            </div>
-
-            <div className="md:col-span-1"> 
-              <button 
-                onClick={loadData}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all font-bold shadow-lg shadow-slate-900/20 active:scale-95 transform duration-150"
-              >
-                <Filter size={18} />
-                <span>Filtrer</span>
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* KPI Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <KpiCard icon={<Package size={24} />} title="Confirmé" value={metrics.confirmed} color="bg-blue-500" lightColor="bg-blue-50" textColor="text-blue-600" borderColor="border-blue-100" />
-        <KpiCard icon={<Package size={24} />} title="Packaging" value={metrics.packaging} color="bg-cyan-500" lightColor="bg-cyan-50" textColor="text-cyan-600" borderColor="border-cyan-100" />
-        <KpiCard icon={<Truck size={24} />} title="Out for Delivery" value={metrics.inTransit} color="bg-orange-500" lightColor="bg-orange-50" textColor="text-orange-600" borderColor="border-orange-100" />
-        <KpiCard icon={<CheckCircle size={24} />} title="Livré" value={metrics.delivered} color="bg-emerald-500" lightColor="bg-emerald-50" textColor="text-emerald-600" borderColor="border-emerald-100" />
-        <KpiCard icon={<XCircle size={24} />} title="Annulé / Retour" value={metrics.returned} color="bg-red-500" lightColor="bg-red-50" textColor="text-red-600" borderColor="border-red-100" />
-      </div>
+      {/* KPI Grid & Chart (Gestion de Stock Style) */}
+      <Section title="Performance Logistique" icon={Box}>
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+             {/* Cards */}
+             <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <StatCard label="Confirmé" value={metrics.confirmed} icon={Package} color="text-blue-600" />
+                <StatCard label="Packaging" value={metrics.packaging} icon={Package} color="text-cyan-600" />
+                <StatCard label="En Transit" value={metrics.inTransit} icon={Truck} color="text-orange-600" />
+                <StatCard label="Livré" value={metrics.delivered} icon={CheckCircle} color="text-emerald-600" />
+                <StatCard label="Retourné" value={metrics.returned} icon={XCircle} color="text-red-600" />
+                <StatCard label="Total Colis" value={Object.values(metrics).reduce((a,b)=>a+b,0)} icon={Database} />
+             </div>
+             {/* Dark Chart */}
+             <div className="h-full min-h-[350px] bg-[#005461] rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col relative overflow-hidden group">
+                {/* Header with Live Indicator */}
+                <div className="flex justify-between items-center mb-4 z-10">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Flux Logistique</h3>
+                        <p className="text-[10px] text-slate-500 font-mono mt-0.5">LIVE ANALYTICS • 30 DAYS</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                         <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                         </span>
+                         <span className="text-[10px] font-bold text-emerald-500">MARKET OPEN</span>
+                    </div>
+                </div>
+
+                {/* Chart Container */}
+                <div className="flex-1 w-full -ml-2">
+                    <Chart 
+                        options={{
+                            chart: {
+                                type: 'area',
+                                background: 'transparent',
+                                toolbar: { show: false },
+                                fontFamily: 'Inter, sans-serif',
+                                zoom: { enabled: false }
+                            },
+                            theme: { mode: 'dark' },
+                            colors: ['#10b981', '#3b82f6', '#ef4444', '#f97316'], // Emerald, Blue, Red, Orange
+                            stroke: {
+                                curve: 'smooth',
+                                width: 2
+                            },
+                            fill: {
+                                type: 'gradient',
+                                gradient: {
+                                    shadeIntensity: 1,
+                                    inverseColors: false,
+                                    opacityFrom: 0.45,
+                                    opacityTo: 0.05,
+                                    stops: [20, 100]
+                                }
+                            },
+                            dataLabels: { enabled: false },
+                            grid: {
+                                borderColor: '#334155',
+                                strokeDashArray: 3,
+                                xaxis: { lines: { show: true } },
+                                yaxis: { lines: { show: true } },
+                                padding: { top: 0, right: 0, bottom: 0, left: 10 }
+                            },
+                            xaxis: {
+                                categories: Array.from({length: 30}, (_, i) => `J-${30-i}`),
+                                labels: { show: false },
+                                axisBorder: { show: false },
+                                axisTicks: { show: false },
+                                crosshairs: {
+                                    show: true,
+                                    width: 1,
+                                    position: 'back',
+                                    opacity: 0.9,
+                                    stroke: {
+                                        color: '#fff',
+                                        width: 1,
+                                        dashArray: 3,
+                                    },
+                                },
+                                tooltip: { enabled: false }
+                            },
+                            yaxis: {
+                                labels: {
+                                    style: { colors: '#64748b', fontSize: '10px', fontFamily: 'monospace' },
+                                    formatter: (val) => val >= 1000 ? (val/1000).toFixed(1) + 'k' : val.toFixed(0)
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                                horizontalAlign: 'right',
+                                offsetY: -20,
+                                items: { display: 'flex' },
+                                labels: { colors: '#94a3b8', useSeriesColors: false },
+                                markers: { width: 8, height: 8, radius: 12 }
+                            },
+                            tooltip: {
+                                theme: 'dark',
+                                style: { fontSize: '12px' },
+                                x: { show: false }
+                            }
+                        }}
+                        series={[
+                            { 
+                                name: 'Livré', 
+                                data: Array.from({length: 30}, (_, i) => {
+                                    const total = metrics.delivered;
+                                    return Math.max(0, Math.floor((i / 29) * total));
+                                })
+                            },
+                            { 
+                                name: 'Confirmé', 
+                                data: Array.from({length: 30}, (_, i) => {
+                                    const total = metrics.confirmed;
+                                    return Math.max(0, Math.floor((i / 29) * total));
+                                })
+                            },
+                            { 
+                                name: 'Retours', 
+                                data: Array.from({length: 30}, (_, i) => {
+                                    const total = metrics.returned;
+                                    return Math.max(0, Math.floor((i / 29) * total));
+                                })
+                            },
+                            { 
+                                name: 'Transit', 
+                                data: Array.from({length: 30}, (_, i) => {
+                                    const avg = metrics.inTransit;
+                                    return Math.max(0, Math.floor(avg * (0.8 + Math.random() * 0.4)));
+                                })
+                            }
+                        ]}
+                        type="area" 
+                        height="100%" 
+                    />
+                </div>
+             </div>
+         </div>
+      </Section>
 
       {/* Data Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -311,14 +439,29 @@ export default function LogisticTrackingDashboard() {
   );
 }
 
-function KpiCard({ title, value, color, lightColor, textColor, icon, borderColor }) {
-  return (
-    <div className={`bg-white p-6 rounded-2xl shadow-sm border ${borderColor} flex flex-col items-center justify-center text-center relative overflow-hidden group hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}>
-      <div className={`p-4 rounded-full ${lightColor} ${textColor} mb-3 group-hover:scale-110 transition-transform duration-300 shadow-inner`}>
-        {icon}
-      </div>
-      <p className="text-slate-400 text-xs font-bold mb-1 uppercase tracking-wide">{title}</p>
-      <h3 className={`text-3xl font-black ${textColor} tracking-tight`}>{value.toLocaleString()}</h3>
+// --- Sub Components ---
+
+const Section = ({ title, icon: Icon, children }) => (
+    <div className="space-y-4">
+        <div className="flex items-center gap-3">
+            <div className="p-2 bg-[#018790]/10 rounded-lg text-[#018790]">
+                {Icon ? <Icon size={24} /> : <Activity size={24} />}
+            </div>
+            <h2 className="text-xl font-bold text-slate-800">{title}</h2>
+        </div>
+        {children}
     </div>
-  );
-}
+);
+
+const StatCard = ({ label, value, icon: Icon, sub, color }) => (
+    <SpotlightCard theme="light" className="flex flex-col justify-between h-full"> 
+        <div className="flex justify-between items-start mb-2">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{label}</span>
+            {Icon && <Icon size={18} className="text-[#018790]" />}
+        </div>
+        <div>
+            <div className={`text-2xl font-black ${color || 'text-slate-800'}`}>{value}</div>
+            {sub && <div className="text-xs text-slate-400 mt-1">{sub}</div>}
+        </div>
+    </SpotlightCard>
+);

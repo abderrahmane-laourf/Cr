@@ -45,6 +45,24 @@ const INITIAL_PIPELINES = [
       { id: 'Livré-AG', name: 'Livré', color: 'bg-green-500', active: true, status: 'delivered', locked: true },
       { id: 'Annulé-AG', name: 'Annulé', color: 'bg-red-500', active: true, status: 'cancelled', locked: true }
     ]
+  },
+  {
+    id: 3,
+    name: 'Retourner Stocker',
+    color: 'bg-slate-600',
+    isDefault: true,
+    stages: [
+      { id: 'Retourner-RS', name: 'Retourner', color: 'bg-slate-500', active: true, status: 'returned', locked: true }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Annulé',
+    color: 'bg-red-600',
+    isDefault: true,
+    stages: [
+      { id: 'Annulé-AN', name: 'Annulé', color: 'bg-red-500', active: true, status: 'cancelled', locked: true }
+    ]
   }
 ];
 
@@ -68,7 +86,7 @@ export default function PipelineSettings() {
 
   const colors = [
     'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500',
-    'bg-teal-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500'
+    'bg-teal-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-slate-600'
   ];
 
   useEffect(() => {
@@ -105,7 +123,7 @@ export default function PipelineSettings() {
         <p class="mb-2">Cette action va :</p>
         <ul class="list-disc list-inside text-sm text-slate-600">
           <li>Supprimer tous les pipelines existants</li>
-          <li>Restaurer les 2 pipelines par défaut protégés</li>
+          <li>Restaurer les pipelines par défaut (y compris "Annulé")</li>
           <li>Réinitialiser tous les stages</li>
         </ul>
         <p class="mt-3 text-red-600 font-semibold">⚠️ Cette action est irréversible !</p>
@@ -287,6 +305,16 @@ export default function PipelineSettings() {
   };
 
   const handleDeleteStage = async (stageId, stageName) => {
+    if (stageName.toLowerCase().includes('retour') || stageName.toLowerCase().includes('retourner')) {
+      Swal.fire({
+        title: 'Action non autorisée',
+        text: 'Cette étape est protégée et ne peut pas être supprimée.',
+        icon: 'error',
+        confirmButtonColor: '#3b82f6'
+      });
+      return;
+    }
+
     const result = await Swal.fire({
       title: 'Supprimer cette étape ?',
       text: `L'étape "${stageName}" sera définitivement supprimée.`,
@@ -331,7 +359,7 @@ export default function PipelineSettings() {
 
   const handleDeletePipeline = async (pipelineId, pipelineName) => {
     const pipeline = pipelines.find(p => p.id === pipelineId);
-    if (pipeline?.isDefault) {
+    if (pipeline?.isDefault || pipelineName.toLowerCase().includes('retour') || pipelineName.toLowerCase().includes('retourner')) {
       Swal.fire({
         title: 'Pipeline protégé',
         text: 'Ce pipeline est protégé et ne peut pas être supprimé.',
@@ -455,67 +483,8 @@ export default function PipelineSettings() {
     setDraggedOverStage(null);
   };
 
-  const handleDeleteAllPipelines = async () => {
-    const nonDefaultPipelines = pipelines.filter(p => !p.isDefault);
-    
-    if (nonDefaultPipelines.length === 0) {
-      Swal.fire({
-        title: 'Aucun pipeline à supprimer',
-        text: 'Tous les pipelines actuels sont protégés.',
-        icon: 'info',
-        confirmButtonColor: '#3b82f6'
-      });
-      return;
-    }
-
-    const result = await Swal.fire({
-      title: 'Supprimer tous les pipelines ?',
-      html: `<div class="text-left">
-        <p class="mb-2">Cette action supprimera <strong>${nonDefaultPipelines.length} pipeline(s)</strong> non protégé(s) :</p>
-        <ul class="list-disc list-inside text-sm text-slate-600">
-          ${nonDefaultPipelines.map(p => `<li>${p.name} (${p.stages.length} étapes)</li>`).join('')}
-        </ul>
-        <p class="mt-3 text-red-600 font-semibold">⚠️ Cette action est irréversible !</p>
-      </div>`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#64748b',
-      confirmButtonText: 'Oui, tout supprimer',
-      cancelButtonText: 'Annuler',
-      reverseButtons: true,
-      width: '600px'
-    });
-
-    if (result.isConfirmed) {
-      try {
-        // Delete all non-default pipelines from API
-        for (const pipeline of nonDefaultPipelines) {
-          await pipelineAPI.delete(pipeline.id);
-        }
-        
-        setPipelines(prev => prev.filter(p => p.isDefault));
-        
-        Swal.fire({
-          title: 'Supprimé !',
-          text: `${nonDefaultPipelines.length} pipeline(s) ont été supprimés avec succès.`,
-          icon: 'success',
-          timer: 2500,
-          showConfirmButton: false
-        });
-      } catch (error) {
-        console.error('Error deleting pipelines:', error);
-        Swal.fire({
-          title: 'Erreur',
-          text: 'Impossible de supprimer les pipelines.',
-          icon: 'error'
-        });
-      }
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-slate-50/50 p-4 md:p-8">
+    <div className="min-h-screen bg-transparent p-4 md:p-8 animate-[fade-in_0.6s_ease-out]">
       
       {/* MAIN CONTENT */}
       <div className="flex-1 min-w-0">
@@ -524,7 +493,7 @@ export default function PipelineSettings() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
             <div className="flex items-center justify-between">
                 <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Configuration Pipeline</h1>
+                <h1 className="text-3xl font-extrabold text-[#005461] tracking-tight">Configuration Pipeline</h1>
                 <p className="text-slate-500 mt-1 font-medium">Gérez les étapes et les status</p>
                 </div>
                 <div className="flex gap-3">
@@ -535,7 +504,7 @@ export default function PipelineSettings() {
                   </button>
                   <button 
                     onClick={() => setShowNewPipelineModal(true)}
-                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold">
+                    className="flex items-center gap-2 px-6 py-3 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] transition-all shadow-lg shadow-cyan-900/30 font-semibold">
                     <Plus size={20} /> Nouveau Pipeline
                   </button>
                 </div>
@@ -546,7 +515,7 @@ export default function PipelineSettings() {
             {loading ? (
               <div className="flex items-center justify-center py-20">
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#005461] mx-auto mb-4"></div>
                   <p className="text-slate-600 font-medium">Chargement des pipelines...</p>
                 </div>
               </div>
@@ -666,7 +635,7 @@ export default function PipelineSettings() {
                     setCurrentPipelineId(pipeline.id);
                     setShowNewStageModal(true);
                     }}
-                    className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-600 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all font-medium flex items-center justify-center gap-2"
+                    className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-600 hover:border-[#005461] hover:text-[#005461] hover:bg-[#005461]/5 transition-all font-medium flex items-center justify-center gap-2"
                 >
                     <Plus size={20} />
                     Ajouter Stage
@@ -682,7 +651,7 @@ export default function PipelineSettings() {
       {/* Modal for New Pipeline */}
       {showNewPipelineModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-slate-800">Nouveau Pipeline</h3>
               <button onClick={() => setShowNewPipelineModal(false)} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
@@ -698,7 +667,7 @@ export default function PipelineSettings() {
                 value={newPipelineName}
                 onChange={(e) => setNewPipelineName(e.target.value)}
                 placeholder="Ex: Pipeline de Vente"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all"
               />
             </div>
 
@@ -729,7 +698,7 @@ export default function PipelineSettings() {
               <button
                 onClick={handleAddPipeline}
                 disabled={!newPipelineName.trim()}
-                className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
+                className="flex-1 px-4 py-2.5 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-900/30"
               >
                 Créer
               </button>
@@ -741,7 +710,7 @@ export default function PipelineSettings() {
       {/* Modal for Edit Pipeline */}
       {showEditPipelineModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-slate-800">Modifier Pipeline</h3>
               <button onClick={() => setShowEditPipelineModal(false)} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
@@ -757,7 +726,7 @@ export default function PipelineSettings() {
                 value={newPipelineName}
                 onChange={(e) => setNewPipelineName(e.target.value)}
                 placeholder="Ex: Pipeline de Vente"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all"
               />
             </div>
 
@@ -788,7 +757,7 @@ export default function PipelineSettings() {
               <button
                 onClick={handleUpdatePipeline}
                 disabled={!newPipelineName.trim()}
-                className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
+                className="flex-1 px-4 py-2.5 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-900/30"
               >
                 Mettre à jour
               </button>
@@ -800,7 +769,7 @@ export default function PipelineSettings() {
       {/* Modal for New/Edit Stage */}
       {showNewStageModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-slate-800">
                 {editingStage ? 'Modifier Stage' : 'Nouveau Stage'}
@@ -818,7 +787,7 @@ export default function PipelineSettings() {
                 value={newStageName}
                 onChange={(e) => setNewStageName(e.target.value)}
                 placeholder="Ex: Livraison en cours"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all"
               />
             </div>
 
@@ -841,14 +810,14 @@ export default function PipelineSettings() {
             {/* Delivery Status */}
             <div className="mb-6">
               <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Statut de Livraison</label>
-              <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+              <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto custom-scrollbar">
                 {DELIVERY_STATUSES.map((status) => (
                   <button
                     key={status.id}
                     onClick={() => setSelectedStatus(status.id)}
                     className={`px-3 py-2 rounded-lg border-2 transition-all text-sm font-medium ${
                       selectedStatus === status.id
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        ? 'border-[#005461] bg-[#005461]/10 text-[#005461]'
                         : 'border-slate-200 text-slate-600 hover:border-slate-300'
                     }`}
                   >
@@ -878,7 +847,7 @@ export default function PipelineSettings() {
               <button
                 onClick={editingStage ? handleUpdateStage : handleAddStage}
                 disabled={!newStageName.trim()}
-                className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
+                className="flex-1 px-4 py-2.5 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-900/30"
               >
                 {editingStage ? 'Mettre à jour' : 'Ajouter'}
               </button>
