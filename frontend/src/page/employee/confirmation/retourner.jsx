@@ -18,8 +18,6 @@ export default function Retourner() {
   const [filterEndDate, setFilterEndDate] = useState('');
   const [filterVille, setFilterVille] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
-  const [filterBusiness, setFilterBusiness] = useState('');
-  const [filterEmployee, setFilterEmployee] = useState('');
 
   // Get Current User
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -89,12 +87,6 @@ export default function Retourner() {
 
     // 6. Category Filter
     if (filterCategory && c.category !== filterCategory) return false;
-
-    // 7. Business Filter
-    if (filterBusiness && c.storeName !== filterBusiness) return false;
-
-    // 8. Employee Filter (UI)
-    if (filterEmployee && c.livreurName !== filterEmployee) return false;
 
     return true;
   });
@@ -261,32 +253,10 @@ export default function Retourner() {
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
-
-              <select
-                value={filterBusiness}
-                onChange={(e) => setFilterBusiness(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
-              >
-                <option value="">Tous les business</option>
-                {[...new Set(colis.map(c => c.storeName))].filter(Boolean).map(store => (
-                  <option key={store} value={store}>{store}</option>
-                ))}
-              </select>
             </div>
             
             {/* Date Filters */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-               <select
-                value={filterEmployee}
-                onChange={(e) => setFilterEmployee(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
-              >
-                <option value="">Tous les employés</option>
-                {[...new Set(colis.map(c => c.livreurName))].filter(Boolean).map(emp => (
-                  <option key={emp} value={emp}>{emp}</option>
-                ))}
-              </select>
-
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                 <input 

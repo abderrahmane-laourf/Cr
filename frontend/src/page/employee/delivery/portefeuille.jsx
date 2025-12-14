@@ -306,7 +306,7 @@ export default function Portefeuille() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 p-4 md:p-8 font-sans text-slate-800 pb-24">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="w-full mx-auto space-y-6">
         
         {/* HEADER */}
         <SpotlightCard className="bg-white border-slate-200 shadow-sm">

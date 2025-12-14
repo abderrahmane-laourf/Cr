@@ -351,22 +351,6 @@ const GlobalDashboard = () => {
                         <Briefcase className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
                     </div>
                 </div>
-                {/* Project - Disabled Select All (Simulated by disabled input or fixed value) */}
-                <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Folder size={12}/> Projet</label>
-                    <div className="relative">
-                        <select 
-                            value={selectedProject} 
-                            onChange={e => setSelectedProject(e.target.value)}
-                            disabled={true} // Disabled as requested
-                            className="w-full pl-3 pr-8 py-2.5 bg-slate-100 border border-slate-200 rounded-xl focus:outline-none text-sm font-semibold text-slate-400 appearance-none cursor-not-allowed shadow-sm"
-                        >
-                            <option value="All">Tous les projets</option>
-                            <option value="Main CRM">Main CRM</option>
-                        </select>
-                        <Folder className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
-                    </div>
-                </div>
              </div>
         </div>
 
