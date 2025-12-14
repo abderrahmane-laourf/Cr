@@ -302,19 +302,17 @@ export default function PackagingPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4">
-                    <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Pièces / Colis</label>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Stock Actuel</label>
                     <input 
                       required
                       type="number" 
-                      min="1"
-                      value={formData.piecesPerPackage}
-                      onChange={e => setFormData({...formData, piecesPerPackage: parseInt(e.target.value) || 1})}
+                      min="0"
+                      value={formData.currentStock}
+                      onChange={e => setFormData({...formData, currentStock: parseInt(e.target.value) })}
                       className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] font-medium transition-all"
                     />
                   </div>
-                </div>
 
                 <div className="pt-4 flex gap-3">
                   <button 
