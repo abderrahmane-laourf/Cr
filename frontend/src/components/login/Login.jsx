@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import loginImage from '../../assets/fd9eb334-78c2-477d-8b87-1b4fc6d213ec.png'
+import loginImage from '../../assets/3a190351-85d7-49d2-982a-591be9ecb488-md.jpeg'
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)

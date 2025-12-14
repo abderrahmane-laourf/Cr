@@ -199,6 +199,17 @@ const InventoryDashboard = () => {
     const returnSorted = [...productStats].sort((a, b) => b.returned - a.returned);
     const deadItems = productStats.filter(s => s.isDead).sort((a, b) => b.value - a.value);
 
+    // Packaging Stats
+    const currentPackagings = JSON.parse(localStorage.getItem('packagings') || '[]');
+    const packagedProductIds = new Set(currentPackagings.map(p => String(p.productId)));
+    const packagedCount = products.filter(p => packagedProductIds.has(String(p.id))).length;
+    const nonPackagedCount = products.length - packagedCount;
+    
+    const packagingDistribution = [
+      { name: 'Emballé', value: packagedCount, color: '#10b981' },
+      { name: 'Non Emballé', value: nonPackagedCount, color: '#ef4444' }
+    ];
+
     setDashboardData({
       kpi, warehouses: warehouseData, warehouseMeta: warehouses, salesChart: salesChartData, stockDistribution,
       topSales: salesSorted[0] || {}, flopSales: salesSorted[salesSorted.length - 1] || {},
@@ -206,7 +217,8 @@ const InventoryDashboard = () => {
       topReturn: returnSorted[0] || {}, flopReturn: returnSorted[returnSorted.length - 1] || {},
       deadStock: deadItems[0] || null, matrixData,
       catalogueData: Object.values(catalogueStats).sort((a,b) => b.stock - a.stock),
-      packagings: JSON.parse(localStorage.getItem('packagings') || '[]')
+      packagings: currentPackagings,
+      packagingDistribution
     });
   };
 
@@ -303,27 +315,40 @@ const InventoryDashboard = () => {
                   }, 0) || 0)} color="text-emerald-500" sub="Est. Colis réalisables" />
              </div>
              
-             {/* List Widget */}
+             {/* Packaging Coverage Chart */}
              <SpotlightCard theme="light" className="p-0 border border-slate-200 overflow-hidden flex flex-col h-full">
                  <div className="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-                     <span className="text-xs font-bold text-[#005461] uppercase tracking-wide">Aperçu Rapide</span>
-                     <span className="text-xs font-bold bg-[#005461]/10 text-[#005461] px-2 py-0.5 rounded-full">{dashboardData.packagings?.length} Refs</span>
+                     <span className="text-xs font-bold text-[#005461] uppercase tracking-wide">Couverture Packaging</span>
+                     <span className="text-xs font-bold bg-[#005461]/10 text-[#005461] px-2 py-0.5 rounded-full">
+                        {Math.round((dashboardData.packagingDistribution[0].value / (dashboardData.packagingDistribution[0].value + dashboardData.packagingDistribution[1].value || 1)) * 100)}%
+                     </span>
                  </div>
-                 <div className="flex-1 overflow-y-auto max-h-[160px] custom-scrollbar p-2 space-y-1">
-                      {dashboardData.packagings?.map((p, idx) => {
-                          const prods = JSON.parse(localStorage.getItem('inv_products') || '[]');
-                          const product = prods.find(prod => prod.id == p.productId);
-                          const stock = product ? product.dist.reduce((a, b) => a + b, 0) : 0;
-                          return (
-                             <div key={idx} className="flex justify-between items-center px-3 py-2 bg-white border border-slate-100 rounded-lg hover:border-[#018790]/30 transition-colors">
-                                 <div className="flex flex-col">
-                                     <span className="text-sm font-bold text-slate-700">{p.name}</span>
-                                     <span className="text-[10px] text-slate-400 font-medium">Ref: {product?.name || 'N/A'}</span>
-                                 </div>
-                                 <span className="font-mono font-bold text-[#005461] bg-[#005461]/5 px-2 py-1 rounded">{stock}</span>
-                             </div>
-                          )
-                      })}
+                 <div className="flex-1 flex flex-col items-center justify-center p-4 relative">
+                      <div className="h-32 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie 
+                                    data={dashboardData.packagingDistribution} 
+                                    cx="50%" cy="50%" 
+                                    innerRadius={35} outerRadius={55} 
+                                    paddingAngle={5} 
+                                    dataKey="value"
+                                >
+                                    {dashboardData.packagingDistribution.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend verticalAlign="bottom" height={36} iconSize={8} wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }}/>
+                            </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -mt-4 text-center pointer-events-none">
+                          <span className="text-xs font-bold text-slate-400 block">Total</span>
+                          <span className="text-lg font-black text-slate-700">
+                              {dashboardData.packagingDistribution[0].value + dashboardData.packagingDistribution[1].value}
+                          </span>
+                      </div>
                  </div>
              </SpotlightCard>
          </div>

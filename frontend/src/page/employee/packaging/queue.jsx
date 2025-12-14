@@ -83,6 +83,7 @@ export default function PackagingQueue() {
   const [currentScanProduct, setCurrentScanProduct] = useState(null);
   const [scanInput, setScanInput] = useState('');
   const [scanError, setScanError] = useState('');
+  const [selectedProductFilter, setSelectedProductFilter] = useState('All');
 
   // --- LOGIC (PRESERVED) ---
   const handleTogglePrepare = (orderId) => {
@@ -173,9 +174,63 @@ export default function PackagingQueue() {
     return () => clearInterval(timer);
   }, []);
 
+  // --- STATS CALCULATION ---
+  const allProducts = orders.flatMap(o => o.products);
+  const uniqueProducts = [...new Set(allProducts.map(p => p.name))];
+
+  const getFilteredStats = () => {
+      let relevantOrders = ordersInStickers; // Focus on packaging stage
+      let relevantProducts = relevantOrders.flatMap(o => o.products);
+
+      if (selectedProductFilter !== 'All') {
+          relevantProducts = relevantProducts.filter(p => p.name === selectedProductFilter);
+      }
+
+      const productsRemaining = relevantProducts.filter(p => !p.scanned).length;
+      // Mock packaging stock logic or just use products remaining as "packages to do"
+      const packagingRemaining = productsRemaining; 
+
+      return { productsRemaining, packagingRemaining };
+  };
+
+  const { productsRemaining, packagingRemaining } = getFilteredStats();
+
+
   // --- RENDER ---
   return (
     <div className="w-full min-h-screen bg-slate-50/50 p-4 md:p-8 font-sans text-slate-800 animate-[fade-in_0.5s_ease-out]">
+      
+      {/* TOP STATS CARD */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 w-full">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                  <Box className="text-orange-500" /> État de l'Emballage
+              </h2>
+              <select 
+                  value={selectedProductFilter} 
+                  onChange={(e) => setSelectedProductFilter(e.target.value)}
+                  className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+              >
+                  <option value="All">Tous les produits</option>
+                  {uniqueProducts.map(p => (
+                      <option key={p} value={p}>{p}</option>
+                  ))}
+              </select>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-4 bg-orange-50 rounded-xl border border-orange-100">
+                  <p className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-1">Produits Restants</p>
+                  <p className="text-2xl font-black text-orange-600">{productsRemaining}</p>
+                  <p className="text-[10px] text-orange-400 mt-1">Articles à scanner</p>
+              </div>
+              <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                  <p className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Emballage Restant</p>
+                  <p className="text-2xl font-black text-blue-600">{packagingRemaining}</p>
+                  <p className="text-[10px] text-blue-400 mt-1">Unités nécessaires</p>
+              </div>
+          </div>
+      </div>
       
       {/* 1. HEADER & PROGRESS */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">

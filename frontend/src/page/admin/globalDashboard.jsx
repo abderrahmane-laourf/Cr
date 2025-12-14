@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   DollarSign, TrendingUp, TrendingDown, Package, Users, ShoppingCart,
   MessageCircle, CheckCircle, Truck, RefreshCw, AlertCircle, Award,
@@ -54,7 +54,7 @@ const GlobalDashboard = () => {
       }
   };
 
-  const generateDashboardData = async () => {
+  const generateDashboardData = useCallback(async () => {
     setLoading(true);
     
     try {
@@ -107,7 +107,6 @@ const GlobalDashboard = () => {
       const delRate = confirmedCount > 0 ? (deliveredCount / confirmedCount) * 100 : 0;
 
       // 3. Stock
-      const initialStock = productsData.reduce((sum, p) => sum + (parseInt(p.initialStock || 0)), 0);
       const currentStock = productsData.reduce((sum, p) => sum + (parseInt(p.stock || 0)), 0);
       const stockRest = currentStock;
       // Derived stock logic can be complex without history, making assumptions:
@@ -212,7 +211,7 @@ const GlobalDashboard = () => {
     } finally {
         setLoading(false);
     }
-  };
+  }, [dateFrom, dateTo, selectedEmployee, selectedProduct, selectedBusiness, selectedProject]);
 
   const fmt = (n) => parseFloat(n).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const num = (n) => parseInt(n).toLocaleString('fr-FR');
@@ -226,10 +225,6 @@ const GlobalDashboard = () => {
   }
 
   // --- Charts Data Preparation ---
-  // A. Stock Distribution (Stacked Bar)
-  const stockChartData = [
-      { name: 'Distribution du Stock', Restant: data.stock.stockRest, Livré: data.stock.delivered, Retours: data.stock.returns, Traitement: data.stock.pending }
-  ];
 
   // B. Financial Distribution (Pie)
   const expenseChartData = [
@@ -252,13 +247,6 @@ const GlobalDashboard = () => {
 
   const topProductsSales = sortDesc(data.products, 'sales').slice(0, 3);
   const bottomProductsSales = sortAsc(data.products.filter(p=>p.sales>0), 'sales').slice(0, 3);
-
-  const topEmpDel = sortDesc(data.employees, 'delRate').slice(0, 3);
-  const topEmpVol = sortDesc(data.employees, 'parcels').slice(0, 3);
-
-  // New Metrics for Performance Overview (with Examples)
-  const topConfRateProduct = sortDesc(data.products.filter(p=>p.total>5), 'confRate')[0] || {name: 'Pack Santé', confRate: 88};
-  const bottomConfRateProduct = sortAsc(data.products.filter(p=>p.total>5), 'confRate')[0] || {name: 'Montre Luxe', confRate: 12};
 
   const topEmployeeStats = sortDesc(data.employees.filter(e=>e.parcels>5), 'delRate')[0] || {name: 'Omar Amrani', delRate: 92, parcels: 154};
   const bottomEmployeeStats = sortAsc(data.employees.filter(e=>e.parcels>5), 'delRate')[0] || {name: 'Karim Tazi', delRate: 45, parcels: 28};
@@ -572,7 +560,7 @@ const GlobalDashboard = () => {
                  <StatCard label="Prix Moyen Colis" value={`${fmt(data.delivery.avgParcelPrice)} DH`} />
                  <StatCard label="Prix Moyen Pièce" value={`${fmt(data.delivery.avgPiecePrice)} DH`} />
                  <StatCard label="Panier Moyen" value={`${fmt(data.delivery.avgCart)} DH`} />
-                 <SpotlightCard theme="light" className="col-span-1 md:col-span-2 lg:col-span-3 !bg-[#018790] !border-[#018790] group">
+                 <SpotlightCard theme="light" className="col-span-1 md:col-span-2 lg:col-span-3 bg-[#018790]! border-[#018790]! group">
                     <div className="flex items-center justify-between text-white">
                         <div>
                             <p className="text-emerald-100 font-medium uppercase tracking-wider text-xs">Chiffre d'Affaires</p>
@@ -626,7 +614,7 @@ const GlobalDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 
                 {/* Sales & Revenue Card */}
-                <SpotlightCard theme="dark" className="!bg-[#018790] !border-[#016f76] text-white shadow-xl shadow-[#018790]/20 !p-5">
+                <SpotlightCard theme="dark" className="bg-[#018790]! border-[#016f76]! text-white shadow-xl shadow-[#018790]/20 p-5!">
                     <div className="mb-4">
                         <h3 className="text-base font-bold text-white mb-0.5">Performance Produit</h3>
                         <p className="text-[10px] text-white/70 font-arabic">أداء المنتج</p>
@@ -690,63 +678,53 @@ const GlobalDashboard = () => {
                         </div>
                     </div>
                 </SpotlightCard>
+ {/* Performance Rates Chart */}
+        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-8">
+             <h3 className="text-lg font-bold text-[#005461] mb-6 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5" />
+                Aperçu des Performances
+             </h3>
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Best Rate */}
+                <div className="relative pt-2">
+                   <div className="flex justify-between items-end mb-2">
+                      <div>
+                         <div className="flex items-center gap-2 mb-1">
+                            <span className="p-1 bg-emerald-100 rounded text-emerald-600"><TrendingUp size={14} /></span>
+                            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Meilleur Taux (أعلى نسبة)</span>
+                         </div>
+                         <div className="font-bold text-slate-800 text-xl">Pack Santé</div>
+                      </div>
+                      <div className="text-3xl font-black text-emerald-600">88%</div>
+                   </div>
+                   <div className="w-full h-6 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                      <div className="h-full bg-linear-to-r from-emerald-400 to-emerald-600 rounded-full shadow-sm" style={{ width: '88%' }}></div>
+                   </div>
+                </div>
 
-                {/* Rates Card (Gauges) */}
-                <SpotlightCard theme="dark" className="!bg-[#018790] !border-[#016f76] text-white flex flex-col items-center justify-center relative overflow-hidden shadow-xl shadow-[#018790]/20 !p-5">
-                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-white via-emerald-200 to-rose-300" />
-                     
-                     <div className="grid grid-cols-2 w-full gap-4 relative z-10">
-                        {/* Winner Gauge */}
-                        <div className="flex flex-col items-center justify-center text-center">
-                            <div className="relative w-24 h-24 flex items-center justify-center mb-3">
-                                <svg className="w-full h-full transform -rotate-90 filter drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">
-                                    <circle cx="48" cy="48" r="40" stroke="rgba(0,0,0,0.2)" strokeWidth="6" fill="transparent" />
-                                    <circle 
-                                        cx="48" cy="48" r="40" 
-                                        stroke="white" strokeWidth="6" fill="transparent"
-                                        strokeDasharray={251} 
-                                        strokeDashoffset={251 - (251 * topConfRateProduct.confRate) / 100}
-                                        strokeLinecap="round"
-                                    />
-                                </svg>
-                                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <Award size={18} className="text-white mb-0.5" />
-                                    <span className="text-lg font-black text-white">{Math.round(topConfRateProduct.confRate)}%</span>
-                                </div>
-                            </div>
-                            <p className="text-xs font-bold text-white uppercase tracking-wider mb-0 leading-none">Meilleur Taux</p>
-                            <p className="text-[10px] text-white/70 font-arabic font-medium mb-1">أعلى نسبة</p>
-                            <p className="text-[10px] text-white/90 max-w-[100px] truncate">{topConfRateProduct.name}</p>
-                        </div>
+                {/* Lowest Rate */}
+                <div className="relative pt-2">
+                   <div className="flex justify-between items-end mb-2">
+                      <div>
+                         <div className="flex items-center gap-2 mb-1">
+                            <span className="p-1 bg-red-100 rounded text-red-600"><TrendingDown size={14} /></span>
+                            <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Faible Taux (أقل نسبة)</span>
+                         </div>
+                         <div className="font-bold text-slate-800 text-xl">Montre Luxe</div>
+                      </div>
+                      <div className="text-3xl font-black text-red-500">12%</div>
+                   </div>
+                   <div className="w-full h-6 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                      <div className="h-full bg-linear-to-r from-red-400 to-red-600 rounded-full shadow-sm" style={{ width: '12%' }}></div>
+                   </div>
+                </div>
+             </div>
+          </div>
 
-                        {/* Loser Gauge */}
-                        <div className="flex flex-col items-center justify-center text-center">
-                            <div className="relative w-16 h-16 flex items-center justify-center mb-3 mt-4">
-                                <svg className="w-full h-full transform -rotate-90 filter drop-shadow-[0_0_5px_rgba(253,164,175,0.4)]">
-                                    <circle cx="32" cy="32" r="28" stroke="rgba(0,0,0,0.2)" strokeWidth="4" fill="transparent" />
-                                    <circle 
-                                        cx="32" cy="32" r="28" 
-                                        stroke="#fca5a5" strokeWidth="4" fill="transparent"
-                                        strokeDasharray={175} 
-                                        strokeDashoffset={175 - (175 * bottomConfRateProduct.confRate) / 100}
-                                        strokeLinecap="round"
-                                    />
-                                </svg>
-                                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <AlertCircle size={14} className="text-rose-200 mb-0.5" />
-                                    <span className="text-sm font-black text-rose-100">{Math.round(bottomConfRateProduct.confRate)}%</span>
-                                </div>
-                            </div>
-                            <p className="text-[10px] font-bold text-rose-200 uppercase tracking-wider mb-0 leading-none">Faible Taux</p>
-                            <p className="text-[9px] text-white/60 font-arabic font-medium mb-1">أقل نسبة</p>
-                            <p className="text-[10px] text-white/80 max-w-[80px] truncate">{bottomConfRateProduct.name}</p>
-                        </div>
-                     </div>
-                </SpotlightCard>
-            </div>
 
             {/* Section 2: Employee Performance */}
-            <SpotlightCard theme="dark" className="!bg-[#018790] !border-[#016f76] text-white shadow-xl shadow-[#018790]/20 !p-5">
+            <SpotlightCard theme="dark" className="bg-[#018790]! border-[#016f76]! text-white shadow-xl shadow-[#018790]/20 p-5!">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 divide-y md:divide-y-0 md:divide-x divide-white/10">
                     
                     {/* Top Performer */}
@@ -884,6 +862,7 @@ const GlobalDashboard = () => {
             </div>
         </Section>
     </div>
+    </div>
   );
 };
 
@@ -923,7 +902,7 @@ const ProgressCard = ({ label, value, total, rate, color, icon: Icon }) => (
          <div className="text-2xl font-black text-slate-800">{value}</div>
          <div className="text-xs text-slate-400 mt-1">Sur {total} total</div>
       </div>
-      <div className="relative w-16 h-16 flex-shrink-0 flex items-center justify-center">
+      <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
          {/* Simple circular progress simulation using SVG */}
          <svg className="w-full h-full transform -rotate-90">
              <circle cx="32" cy="32" r="28" stroke="#e2e8f0" strokeWidth="4" fill="transparent" />

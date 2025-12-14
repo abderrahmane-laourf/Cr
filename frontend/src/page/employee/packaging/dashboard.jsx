@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { RefreshCw, Package, Truck, CheckCircle, Clock, ArrowLeftCircle, Box , Search, Warehouse, AlertCircle, XCircle, TrendingUp } from 'lucide-react';
+import { RefreshCw, Package, Truck, CheckCircle, Clock, ArrowLeftCircle, Box , Search, Warehouse, AlertCircle, TrendingDown , TrendingUp } from 'lucide-react';
 
 // SpotlightCard Component
 const SpotlightCard = ({ children, className = "", spotlightColor = "rgba(255, 255, 255, 0.25)" }) => {
@@ -397,49 +397,7 @@ const LogisticsDashboard = () => {
           </SpotlightCard>
         </div>
 
-        {/* Performance Rates Chart */}
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-8">
-             <h3 className="text-lg font-bold text-[#005461] mb-6 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                Aperçu des Performances
-             </h3>
-             
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Best Rate */}
-                <div className="relative pt-2">
-                   <div className="flex justify-between items-end mb-2">
-                      <div>
-                         <div className="flex items-center gap-2 mb-1">
-                            <span className="p-1 bg-emerald-100 rounded text-emerald-600"><TrendingUp size={14} /></span>
-                            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Meilleur Taux (أعلى نسبة)</span>
-                         </div>
-                         <div className="font-bold text-slate-800 text-xl">Pack Santé</div>
-                      </div>
-                      <div className="text-3xl font-black text-emerald-600">88%</div>
-                   </div>
-                   <div className="w-full h-6 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                      <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full shadow-sm" style={{ width: '88%' }}></div>
-                   </div>
-                </div>
-
-                {/* Lowest Rate */}
-                <div className="relative pt-2">
-                   <div className="flex justify-between items-end mb-2">
-                      <div>
-                         <div className="flex items-center gap-2 mb-1">
-                            <span className="p-1 bg-red-100 rounded text-red-600"><TrendingDown size={14} /></span>
-                            <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Faible Taux (أقل نسبة)</span>
-                         </div>
-                         <div className="font-bold text-slate-800 text-xl">Montre Luxe</div>
-                      </div>
-                      <div className="text-3xl font-black text-red-500">12%</div>
-                   </div>
-                   <div className="w-full h-6 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                      <div className="h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full shadow-sm" style={{ width: '12%' }}></div>
-                   </div>
-                </div>
-             </div>
-          </div>
+       
 
         {/* Distribution Entrepôts */}
         {warehouseMeta.length > 0 && (

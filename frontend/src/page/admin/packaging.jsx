@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Plus, Search, Trash2, Edit2, Save, X, Package, 
-  AlertCircle, TrendingUp, TrendingDown, Box, Truck 
+  AlertCircle, TrendingUp, TrendingDown, Box, Truck
 } from 'lucide-react';
 import { productAPI, settingsAPI } from '../../services/api';
 import SpotlightCard from '../../util/SpotlightCard';
@@ -284,26 +284,11 @@ export default function PackagingPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Stock Emballage</label>
-                    <input 
-                      required
-                      type="number" 
-                      min="0"
-                      placeholder="Ex: 50"
-                      value={formData.currentStock}
-                      onChange={e => setFormData({...formData, currentStock: parseInt(e.target.value) || 0})}
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] font-medium transition-all"
-                    />
-                  </div>
-                  <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Stock Produit</label>
                       <div className="px-4 py-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 font-bold">
                         {formData.productId ? (products.find(p => p.id == formData.productId)?.stock || 0) : 0}
                       </div>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Seuil d'alerte</label>
                     <input 
@@ -315,6 +300,9 @@ export default function PackagingPage() {
                       className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] font-medium transition-all"
                     />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
                     <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Pièces / Colis</label>
                     <input 
