@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import loginImage from '../../assets/3a190351-85d7-49d2-982a-591be9ecb488-md.jpeg'
+import ThemeToggle from '../layout/ThemeToggle'
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
@@ -132,6 +133,11 @@ export default function Login() {
   return (
     <div className="min-h-screen w-full flex bg-[#f8f9fc] dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans overflow-hidden relative transition-colors duration-300">
       
+      {/* Theme Toggle */}
+      <div className="absolute top-6 left-6 z-50">
+        <ThemeToggle />
+      </div>
+      
       {/* Toast Notification */}
       {toast.show && (
         <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-xl shadow-2xl backdrop-blur-sm transition-all duration-300 ${
@@ -178,19 +184,19 @@ export default function Login() {
               <circle cx="5" cy="12" r="2" opacity="0.2" />
               <circle cx="19" cy="12" r="2" opacity="0.2" />
             </svg>
-            <span className="text-xl font-bold tracking-wide text-slate-900">Platform</span>
+            <span className="text-xl font-bold tracking-wide text-slate-900 dark:text-white">Platform</span>
           </div>
 
           {/* Header */}
-          <h1 className="text-3xl font-bold mb-2 text-slate-900">Bienvenue !</h1>
-          <p className="text-slate-500 mb-8 text-sm">Connectez-vous pour continuer.</p>
+          <h1 className="text-3xl font-bold mb-2 text-slate-900 dark:text-white">Bienvenue !</h1>
+          <p className="text-slate-500 dark:text-slate-400 mb-8 text-sm">Connectez-vous pour continuer.</p>
 
           {/* Form */}
           <div className="flex flex-col gap-5">
             
             {/* Login Field */}
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-bold text-slate-700 ml-1">Login</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Login</label>
               <div className="relative">
                 <input
                   type="text"
@@ -201,9 +207,9 @@ export default function Login() {
                   }}
                   onKeyPress={handleKeyPress}
                   placeholder="Entrez votre login"
-                  className={`w-full h-12 rounded-xl bg-white border ${
-                    errors.login ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 focus:ring-[#018790]/50'
-                  } text-slate-900 px-4 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-[#018790] transition-all shadow-sm`}
+                  className={`w-full h-12 rounded-xl bg-white dark:bg-slate-800 border ${
+                    errors.login ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 dark:border-slate-700 focus:ring-[#018790]/50'
+                  } text-slate-900 dark:text-white px-4 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-[#018790] transition-all shadow-sm`}
                 />
                 {errors.login && (
                   <div className="flex items-center gap-1 mt-1 text-red-500 text-xs ml-1">
@@ -218,7 +224,7 @@ export default function Login() {
 
             {/* Password Field */}
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-bold text-slate-700 ml-1">Mot de passe</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Mot de passe</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -229,9 +235,9 @@ export default function Login() {
                   }}
                   onKeyPress={handleKeyPress}
                   placeholder="Entrez votre mot de passe"
-                  className={`w-full h-12 rounded-xl bg-white border ${
-                    errors.password ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 focus:ring-[#018790]/50'
-                  } text-slate-900 px-4 pr-12 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-[#018790] transition-all shadow-sm`}
+                  className={`w-full h-12 rounded-xl bg-white dark:bg-slate-800 border ${
+                    errors.password ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 dark:border-slate-700 focus:ring-[#018790]/50'
+                  } text-slate-900 dark:text-white px-4 pr-12 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-[#018790] transition-all shadow-sm`}
                 />
                 <button
                   type="button"
