@@ -12,8 +12,10 @@ import {
 import Chart from 'react-apexcharts';
 import { productAPI, employeeAPI, businessAPI } from '../../services/api';
 import SpotlightCard from '../../util/SpotlightCard';
+import { useTheme } from '../../context/ThemeContext';
 
 const GlobalDashboard = () => {
+  const { isDarkMode } = useTheme();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -497,20 +499,22 @@ const GlobalDashboard = () => {
                 </div>
 
                 <div className="w-full h-[400px]">
-                   <Chart
+                   <Chart key={isDarkMode ? 'dark' : 'light'}
                         options={{
                             chart: {
-                                type: 'area', // Area for "Trading" feel (fills under line)
+                                type: 'area', 
                                 height: 400,
                                 fontFamily: 'Inter, sans-serif',
                                 toolbar: { show: false },
-                                zoom: { enabled: false }
+                                zoom: { enabled: false },
+                                background: 'transparent'
                             },
-                            colors: ['#2563EB', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444'], // Blue, Purple, Orange, Green, Red
+                            theme: { mode: isDarkMode ? 'dark' : 'light' },
+                            colors: ['#2563EB', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444'],
                             stroke: {
                                 curve: 'smooth',
                                 width: 2,
-                                dashArray: [0, 0, 0, 5, 0] // Dashed for less important lines if needed
+                                dashArray: [0, 0, 0, 5, 0] 
                             },
                             fill: {
                                 type: 'gradient',
@@ -524,7 +528,7 @@ const GlobalDashboard = () => {
                             },
                             dataLabels: { enabled: false },
                             grid: {
-                                borderColor: '#f1f5f9',
+                                borderColor: isDarkMode ? '#334155' : '#f1f5f9',
                                 strokeDashArray: 3,
                                 xaxis: { lines: { show: true } },
                                 yaxis: { lines: { show: true } },
@@ -535,24 +539,24 @@ const GlobalDashboard = () => {
                                 axisTicks: { show: false },
                                 tickAmount: 10,
                                 labels: {
-                                    style: { colors: '#94a3b8', fontSize: '10px', fontFamily: 'monospace' }
+                                    style: { colors: isDarkMode ? '#cbd5e1' : '#94a3b8', fontSize: '10px', fontFamily: 'monospace' }
                                 }
                             },
                             yaxis: [
                                 {
                                     // Primary Axis: Amount (DH) & Volume
-                                    title: { text: "Volume (DH / Qté)", style: { color: '#94a3b8', fontSize: '10px' } },
+                                    title: { text: "Volume (DH / Qté)", style: { color: isDarkMode ? '#94a3b8' : '#94a3b8', fontSize: '10px' } },
                                     labels: {
-                                        style: { colors: '#64748b', fontSize: '10px', fontFamily: 'monospace' },
+                                        style: { colors: isDarkMode ? '#cbd5e1' : '#64748b', fontSize: '10px', fontFamily: 'monospace' },
                                         formatter: (val) => val >= 1000 ? (val/1000).toFixed(1) + 'k' : val.toFixed(0)
                                     }
                                 },
                                 {
                                     // Secondary Axis: Unit Costs (Small numbers)
                                     opposite: true,
-                                    title: { text: "Coût Unitaire (DH)", style: { color: '#94a3b8', fontSize: '10px' } },
+                                    title: { text: "Coût Unitaire (DH)", style: { color: isDarkMode ? '#94a3b8' : '#94a3b8', fontSize: '10px' } },
                                     labels: {
-                                        style: { colors: '#64748b', fontSize: '10px', fontFamily: 'monospace' },
+                                        style: { colors: isDarkMode ? '#cbd5e1' : '#64748b', fontSize: '10px', fontFamily: 'monospace' },
                                         formatter: (val) => val.toFixed(1)
                                     }
                                 }
@@ -562,11 +566,14 @@ const GlobalDashboard = () => {
                                 horizontalAlign: 'right',
                                 fontFamily: 'Inter, sans-serif',
                                 fontWeight: 600,
-                                labels: { colors: '#64748b' }
+                                labels: { colors: isDarkMode ? '#cbd5e1' : '#64748b' }
                             },
                             tooltip: {
-                                theme: 'light',
-                                y: { formatter: (val) => val.toFixed(2) }
+                                theme: 'dark',
+                                style: { fontSize: '12px', fontFamily: 'Inter, sans-serif' },
+                                x: { show: true, format: 'dd MMM' },
+                                y: { formatter: (val) => val.toFixed(2) },
+                                marker: { show: true },
                             }
                         }}
                         series={[
@@ -678,22 +685,24 @@ const GlobalDashboard = () => {
                     </div>
                     
                     <div className="w-full h-[300px]">
-                        <Chart 
+                        <Chart key={isDarkMode ? 'dark' : 'light'} 
                             options={{
                                 chart: { 
                                     type: 'area', 
                                     fontFamily: 'Inter, sans-serif', 
                                     toolbar: { show: false },
-                                    zoom: { enabled: false }
+                                    zoom: { enabled: false },
+                                    background: 'transparent'
                                 },
-                                colors: ['#2563EB', '#10b981'], // Blue (Conf), Green (Del)
+                                theme: { mode: isDarkMode ? 'dark' : 'light' },
+                                colors: ['#2563EB', '#10b981'], 
                                 fill: {
                                     type: 'gradient',
                                     gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1, stops: [0, 100] }
                                 },
                                 stroke: { curve: 'smooth', width: 3 },
                                 dataLabels: { enabled: false },
-                                grid: { borderColor: '#f1f5f9', strokeDashArray: 3 },
+                                grid: { borderColor: isDarkMode ? '#334155' : '#f1f5f9', strokeDashArray: 3 },
                                 xaxis: {
                                     categories: (data.confirmation.history || []).map(h => h.day),
                                     labels: { show: false },
@@ -702,10 +711,15 @@ const GlobalDashboard = () => {
                                     axisTicks: { show: false }
                                 },
                                 yaxis: {
-                                    labels: { style: { colors: '#64748b', fontSize: '10px' } }
+                                    labels: { style: { colors: isDarkMode ? '#cbd5e1' : '#64748b', fontSize: '10px' } }
                                 },
-                                legend: { position: 'top', horizontalAlign: 'right' },
-                                tooltip: { theme: 'light' }
+                                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: isDarkMode ? '#cbd5e1' : '#64748b' } },
+                                tooltip: { 
+                                    theme: 'dark',
+                                    style: { fontSize: '12px', fontFamily: 'Inter, sans-serif' },
+                                    x: { show: true },
+                                    marker: { show: true }
+                                }
                             }}
                             series={[
                                 { name: 'Confirmées', data: (data.confirmation.history || []).map(h => h.confirmed) },
@@ -735,17 +749,22 @@ const GlobalDashboard = () => {
                         <p className="text-xs text-slate-500">Répartition actuelle de l'inventaire</p>
                     </div>
                     <div className="flex-1 min-h-[250px] relative">
-                        <Chart 
+                        <Chart key={isDarkMode ? 'dark' : 'light'} 
                             options={{
-                                chart: { type: 'donut', fontFamily: 'Inter, sans-serif' },
+                                chart: { type: 'donut', fontFamily: 'Inter, sans-serif', background: 'transparent' },
+                                theme: { mode: isDarkMode ? 'dark' : 'light' },
                                 labels: ['Restant', 'Livré', 'Retourné', 'Traitement'],
                                 colors: ['#cbd5e1', '#10b981', '#ef4444', '#6366f1'],
                                 plotOptions: {
-                                    pie: { donut: { size: '75%', labels: { show: true, total: { show: true, label: 'Total', fontSize: '12px', color: '#64748b' } } } }
+                                    pie: { donut: { size: '75%', labels: { show: true, total: { show: true, label: 'Total', fontSize: '12px', color: isDarkMode ? '#cbd5e1' : '#64748b' } } } }
                                 },
                                 dataLabels: { enabled: false },
-                                legend: { position: 'bottom', fontSize: '12px' },
-                                stroke: { show: false }
+                                legend: { position: 'bottom', fontSize: '12px', labels: { colors: isDarkMode ? '#cbd5e1' : '#64748b' } },
+                                stroke: { show: false },
+                                tooltip: { 
+                                    theme: 'dark',
+                                    style: { fontSize: '12px', fontFamily: 'Inter, sans-serif' }
+                                }
                             }}
                             series={[
                                 data.stock.stockRest, 
@@ -787,16 +806,18 @@ const GlobalDashboard = () => {
                                     fontFamily: 'Inter, sans-serif', 
                                     toolbar: { show: false },
                                     zoom: { enabled: false },
-                                    stacked: false
+                                    stacked: false,
+                                    background: 'transparent'
                                 },
-                                colors: ['#10b981', '#ef4444', '#6366f1'], // Deliveries (Green), Returns (Red), Pending (Indigo)
+                                theme: { mode: isDarkMode ? 'dark' : 'light' },
+                                colors: ['#10b981', '#ef4444', '#6366f1'], 
                                 fill: {
                                     type: 'gradient',
                                     gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0.1, stops: [0, 100] }
                                 },
                                 stroke: { curve: 'smooth', width: 2 },
                                 dataLabels: { enabled: false },
-                                grid: { borderColor: '#f1f5f9', strokeDashArray: 3 },
+                                grid: { borderColor: isDarkMode ? '#334155' : '#f1f5f9', strokeDashArray: 3 },
                                 xaxis: {
                                     categories: (data.stock.history || []).map(h => h.day),
                                     labels: { show: false },
@@ -804,10 +825,14 @@ const GlobalDashboard = () => {
                                     axisTicks: { show: false }
                                 },
                                 yaxis: {
-                                    labels: { style: { colors: '#64748b', fontSize: '10px' } }
+                                    labels: { style: { colors: isDarkMode ? '#cbd5e1' : '#64748b', fontSize: '10px' } }
                                 },
-                                legend: { position: 'top', horizontalAlign: 'right' },
-                                tooltip: { theme: 'light' }
+                                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: isDarkMode ? '#cbd5e1' : '#64748b' } },
+                                tooltip: { 
+                                    theme: 'dark',
+                                    style: { fontSize: '12px', fontFamily: 'Inter, sans-serif' },
+                                    marker: { show: true }
+                                }
                             }}
                             series={[
                                 { name: 'Livrés', data: (data.stock.history || []).map(h => h.delivered) },
@@ -839,11 +864,19 @@ const GlobalDashboard = () => {
                         </div>
                     </div>
                     <div className="h-16 w-16">
-                         <Chart 
+                         <Chart key={isDarkMode ? 'dark' : 'light'} 
                             options={{
-                                chart: { type: 'radialBar', sparkline: { enabled: true } },
-                                plotOptions: { radialBar: { hollow: { size: '50%' }, track: { background: '#f1f5f9' }, dataLabels: { show: false } } },
-                                colors: ['#6366f1'], stroke: { lineCap: 'round' }
+                                chart: { type: 'radialBar', sparkline: { enabled: true }, background: 'transparent' },
+                                theme: { mode: isDarkMode ? 'dark' : 'light' },
+                                plotOptions: { 
+                                    radialBar: { 
+                                        hollow: { size: '50%' }, 
+                                        track: { background: isDarkMode ? '#334155' : '#f1f5f9' }, 
+                                        dataLabels: { show: false } 
+                                    } 
+                                },
+                                colors: ['#6366f1'], stroke: { lineCap: 'round' },
+                                tooltip: { theme: 'dark' }
                             }}
                             series={[75]} // Mock target percentage
                             type="radialBar" height="100%" width="100%"
@@ -921,9 +954,10 @@ const GlobalDashboard = () => {
                         </div>
                    </div>
                    <div className="h-[320px]">
-                       <Chart
+                       <Chart key={isDarkMode ? 'dark' : 'light'}
                             options={{
-                                chart: { type: 'line', toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+                                chart: { type: 'line', toolbar: { show: false }, fontFamily: 'Inter, sans-serif', background: 'transparent' },
+                                theme: { mode: isDarkMode ? 'dark' : 'light' },
                                 stroke: { curve: 'smooth', width: [3, 2] },
                                 colors: ['#2563EB', '#10b981'],
                                 fill: { type: ['gradient', 'solid'], gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0.05, stops: [0, 100] } },
@@ -935,12 +969,16 @@ const GlobalDashboard = () => {
                                     axisTicks: { show: false }
                                 },
                                 yaxis: [
-                                    { title: { text: "Revenus (DH)", style: { fontSize: '10px', color: '#64748b' } }, labels: { formatter: val => val >= 1000 ? (val/1000).toFixed(1)+'k' : val } },
-                                    { opposite: true, title: { text: "Colis", style: { fontSize: '10px', color: '#64748b' } } }
+                                    { title: { text: "Revenus (DH)", style: { fontSize: '10px', color: isDarkMode ? '#cbd5e1' : '#64748b' } }, labels: { style: { colors: isDarkMode ? '#cbd5e1' : '#64748b' }, formatter: val => val >= 1000 ? (val/1000).toFixed(1)+'k' : val } },
+                                    { opposite: true, title: { text: "Colis", style: { fontSize: '10px', color: isDarkMode ? '#cbd5e1' : '#64748b' } }, labels: { style: { colors: isDarkMode ? '#cbd5e1' : '#64748b' } } }
                                 ],
-                                legend: { position: 'top' },
-                                grid: { borderColor: '#f1f5f9' },
-                                tooltip: { theme: 'light' }
+                                legend: { position: 'top', labels: { colors: isDarkMode ? '#cbd5e1' : '#64748b' } },
+                                grid: { borderColor: isDarkMode ? '#334155' : '#f1f5f9' },
+                                tooltip: { 
+                                    theme: 'dark',
+                                    style: { fontSize: '12px', fontFamily: 'Inter, sans-serif' },
+                                    y: { formatter: (val) => typeof val === 'number' ? val.toFixed(2) : val }
+                                }
                             }}
                             series={[
                                 { name: 'Chiffre d\'Affaires (DH)', type: 'area', data: (data.delivery.history || []).map(h => h.revenue) },
@@ -961,17 +999,18 @@ const GlobalDashboard = () => {
                              <p className="text-xs text-slate-500">Panier vs Unité (DH)</p>
                         </div>
                         <div className="h-[200px]">
-                            <Chart 
+                            <Chart key={isDarkMode ? 'dark' : 'light'} 
                                 options={{
-                                    chart: { type: 'bar', toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+                                    chart: { type: 'bar', toolbar: { show: false }, fontFamily: 'Inter, sans-serif', background: 'transparent' },
+                                    theme: { mode: isDarkMode ? 'dark' : 'light' },
                                     plotOptions: { bar: { borderRadius: 6, columnWidth: '50%', distributed: true } },
                                     colors: ['#3b82f6', '#8b5cf6', '#10b981'],
-                                    dataLabels: { enabled: true, formatter: val => `${val} DH`, style: { fontSize: '10px' }, offsetY: -20, replaceUndefined: false },
-                                    xaxis: { categories: ['Panier Moyen', 'Prix/Colis', 'Prix/Pièce'], labels: { style: { fontSize: '10px', fontWeight: 600 } }, axisBorder: {show:false}, axisTicks:{show:false} },
+                                    dataLabels: { enabled: true, formatter: val => `${val} DH`, style: { fontSize: '10px', colors: [isDarkMode ? '#cbd5e1' : '#1e293b'] }, offsetY: -20, replaceUndefined: false },
+                                    xaxis: { categories: ['Panier Moyen', 'Prix/Colis', 'Prix/Pièce'], labels: { style: { fontSize: '10px', fontWeight: 600, colors: isDarkMode ? '#cbd5e1' : '#64748b' } }, axisBorder: {show:false}, axisTicks:{show:false} },
                                     yaxis: { show: false },
                                     grid: { show: false },
                                     legend: { show: false },
-                                    tooltip: { theme: 'light' }
+                                    tooltip: { theme: 'dark' }
                                 }}
                                 series={[{ name: 'Valeur', data: [data.delivery.avgCart, data.delivery.avgParcelPrice, data.delivery.avgPiecePrice] }]}
                                 type="bar"
