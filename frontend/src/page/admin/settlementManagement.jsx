@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   CheckCircle, XCircle, Package, DollarSign, User, Calendar, 
   Filter, Clock, Truck, FileText, AlertTriangle, Eye, TrendingUp,
@@ -206,11 +207,11 @@ export default function SettlementManagement() {
     .reduce((sum, b) => sum + b.driverCommission, 0);
 
   return (
-    <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out]">
+    <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out] dark:text-slate-200">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
         <div>
-          <h1 className="text-2xl font-extrabold text-[#018790]">Check Livreur</h1>
+          <h1 className="text-2xl font-extrabold text-[#2563EB]">Check Livreur</h1>
           <p className="text-slate-500">Approuvez ou rejetez les demandes de versement des livreurs</p>
         </div>
       </div>
@@ -220,7 +221,7 @@ export default function SettlementManagement() {
         <SpotlightCard theme="light" className="flex flex-col justify-between h-full">
           <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">En attente</span>
-            <Clock size={18} className="text-[#018790]" />
+            <Clock size={18} className="text-[#2563EB]" />
           </div>
           <div>
             <div className="text-2xl font-black text-slate-800">{pendingSettlements.toFixed(2)} DH</div>
@@ -258,13 +259,13 @@ export default function SettlementManagement() {
            <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Search size={12}/> Recherche</label>
                 <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]/50" size={18} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]/50" size={18} />
                     <input 
                         type="text" 
                         placeholder="ID Lot, Livreur..." 
                         value={searchTerm} 
                         onChange={(e) => setSearchTerm(e.target.value)} 
-                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all" 
+                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all" 
                     />
                 </div>
             </div>
@@ -275,7 +276,7 @@ export default function SettlementManagement() {
               type="date"
               value={filterDate}
               onChange={(e) => setFilterDate(e.target.value)}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 transition-all"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all"
             />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -284,7 +285,7 @@ export default function SettlementManagement() {
               <select
                 value={filterDriver}
                 onChange={(e) => setFilterDriver(e.target.value)}
-                className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 transition-all appearance-none cursor-pointer"
+                className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all appearance-none cursor-pointer"
               >
                 <option value="all">Tous les livreurs</option>
                 {drivers.map(driver => (
@@ -300,7 +301,7 @@ export default function SettlementManagement() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 transition-all appearance-none cursor-pointer"
+                className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all appearance-none cursor-pointer"
               >
                 <option value="all">Tous les statuts</option>
                 <option value="En attente">En attente</option>
@@ -332,16 +333,16 @@ export default function SettlementManagement() {
       <SpotlightCard theme="light" className="overflow-hidden p-0">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-[#005461]/5 border-b border-[#005461]/10">
+            <thead className="bg-[#1e3a8a]/5 border-b border-[#1e3a8a]/10">
               <tr>
-                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Lot</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Livreur</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Date</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Commandes</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Total Cash</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Commission</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Statut</th>
-                <th className="text-right px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Actions</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Lot</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Livreur</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Date</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Commandes</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Total Cash</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Commission</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Statut</th>
+                <th className="text-right px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -383,7 +384,7 @@ export default function SettlementManagement() {
                     <td className="px-6 py-4 font-bold text-slate-800">
                         {batch.totalCash} DH
                     </td>
-                    <td className="px-6 py-4 font-bold text-[#018790]">
+                    <td className="px-6 py-4 font-bold text-[#2563EB]">
                         {batch.driverCommission} DH
                     </td>
                     <td className="px-6 py-4">
@@ -428,17 +429,17 @@ export default function SettlementManagement() {
       </SpotlightCard>
 
       {/* Batch Details Modal */}
-      {showBatchDetails && selectedBatch && (
+      {showBatchDetails && selectedBatch && createPortal(
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <SpotlightCard theme="light" className="w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col !p-0 !bg-white/90">
+          <SpotlightCard theme="light" className="w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col !p-0 bg-white/90 dark:bg-slate-900">
             {/* Modal Header */}
-            <div className="flex justify-between items-center px-6 py-5 border-b border-slate-100 bg-[#005461]/5">
+            <div className="flex justify-between items-center px-6 py-5 border-b border-slate-100 bg-[#1e3a8a]/5">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-[#005461]/10 rounded-lg text-[#005461]">
+                <div className="p-2 bg-[#1e3a8a]/10 rounded-lg text-[#1e3a8a]">
                   <FileText size={24} />
                 </div>
                 <div>
-                    <h3 className="font-bold text-[#005461] text-xl">Détails du Lot #{selectedBatch.id}</h3>
+                    <h3 className="font-bold text-[#1e3a8a] text-xl">Détails du Lot #{selectedBatch.id}</h3>
                     <p className="text-xs text-slate-500">Livreur: {selectedBatch.driverName}</p>
                 </div>
               </div>
@@ -453,11 +454,11 @@ export default function SettlementManagement() {
             {/* Modal Content */}
             <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
               {/* Summary Header */}
-              <div className="bg-gradient-to-br from-[#005461]/5 to-[#018790]/5 p-6 rounded-2xl mb-8 border border-[#005461]/10">
+              <div className="bg-gradient-to-br from-[#1e3a8a]/5 to-[#2563EB]/5 p-6 rounded-2xl mb-8 border border-[#1e3a8a]/10">
                 <div className="grid grid-cols-2 gap-8">
                   <div>
-                    <p className="text-xs text-[#005461] font-bold uppercase tracking-wider mb-2">Montant attendu</p>
-                    <p className="text-4xl font-black text-[#005461]">{selectedBatch.totalCash} <span className="text-lg font-bold text-[#005461]/50">DH</span></p>
+                    <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">Montant attendu</p>
+                    <p className="text-4xl font-black text-[#1e3a8a]">{selectedBatch.totalCash} <span className="text-lg font-bold text-[#1e3a8a]/50">DH</span></p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">Commission du livreur</p>
@@ -469,14 +470,14 @@ export default function SettlementManagement() {
               {/* Order List */}
               <div>
                 <h4 className="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
-                    <Package size={16} className="text-[#018790]" />
+                    <Package size={16} className="text-[#2563EB]" />
                     Commandes incluses ({selectedBatch.orders.length})
                 </h4>
                 <div className="space-y-3">
                   {selectedBatch.orders.map((order, index) => (
                     <div key={index} className="flex items-center justify-between p-4 bg-white rounded-xl hover:shadow-md transition-all border border-slate-100 group">
                       <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 rounded-lg bg-[#005461]/10 flex items-center justify-center text-[#005461] font-bold text-xs">
+                        <div className="w-8 h-8 rounded-lg bg-[#1e3a8a]/10 flex items-center justify-center text-[#1e3a8a] font-bold text-xs">
                           {index + 1}
                         </div>
                         <div>
@@ -503,7 +504,8 @@ export default function SettlementManagement() {
               </button>
             </div>
           </SpotlightCard>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -130,7 +130,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen w-full flex bg-[#f8f9fc] text-slate-900 font-sans overflow-hidden relative">
+    <div className="min-h-screen w-full flex bg-[#f8f9fc] dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans overflow-hidden relative transition-colors duration-300">
       
       {/* Toast Notification */}
       {toast.show && (

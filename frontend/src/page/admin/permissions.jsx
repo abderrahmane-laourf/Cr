@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Search, Plus, Edit2, Trash2, Eye, X, Check,
   LayoutDashboard, Users, Box, Workflow, Package, ShoppingCart,
@@ -94,11 +95,9 @@ const ADMIN_MODULES = [
     ]
   },
   {
-    category: "Actifs / Pubs",
-    icon: Building,
+    category: "Publicité",
+    icon: Megaphone,
     items: [
-      { id: 'actifs-dash', label: 'Dashboard Actifs', actions: ['view'] },
-      { id: 'actifs-list', label: 'Liste des actifs', actions: ['view', 'create', 'edit'] },
       { id: 'ads-dash', label: 'Dashboard Pubs', actions: ['view'] },
       { id: 'ads-list', label: 'Liste des publicités', actions: ['view', 'create', 'edit'] },
     ]
@@ -142,7 +141,7 @@ const Toast = ({ message, type = 'success', onClose }) => {
   return (
     <div className="fixed top-6 right-6 z-[100] animate-in slide-in-from-right-10 fade-in duration-300">
       <div className={`flex items-center gap-3 px-6 py-4 rounded-xl shadow-lg border backdrop-blur-md
-        ${type === 'success' ? 'bg-[#005461] text-white border-[#005461]' : 'bg-red-50 text-red-800 border-red-100'}`}>
+        ${type === 'success' ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]' : 'bg-red-50 text-red-800 border-red-100'}`}>
         <div className={`p-1 rounded-full ${type === 'success' ? 'bg-white/20' : 'bg-red-500/20'}`}>
            {type === 'success' ? <Check size={16} className="text-white" /> : <X size={16} className="text-red-500" />}
         </div>
@@ -208,23 +207,23 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
 
   const activeModuleData = modulesConfig.find(m => m.category === activeCategory);
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all">
       <SpotlightCard theme="light" className="w-full max-w-6xl h-[85vh] flex flex-col !p-0 overflow-hidden border border-slate-200">
         
         {/* Header - Simple & Clean */}
-        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-white dark:bg-slate-900 shrink-0">
           <div className="flex items-center gap-5">
             <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border-2 border-slate-100 shadow-sm">
                 <img src={employee.avatar || "https://i.pravatar.cc/150"} alt={employee.name} className="w-full h-full object-cover" />
             </div>
             <div>
-              <h3 className="font-bold text-xl text-[#005461]">{employee.name}</h3>
+              <h3 className="font-bold text-xl text-[#1e3a8a]">{employee.name}</h3>
               <p className="text-xs text-slate-400 font-bold uppercase tracking-wide">Configuration des accès</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-             <button onClick={selectAll} className="text-xs font-bold text-slate-500 hover:text-[#005461] hover:bg-[#005461]/5 px-4 py-2.5 rounded-xl transition-colors border border-slate-200">
+             <button onClick={selectAll} className="text-xs font-bold text-slate-500 hover:text-[#1e3a8a] hover:bg-[#1e3a8a]/5 px-4 py-2.5 rounded-xl transition-colors border border-slate-200">
                Tout cocher / Décocher
              </button>
              <button onClick={onClose} className="p-2.5 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
@@ -235,7 +234,7 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
 
         <div className="flex flex-1 overflow-hidden">
             {/* Sidebar Categories - Minimalist */}
-            <div className="w-72 bg-slate-50/50 border-r border-slate-100 overflow-y-auto p-4 space-y-1">
+            <div className="w-72 bg-slate-50/50 dark:bg-slate-900 border-r border-slate-100 overflow-y-auto p-4 space-y-1">
                 {modulesConfig.map((module) => {
                     const Icon = module.icon;
                     const isActive = activeCategory === module.category;
@@ -247,15 +246,15 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
                             onClick={() => setActiveCategory(module.category)}
                             className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all
                                 ${isActive 
-                                    ? 'bg-white text-[#005461] shadow-md shadow-slate-200 border border-slate-100' 
+                                    ? 'bg-white text-[#1e3a8a] shadow-md shadow-slate-200 border border-slate-100' 
                                     : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700 border border-transparent'}`}
                         >
                             <div className="flex items-center gap-3">
-                                <Icon size={18} className={isActive ? 'text-[#018790]' : 'text-slate-400'} />
+                                <Icon size={18} className={isActive ? 'text-[#2563EB]' : 'text-slate-400'} />
                                 <span>{module.category}</span>
                             </div>
                             {activeCount > 0 && (
-                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${isActive ? 'bg-[#005461]/10 text-[#005461]' : 'bg-slate-200 text-slate-500'}`}>
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${isActive ? 'bg-[#1e3a8a]/10 text-[#1e3a8a]' : 'bg-slate-200 text-slate-500'}`}>
                                     {activeCount}
                                 </span>
                             )}
@@ -265,14 +264,14 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 overflow-y-auto p-8 bg-white/80">
+            <div className="flex-1 overflow-y-auto p-8 bg-white/80 dark:bg-slate-900">
                 {activeModuleData ? (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
                         <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                            <div className="p-2 bg-[#005461]/5 rounded-lg text-[#005461]">
+                            <div className="p-2 bg-[#1e3a8a]/5 rounded-lg text-[#1e3a8a]">
                                 <activeModuleData.icon size={24} />
                             </div>
-                            <h2 className="text-xl font-extrabold text-[#005461]">{activeModuleData.category}</h2>
+                            <h2 className="text-xl font-extrabold text-[#1e3a8a]">{activeModuleData.category}</h2>
                         </div>
 
                         <div className="grid grid-cols-1 gap-6">
@@ -280,9 +279,9 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
                                 const allActive = item.actions.every(act => permissions.has(`${item.id}:${act}`));
                                 
                                 return (
-                                    <div key={item.id} className="p-6 rounded-2xl border border-slate-100 hover:border-[#018790]/30 hover:bg-[#005461]/[0.02] transition-colors bg-white">
+                                    <div key={item.id} className="p-6 rounded-2xl border border-slate-100 hover:border-[#2563EB]/30 hover:bg-[#1e3a8a]/[0.02] transition-colors bg-white dark:bg-slate-900">
                                         <div className="flex items-center gap-4 mb-5 cursor-pointer" onClick={() => toggleModuleAll(item)}>
-                                            <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${allActive ? 'bg-[#005461] border-[#005461] text-white scale-110 shadow-lg shadow-[#005461]/20' : 'border-slate-300 bg-white hover:border-[#018790]'}`}>
+                                            <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${allActive ? 'bg-[#1e3a8a] border-[#1e3a8a] text-white scale-110 shadow-lg shadow-blue-900/20' : 'border-slate-300 bg-white hover:border-[#2563EB]'}`}>
                                                 {allActive && <Check size={14} strokeWidth={4} />}
                                             </div>
                                             <span className="font-bold text-lg text-slate-800">{item.label}</span>
@@ -304,8 +303,8 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
                                                         className={`
                                                             px-4 py-2 rounded-lg text-xs font-bold border-2 transition-all duration-200 flex items-center gap-2
                                                             ${isActive 
-                                                                ? 'bg-[#005461] text-white border-[#005461] shadow-md shadow-[#005461]/20' 
-                                                                : 'bg-white text-slate-500 border-slate-200 hover:border-[#018790] hover:text-[#018790]'}
+                                                                ? 'bg-[#1e3a8a] text-white border-[#1e3a8a] shadow-md shadow-blue-900/20' 
+                                                                : 'bg-white text-slate-500 border-slate-200 hover:border-[#2563EB] hover:text-[#2563EB]'}
                                                         `}
                                                     >
                                                         {isActive && <Check size={12} strokeWidth={3} />}
@@ -329,13 +328,13 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3 shrink-0">
+        <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 dark:bg-slate-900 flex justify-end gap-3 shrink-0">
           <button onClick={onClose} className="px-6 py-3 rounded-xl text-slate-600 font-bold hover:bg-white border border-transparent hover:border-slate-200 text-sm transition-all">
             Annuler
           </button>
           <button 
             onClick={() => { onSave(employee.id, Array.from(permissions)); onClose(); }} 
-            className="px-8 py-3 rounded-xl bg-[#005461] text-white font-bold text-sm hover:bg-[#016f76] shadow-lg shadow-cyan-900/20 transition-all flex items-center gap-2"
+            className="px-8 py-3 rounded-xl bg-[#1e3a8a] text-white font-bold text-sm hover:bg-[#1e40af] shadow-lg shadow-blue-900/20 transition-all flex items-center gap-2"
           >
             <Check size={18} />
             Enregistrer les modifications
@@ -343,7 +342,8 @@ const PermissionsModal = ({ isOpen, onClose, employee, onSave }) => {
         </div>
 
       </SpotlightCard>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -395,7 +395,7 @@ export default function PermissionsPage() {
   const filteredEmployees = employees.filter(emp => emp.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
-    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 relative">
+    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 dark:text-slate-200 relative">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       <div className="w-full space-y-8">
@@ -403,7 +403,7 @@ export default function PermissionsPage() {
           <SpotlightCard theme="light" className="mb-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                 <h1 className="text-3xl font-extrabold text-[#018790] tracking-tight mb-2">Gestion des Permissions</h1>
+                 <h1 className="text-3xl font-extrabold text-[#2563EB] tracking-tight mb-2">Gestion des Permissions</h1>
                  <div className="flex items-center gap-3">
                     <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -416,13 +416,13 @@ export default function PermissionsPage() {
               </div>
 
               <div className="relative group w-full md:w-96">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]/50" size={20} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]/50" size={20} />
                 <input 
                     type="text" 
                     placeholder="Rechercher un membre..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all font-semibold"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all font-semibold"
                 />
               </div>
             </div>
@@ -431,20 +431,20 @@ export default function PermissionsPage() {
           <SpotlightCard theme="light" className="!p-0 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-[#005461]/5 border-b border-[#005461]/10">
+                <thead className="bg-[#1e3a8a]/5 border-b border-[#1e3a8a]/10">
                   <tr>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Employé</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Rôle</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Statut</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Permissions</th>
-                    <th className="text-right px-6 py-4 text-xs font-bold text-[#005461] uppercase tracking-wider">Actions</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Employé</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Rôle</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Statut</th>
+                    <th className="text-left px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Permissions</th>
+                    <th className="text-right px-6 py-4 text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {loading ? (
                      <tr>
                         <td colSpan="5" className="px-6 py-8 text-center text-slate-400">
-                           <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-200 border-t-[#005461]"></div>
+                           <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-200 border-t-[#1e3a8a]"></div>
                         </td>
                      </tr>
                   ) : filteredEmployees.length === 0 ? (
@@ -485,7 +485,7 @@ export default function PermissionsPage() {
                             </span>
                         </td>
                         <td className="px-6 py-4">
-                           <div className="flex items-center gap-2 text-slate-600 bg-slate-50 inline-flex px-3 py-1.5 rounded-lg border border-slate-100 group-hover:bg-white group-hover:border-[#018790]/20 transition-all">
+                           <div className="flex items-center gap-2 text-slate-600 bg-slate-50 inline-flex px-3 py-1.5 rounded-lg border border-slate-100 group-hover:bg-white group-hover:border-[#2563EB]/20 transition-all">
                               <UnlockIcon hasPermissions={employee.permissions.length > 0} />
                               <span className="text-xs font-bold">{employee.permissions.length} accès configurés</span>
                            </div>
@@ -493,7 +493,7 @@ export default function PermissionsPage() {
                         <td className="px-6 py-4 text-right">
                            <button 
                              onClick={() => handleOpenModal(employee)} 
-                             className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-[#005461] hover:border-[#005461] hover:text-white transition-all shadow-sm group-hover:shadow-md"
+                             className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-[#1e3a8a] hover:border-[#1e3a8a] hover:text-white transition-all shadow-sm group-hover:shadow-md"
                            >
                               <Settings size={14} />
                               Configurer
@@ -519,5 +519,5 @@ export default function PermissionsPage() {
 }
 
 const UnlockIcon = ({ hasPermissions }) => {
-    return hasPermissions ? <ShieldCheck size={18} className="text-[#018790]" /> : <Lock size={18} className="opacity-50" />;
+    return hasPermissions ? <ShieldCheck size={18} className="text-[#2563EB]" /> : <Lock size={18} className="opacity-50" />;
 }

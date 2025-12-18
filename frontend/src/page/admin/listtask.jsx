@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Search, Plus, Edit2, Trash2, X, Check, Calendar, AlertCircle, 
   CheckCircle, ChevronDown, FileText, Eye, EyeOff, MessageSquare, 
@@ -23,7 +24,7 @@ const Toast = ({ message, type = "success", onClose }) => {
           <AlertCircle size={24} className="text-red-500" />
         )}
         <div>
-          <h4 className="font-bold text-sm">{type === "success" ? "Succès" : "Erreur"}</h4>
+          <h4 className="font-bold text-sm">{type === "success" ? "SuccÃ¨s" : "Erreur"}</h4>
           <p className="text-xs opacity-90">{message}</p>
         </div>
         <button onClick={onClose} className="ml-4 opacity-50 hover:opacity-100">
@@ -36,14 +37,14 @@ const Toast = ({ message, type = "success", onClose }) => {
 
 const InputField = ({ label, type = "text", placeholder, value, onChange, disabled }) => (
   <div className="group">
-    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
+    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 dark:group-focus-within:text-blue-400 transition-colors">
       {label} {!disabled && <span className="text-red-400">*</span>}
     </label>
     <input
       type={type}
       disabled={disabled}
       placeholder={placeholder}
-      className="w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500"
+      className="w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-sm placeholder-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:text-slate-500"
       value={value}
       onChange={onChange}
     />
@@ -52,19 +53,19 @@ const InputField = ({ label, type = "text", placeholder, value, onChange, disabl
 
 const SelectField = ({ label, options, value, onChange, disabled }) => (
   <div className="group">
-    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
+    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 dark:group-focus-within:text-blue-400 transition-colors">
       {label} {!disabled && <span className="text-red-400">*</span>}
     </label>
     <div className="relative">
       <select
         disabled={disabled}
-        className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer"
+        className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:text-slate-500 cursor-pointer"
         value={value}
         onChange={onChange}
       >
         <option value="">Sélectionner</option>
         {options.map((opt) => (
-          <option key={opt.id} value={opt.id}>
+          <option key={opt.id} value={opt.id} className="dark:bg-slate-800">
             {opt.name}
           </option>
         ))}
@@ -80,14 +81,14 @@ const SelectField = ({ label, options, value, onChange, disabled }) => (
 
 const TextAreaField = ({ label, placeholder, value, onChange, disabled, required = true }) => (
   <div className="group">
-    <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
+    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 dark:group-focus-within:text-blue-400 transition-colors">
       {label} {!disabled && required && <span className="text-red-400">*</span>}
     </label>
     <textarea
       rows={3}
       disabled={disabled}
       placeholder={placeholder}
-      className="w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm placeholder-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500 resize-none"
+      className="w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-sm placeholder-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:text-slate-500 resize-none"
       value={value}
       onChange={onChange}
     />
@@ -133,17 +134,17 @@ const TaskModal = ({ isOpen, onClose, employees, onSave }) => {
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col animate-in zoom-in-95 duration-200">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-lg flex flex-col animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">Nouvelle Tâche</h2>
-            <p className="text-sm text-slate-500">Attribuer une tâche à un employé</p>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Nouvelle Tâche</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Attribuer une tâche à un employé</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors"
+            className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-500 dark:hover:text-red-400 rounded-full transition-colors"
           >
             <X size={24} />
           </button>
@@ -151,7 +152,7 @@ const TaskModal = ({ isOpen, onClose, employees, onSave }) => {
 
         <form onSubmit={handleSubmit} className="p-8 space-y-5">
           <SelectField
-            label="Employé"
+            label="EmployÃ©"
             options={employees}
             value={formData.employeeId}
             onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
@@ -159,13 +160,13 @@ const TaskModal = ({ isOpen, onClose, employees, onSave }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <InputField
-              label="Date de début"
+              label="Date de dÃ©but"
               type="date"
               value={formData.startDate}
               onChange={(e) => handleChange({ target: { name: "startDate", value: e.target.value } })}
             />
             <SelectField
-              label="Priorité"
+              label="PrioritÃ©"
               options={[
                 { id: "low", name: "Basse" },
                 { id: "normal", name: "Normale" },
@@ -177,15 +178,15 @@ const TaskModal = ({ isOpen, onClose, employees, onSave }) => {
           </div>
 
           <InputField
-            label="Durée (Jours)"
+            label="DurÃ©e (Jours)"
             type="number"
             value={formData.days}
             onChange={(e) => handleChange({ target: { name: "days", value: e.target.value } })}
           />
 
           <TextAreaField
-            label="Description de la tâche"
-            placeholder="Détails de la tâche..."
+            label="Description de la tÃ¢che"
+            placeholder="DÃ©tails de la tÃ¢che..."
             value={formData.description}
             onChange={(e) => handleChange({ target: { name: "description", value: e.target.value } })}
           />
@@ -194,7 +195,7 @@ const TaskModal = ({ isOpen, onClose, employees, onSave }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all"
+              className="px-6 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition-all"
             >
               Annuler
             </button>
@@ -207,7 +208,8 @@ const TaskModal = ({ isOpen, onClose, employees, onSave }) => {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -216,17 +218,17 @@ const TaskModal = ({ isOpen, onClose, employees, onSave }) => {
 const TaskDetailModal = ({ isOpen, onClose, task, onUpdate }) => {
   if (!isOpen || !task) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-hidden">
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">Détails de la Tâche</h2>
-            <p className="text-sm text-slate-500">Suivi et réponse de l'employé</p>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Détails de la Tâche</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Suivi et réponse de l'employé</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors"
+            className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-500 dark:hover:text-red-400 rounded-full transition-colors"
           >
             <X size={24} />
           </button>
@@ -234,57 +236,57 @@ const TaskDetailModal = ({ isOpen, onClose, task, onUpdate }) => {
 
         <div className="p-8 space-y-6 overflow-y-auto">
           {/* Task Info */}
-          <div className="bg-slate-50 rounded-2xl p-5 space-y-3">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg">
                 {task.employeeName?.charAt(0)}
               </div>
               <div>
-                <h3 className="font-bold text-slate-800">{task.employeeName}</h3>
-                <div className="flex items-center gap-2 text-xs text-slate-500">
+                <h3 className="font-bold text-slate-800 dark:text-slate-200">{task.employeeName}</h3>
+                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                   <Calendar size={12} />
                   {new Date(task.startDate).toLocaleDateString("fr-FR", {
                     day: "2-digit",
                     month: "long",
                     year: "numeric",
                   })}
-                  <span>•</span>
+                  <span>â€¢</span>
                   <Clock size={12} />
                   {task.days} jour(s)
                 </div>
               </div>
             </div>
-            <p className="text-sm text-slate-600 bg-white rounded-xl p-4 border border-slate-100">{task.description}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-100 dark:border-slate-700">{task.description}</p>
           </div>
 
           {/* Visibility Status */}
           <div
             className={`flex items-center gap-4 p-4 rounded-2xl border-2 ${
-              task.seenByEmployee ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"
+              task.seenByEmployee ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800" : "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800"
             }`}
           >
             {task.seenByEmployee ? (
               <>
-                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <Eye size={20} className="text-emerald-600" />
+                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
+                  <Eye size={20} className="text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-emerald-800">Vu par l'employé</p>
-                  <p className="text-xs text-emerald-600">
+                  <p className="font-semibold text-emerald-800 dark:text-emerald-300">Vu par l'employé</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400">
                     {task.seenAt
-                      ? `Le ${new Date(task.seenAt).toLocaleDateString("fr-FR")} à ${new Date(task.seenAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`
+                      ? `Le ${new Date(task.seenAt).toLocaleDateString("fr-FR")} Ã  ${new Date(task.seenAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`
                       : "Date non disponible"}
                   </p>
                 </div>
               </>
             ) : (
               <>
-                <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center animate-pulse">
-                  <EyeOff size={20} className="text-amber-600" />
+                <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center animate-pulse">
+                  <EyeOff size={20} className="text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-amber-800">En attente de lecture</p>
-                  <p className="text-xs text-amber-600">L'employé n'a pas encore consulté cette tâche</p>
+                  <p className="font-semibold text-amber-800 dark:text-amber-300">En attente de lecture</p>
+                  <p className="text-xs text-amber-600 dark:text-amber-400">L'employé n'a pas encore consulté cette tâche</p>
                 </div>
               </>
             )}
@@ -294,21 +296,21 @@ const TaskDetailModal = ({ isOpen, onClose, task, onUpdate }) => {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <MessageSquare size={18} className="text-slate-400" />
-              <h4 className="font-bold text-slate-700 uppercase text-xs tracking-wider">Réponse de l'employé</h4>
+              <h4 className="font-bold text-slate-700 uppercase text-xs tracking-wider">RÃ©ponse de l'employÃ©</h4>
             </div>
             {task.employeeResponse ? (
               <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
                 <p className="text-sm text-blue-800">{task.employeeResponse}</p>
                 {task.responseAt && (
                   <p className="text-xs text-blue-500 mt-2">
-                    Répondu le {new Date(task.responseAt).toLocaleDateString("fr-FR")}
+                    RÃ©pondu le {new Date(task.responseAt).toLocaleDateString("fr-FR")}
                   </p>
                 )}
               </div>
             ) : (
               <div className="bg-slate-100 border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center">
                 <MessageSquare size={24} className="text-slate-300 mx-auto mb-2" />
-                <p className="text-sm text-slate-400">Aucune réponse pour le moment</p>
+                <p className="text-sm text-slate-400">Aucune rÃ©ponse pour le moment</p>
               </div>
             )}
           </div>
@@ -324,11 +326,11 @@ const TaskDetailModal = ({ isOpen, onClose, task, onUpdate }) => {
                 <div className="flex items-start gap-3">
                   <CheckCircle size={20} className="text-emerald-500 mt-0.5" />
                   <div>
-                    <p className="text-sm text-emerald-800 font-medium">Tâche complétée</p>
+                    <p className="text-sm text-emerald-800 font-medium">TÃ¢che complÃ©tÃ©e</p>
                     <p className="text-sm text-emerald-700 mt-1">{task.completionProof}</p>
                     {task.completedAt && (
                       <p className="text-xs text-emerald-500 mt-2">
-                        Complété le {new Date(task.completedAt).toLocaleDateString("fr-FR")}
+                        ComplÃ©tÃ© le {new Date(task.completedAt).toLocaleDateString("fr-FR")}
                       </p>
                     )}
                   </div>
@@ -337,13 +339,13 @@ const TaskDetailModal = ({ isOpen, onClose, task, onUpdate }) => {
             ) : (
               <div className="bg-slate-100 border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center">
                 <Award size={24} className="text-slate-300 mx-auto mb-2" />
-                <p className="text-sm text-slate-400">Pas encore de preuve de complétion</p>
+                <p className="text-sm text-slate-400">Pas encore de preuve de complÃ©tion</p>
               </div>
             )}
           </div>
         </div>
 
-        <div className="px-8 py-5 border-t border-slate-100 bg-slate-50">
+        <div className="px-8 py-5 border-t border-slate-100 bg-slate-50 dark:bg-slate-800/50">
           <button
             onClick={onClose}
             className="w-full px-6 py-3 rounded-xl text-slate-600 font-semibold bg-white border border-slate-200 hover:bg-slate-100 transition-all"
@@ -352,7 +354,8 @@ const TaskDetailModal = ({ isOpen, onClose, task, onUpdate }) => {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -388,7 +391,7 @@ const TaskCard = ({ task, index, onView, onEdit, onDelete }) => {
     responded: {
       bg: "bg-indigo-50 border-indigo-200",
       badge: "bg-indigo-100 text-indigo-700 border-indigo-300",
-      badgeText: "Répondu",
+      badgeText: "RÃ©pondu",
       icon: MessageSquare,
       iconColor: "text-indigo-500",
       pulse: false,
@@ -396,7 +399,7 @@ const TaskCard = ({ task, index, onView, onEdit, onDelete }) => {
     completed: {
       bg: "bg-emerald-50 border-emerald-200",
       badge: "bg-emerald-100 text-emerald-700 border-emerald-300",
-      badgeText: "Terminé",
+      badgeText: "TerminÃ©",
       icon: CheckCircle,
       iconColor: "text-emerald-500",
       pulse: false,
@@ -502,7 +505,7 @@ const TaskCard = ({ task, index, onView, onEdit, onDelete }) => {
           {task.completionProof && (
             <div className="flex items-center gap-2 text-xs text-emerald-600">
               <Award size={14} />
-              <span>Preuve ajoutée</span>
+              <span>Preuve ajoutÃ©e</span>
             </div>
           )}
         </div>
@@ -533,28 +536,28 @@ const TaskManager = () => {
         id: 1,
         employeeName: "Mohamed Amine",
         employeeId: "1",
-        description: "Préparer le rapport mensuel des ventes et l'envoyer à la direction",
+        description: "PrÃ©parer le rapport mensuel des ventes et l'envoyer Ã  la direction",
         startDate: "2024-01-15",
         days: 3,
         priority: "high",
         seenByEmployee: true,
         seenAt: "2024-01-15T09:30:00",
-        employeeResponse: "J'ai commencé à travailler sur le rapport. Je le terminerai avant la date limite.",
+        employeeResponse: "J'ai commencÃ© Ã  travailler sur le rapport. Je le terminerai avant la date limite.",
         responseAt: "2024-01-15T10:00:00",
-        completionProof: "Rapport envoyé par email à direction@company.com le 17/01/2024",
+        completionProof: "Rapport envoyÃ© par email Ã  direction@company.com le 17/01/2024",
         completedAt: "2024-01-17T16:00:00",
       },
       {
         id: 2,
         employeeName: "Sara Benali",
         employeeId: "2",
-        description: "Mettre à jour la base de données clients avec les nouvelles informations",
+        description: "Mettre Ã  jour la base de donnÃ©es clients avec les nouvelles informations",
         startDate: "2024-01-18",
         days: 2,
         priority: "normal",
         seenByEmployee: true,
         seenAt: "2024-01-18T08:15:00",
-        employeeResponse: "Bien reçu, je m'en occupe immédiatement.",
+        employeeResponse: "Bien reÃ§u, je m'en occupe immÃ©diatement.",
         responseAt: "2024-01-18T08:30:00",
         completionProof: null,
         completedAt: null,
@@ -563,7 +566,7 @@ const TaskManager = () => {
         id: 3,
         employeeName: "Karim Zaki",
         employeeId: "3",
-        description: "Organiser la réunion d'équipe pour le projet Alpha",
+        description: "Organiser la rÃ©union d'Ã©quipe pour le projet Alpha",
         startDate: "2024-01-20",
         days: 1,
         priority: "low",
@@ -578,7 +581,7 @@ const TaskManager = () => {
         id: 4,
         employeeName: "Fatima Alaoui",
         employeeId: "4",
-        description: "Réviser les contrats fournisseurs avant signature",
+        description: "RÃ©viser les contrats fournisseurs avant signature",
         startDate: "2024-01-22",
         days: 5,
         priority: "high",
@@ -593,7 +596,7 @@ const TaskManager = () => {
         id: 5,
         employeeName: "Youssef El Amrani",
         employeeId: "5",
-        description: "Former les nouveaux employés sur le système CRM",
+        description: "Former les nouveaux employÃ©s sur le systÃ¨me CRM",
         startDate: "2024-01-25",
         days: 2,
         priority: "normal",
@@ -631,7 +634,7 @@ const TaskManager = () => {
     };
     setTasks([newTask, ...tasks]);
     setIsModalOpen(false);
-    setToast({ message: "Tâche attribuée avec succès !", type: "success" });
+    setToast({ message: "TÃ¢che attribuÃ©e avec succÃ¨s !", type: "success" });
   };
 
   const getTaskState = (task) => {
@@ -659,21 +662,21 @@ const TaskManager = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8 font-sans text-slate-800">
+    <div className="min-h-screen bg-transparent p-4 md:p-8 font-sans text-slate-800 dark:text-slate-200">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {/* Header */}
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 mb-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Gestion des Tâches</h1>
-            <p className="text-slate-500 mt-2 font-medium">Suivez et attribuez les tâches à votre équipe</p>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Gestion des TÃ¢ches</h1>
+            <p className="text-slate-500 mt-2 font-medium">Suivez et attribuez les tÃ¢ches Ã  votre Ã©quipe</p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
             className="flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
           >
-            <Plus size={20} /> Nouvelle tâche
+            <Plus size={20} /> Nouvelle tÃ¢che
           </button>
         </div>
 
@@ -684,7 +687,7 @@ const TaskManager = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
           <input
             type="text"
-            placeholder="Rechercher une tâche ou un employé..."
+            placeholder="Rechercher une tÃ¢che ou un employÃ©..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
@@ -696,8 +699,8 @@ const TaskManager = () => {
       {filteredTasks.length === 0 ? (
         <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-16 text-center">
           <FileText size={48} className="text-slate-200 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-400">Aucune tâche trouvée</h3>
-          <p className="text-sm text-slate-400 mt-1">Ajoutez une nouvelle tâche pour commencer</p>
+          <h3 className="text-lg font-semibold text-slate-400">Aucune tÃ¢che trouvÃ©e</h3>
+          <p className="text-sm text-slate-400 mt-1">Ajoutez une nouvelle tÃ¢che pour commencer</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -710,7 +713,7 @@ const TaskManager = () => {
               onEdit={(t) => console.log("Edit", t)}
               onDelete={(t) => {
                 setTasks(tasks.filter((task) => task.id !== t.id));
-                setToast({ message: "Tâche supprimée", type: "success" });
+                setToast({ message: "TÃ¢che supprimÃ©e", type: "success" });
               }}
             />
           ))}
@@ -730,3 +733,4 @@ const TaskManager = () => {
 };
 
 export default TaskManager;
+

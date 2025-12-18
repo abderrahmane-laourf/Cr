@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Search, Plus, Calendar, X, Check, ChevronDown, 
   Clock, AlertTriangle, TrendingUp, TrendingDown, Trash2, Edit2
@@ -79,14 +80,14 @@ const AddAttendanceModal = ({ isOpen, onClose, onSave, employees, defaultEmploye
   const getInputColor = (val) => {
     if (val > 0) return 'border-emerald-300 text-emerald-700 bg-emerald-50 focus:border-emerald-500'; // Positif (Gain)
     if (val < 0) return 'border-red-300 text-red-700 bg-red-50 focus:border-red-500'; // Négatif (Perte)
-    return 'border-slate-200 text-slate-700 bg-white focus:border-[#018790]'; // Neutre
+    return 'border-slate-200 text-slate-700 bg-white focus:border-[#2563EB]'; // Neutre
   };
 
-  return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <SpotlightCard theme="light" className="w-full max-w-2xl flex flex-col animate-in zoom-in-95 duration-200 !p-0">
+  return createPortal(
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[100] p-4">
+      <SpotlightCard theme="light" className="w-full max-w-2xl flex flex-col animate-in zoom-in-95 duration-200 !p-0 bg-white dark:bg-slate-900">
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
-          <h2 className="text-xl font-bold text-[#005461]">{initialData ? 'Modifier Présence' : 'Ajouter Présence'}</h2>
+          <h2 className="text-xl font-bold text-[#1e3a8a]">{initialData ? 'Modifier Présence' : 'Ajouter Présence'}</h2>
           <button onClick={onClose} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition"><X size={20}/></button>
         </div>
 
@@ -119,8 +120,8 @@ const AddAttendanceModal = ({ isOpen, onClose, onSave, employees, defaultEmploye
             </div>
             {/* Show employee salary info */}
             {selectedEmployee && (
-              <div className="md:col-span-2 bg-[#005461]/5 p-3 rounded-lg border border-[#005461]/10">
-                <p className="text-xs text-[#018790] font-semibold">Salaire: {selectedEmployee.salary} MAD/mois</p>
+              <div className="md:col-span-2 bg-[#1e3a8a]/5 p-3 rounded-lg border border-[#1e3a8a]/10">
+                <p className="text-xs text-[#2563EB] font-semibold">Salaire: {selectedEmployee.salary} MAD/mois</p>
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <p className="text-[10px] text-slate-600">📅 Jour: {formatCurrency(dailyRate)} MAD</p>
                   <p className="text-[10px] text-slate-600">⏰ Heure: {formatCurrency(hourlyRate)} MAD</p>
@@ -130,10 +131,10 @@ const AddAttendanceModal = ({ isOpen, onClose, onSave, employees, defaultEmploye
           </div>
 
           {/* Ligne 2 : Inputs Financiers (Jours & Heures) */}
-          <div className="bg-[#005461]/5 p-6 rounded-2xl border border-[#005461]/10 space-y-4">
+          <div className="bg-[#1e3a8a]/5 p-6 rounded-2xl border border-[#1e3a8a]/10 space-y-4">
              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp size={18} className="text-[#018790]"/>
-                <h3 className="font-bold text-[#005461] text-sm">Impact sur Salaire (Commission / Déduction)</h3>
+                <TrendingUp size={18} className="text-[#2563EB]"/>
+                <h3 className="font-bold text-[#1e3a8a] text-sm">Impact sur Salaire (Commission / Déduction)</h3>
              </div>
              
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -196,12 +197,13 @@ const AddAttendanceModal = ({ isOpen, onClose, onSave, employees, defaultEmploye
             />
           </div>
 
-          <button type="submit" className="w-full py-4 rounded-xl bg-[#018790] text-white font-bold text-lg hover:bg-[#005461] shadow-xl shadow-cyan-900/20 transition-all flex items-center justify-center gap-2">
+          <button type="submit" className="w-full py-4 rounded-xl bg-[#2563EB] text-white font-bold text-lg hover:bg-[#1e3a8a] shadow-xl shadow-blue-900/20 transition-all flex items-center justify-center gap-2">
              <Check size={20} /> Sauvegarder
           </button>
         </form>
       </SpotlightCard>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -327,13 +329,13 @@ export default function AttendancePage() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800">
+    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 dark:text-slate-200">
       
       {/* HEADER */}
       <SpotlightCard theme="light" className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-[#018790] tracking-tight">Suivi Présence & Impact Paie</h1>
+            <h1 className="text-3xl font-extrabold text-[#2563EB] tracking-tight">Suivi Présence & Impact Paie</h1>
             <p className="text-slate-500 mt-1 font-medium">Gérez les heures sup et absences pour le calcul des salaires.</p>
           </div>
           <button 
@@ -342,14 +344,14 @@ export default function AttendancePage() {
               setEditingRecord(null);
               setIsAddModalOpen(true);
             }} 
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-[#018790] text-white rounded-xl hover:bg-[#005461] transition-all shadow-lg shadow-cyan-900/20 font-semibold"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-[#2563EB] text-white rounded-xl hover:bg-[#1e3a8a] transition-all shadow-lg shadow-blue-900/20 font-semibold"
           >
             <Plus size={20} /> Ajouter Ajustement
           </button>
         </div>
         <div className="relative mt-6 max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]/50" size={20} />
-          <input type="text" placeholder="Chercher un employé..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 focus:border-[#018790] transition-all" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]/50" size={20} />
+          <input type="text" placeholder="Chercher un employé..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all" />
         </div>
       </SpotlightCard>
 
@@ -365,12 +367,12 @@ export default function AttendancePage() {
           const totalDaysBonus = records.reduce((sum, r) => sum + (r.daysAdj || 0), 0);
 
           return (
-            <SpotlightCard theme="light" key={employee.id} className={`!border transition-all duration-300 overflow-hidden !p-0 ${isExpanded ? '!border-[#018790] shadow-md' : '!border-slate-200 shadow-sm'}`}>
+            <SpotlightCard theme="light" key={employee.id} className={`!border transition-all duration-300 overflow-hidden !p-0 ${isExpanded ? '!border-[#2563EB] shadow-md' : '!border-slate-200 shadow-sm'}`}>
               
               {/* Résumé Employé */}
               <div onClick={() => toggleEmployee(employee.id)} className="p-5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl transition-colors overflow-hidden ${isExpanded ? 'bg-[#018790]/10 ring-4 ring-[#018790]/5' : 'bg-slate-100'}`}>
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl transition-colors overflow-hidden ${isExpanded ? 'bg-[#2563EB]/10 ring-4 ring-[#2563EB]/5' : 'bg-slate-100'}`}>
                     <img src={employee.avatar} className="w-full h-full object-cover" alt="" />
                   </div>
                   <div>
@@ -395,13 +397,13 @@ export default function AttendancePage() {
                       setEditingRecord(null);
                       setIsAddModalOpen(true);
                     }}
-                    className="w-8 h-8 rounded-full flex items-center justify-center bg-[#018790]/10 text-[#018790] hover:bg-[#005461] hover:text-white transition-all border border-[#018790]/20"
+                    className="w-8 h-8 rounded-full flex items-center justify-center bg-[#2563EB]/10 text-[#2563EB] hover:bg-[#1e3a8a] hover:text-white transition-all border border-[#2563EB]/20"
                     title="Ajouter une présence"
                   >
                     <Plus size={18} />
                   </button>
 
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${isExpanded ? 'bg-[#018790] border-[#018790] text-white rotate-180' : 'bg-white border-slate-200 text-slate-400'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${isExpanded ? 'bg-[#2563EB] border-[#2563EB] text-white rotate-180' : 'bg-white border-slate-200 text-slate-400'}`}>
                       <ChevronDown size={18} />
                   </div>
                 </div>

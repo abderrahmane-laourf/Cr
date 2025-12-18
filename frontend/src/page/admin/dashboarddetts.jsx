@@ -12,7 +12,7 @@ const SpotlightCard = ({ children, className = "", theme = "light" }) => {
   return (
     <div className={`relative overflow-hidden rounded-2xl border transition-all duration-300 ${
       theme === 'dark' 
-        ? 'bg-[#005461] border-slate-700 shadow-xl' 
+        ? 'bg-[#1e3a8a] border-slate-700 shadow-xl' 
         : 'bg-white border-slate-100 shadow-sm hover:shadow-md'
     } ${className}`}>
       <div className="relative z-10 p-6 h-full">
@@ -25,7 +25,7 @@ const SpotlightCard = ({ children, className = "", theme = "light" }) => {
 const Section = ({ title, icon: Icon, children }) => (
     <div className="space-y-4 animate-[fade-in_0.5s_ease-out]">
         <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#018790]/10 rounded-lg text-[#018790]">
+            <div className="p-2 bg-[#2563EB]/10 rounded-lg text-[#2563EB]">
                 {Icon ? <Icon size={24} /> : <FileText size={24} />}
             </div>
             <h2 className="text-xl font-bold text-slate-800">{title}</h2>
@@ -38,7 +38,7 @@ const StatCard = ({ label, value, sub, color, icon: Icon, borderColor }) => (
     <SpotlightCard theme="light" className={`flex flex-col justify-between h-full border-l-4 ${borderColor}`}> 
         <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{label}</span>
-            {Icon && <Icon size={18} className="text-[#018790]" />}
+            {Icon && <Icon size={18} className="text-[#2563EB]" />}
         </div>
         <div>
             <div className={`text-2xl font-black ${color || 'text-slate-800'}`}>{value}</div>
@@ -171,7 +171,7 @@ export default function FinanceDashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
             <div>
-                <h1 className="text-2xl font-extrabold text-[#018790] flex items-center gap-3">
+                <h1 className="text-2xl font-extrabold text-[#2563EB] flex items-center gap-3">
                    <Briefcase size={28} />
                    Tableau de Bord Financier
                 </h1>
@@ -192,7 +192,7 @@ export default function FinanceDashboard() {
                         type="date" 
                         value={dateFrom} 
                         onChange={e => setDateFrom(e.target.value)}
-                        className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 text-sm font-semibold transition-all text-slate-600 w-full" 
+                        className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 text-sm font-semibold transition-all text-slate-600 w-full" 
                     />
                 </div>
                 {/* Date To */}
@@ -202,7 +202,7 @@ export default function FinanceDashboard() {
                         type="date" 
                         value={dateTo} 
                         onChange={e => setDateTo(e.target.value)}
-                        className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 text-sm font-semibold transition-all text-slate-600 w-full" 
+                        className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 text-sm font-semibold transition-all text-slate-600 w-full" 
                     />
                 </div>
                 {/* Supplier */}
@@ -212,7 +212,7 @@ export default function FinanceDashboard() {
                         <select 
                             value={selectedSupplier} 
                             onChange={e => setSelectedSupplier(e.target.value)}
-                            className="w-full pl-3 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#018790]/20 text-sm font-semibold text-slate-600 appearance-none cursor-pointer transition-all shadow-sm"
+                            className="w-full pl-3 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 text-sm font-semibold text-slate-600 appearance-none cursor-pointer transition-all shadow-sm"
                         >
                             <option value="All">Tous les Fournisseurs</option>
                             {uniqueSuppliers.map(s => <option key={s} value={s}>{s}</option>)}
@@ -221,7 +221,7 @@ export default function FinanceDashboard() {
                     </div>
                 </div>
                 {/* Filter Button (Visual only based on your logic usually auto-updating) */}
-                <button className="px-4 py-2.5 bg-[#018790] text-white rounded-xl hover:bg-[#006a70] transition-colors font-bold shadow-lg shadow-teal-900/20 flex items-center justify-center gap-2">
+                <button className="px-4 py-2.5 bg-[#1e3a8a] text-white rounded-xl hover:bg-[#1e40af] transition-colors font-bold shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
                     <Filter size={18} />
                     <span>Filtrer</span>
                 </button>
@@ -294,7 +294,7 @@ export default function FinanceDashboard() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
              <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                  <div className="flex items-center gap-2">
-                     <List size={20} className="text-[#018790]"/> 
+                     <List size={20} className="text-[#2563EB]"/> 
                      <h3 className="font-bold text-lg text-slate-800">Rapport Détaillé par Fournisseur</h3>
                  </div>
              </div>
@@ -386,9 +386,9 @@ export default function FinanceDashboard() {
                         </button>
                     </div>
                     
-                    <div className="bg-slate-50 rounded-2xl h-48 flex items-center justify-center flex-col gap-3 border-2 border-dashed border-slate-200 group hover:border-[#018790]/30 transition-colors">
+                    <div className="bg-slate-50 rounded-2xl h-48 flex items-center justify-center flex-col gap-3 border-2 border-dashed border-slate-200 group hover:border-[#2563EB]/30 transition-colors">
                         <div className="p-4 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform">
-                            <FileText size={32} className="text-slate-300 group-hover:text-[#018790]" />
+                            <FileText size={32} className="text-slate-300 group-hover:text-[#2563EB]" />
                         </div>
                         <p className="text-slate-400 text-sm font-medium">Aucun document joint pour ce fournisseur.</p>
                     </div>

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Trophy, Plus, X, Edit2, Trash2, Save, Calendar, Target, 
   Gift, Image as ImageIcon, ToggleLeft, ToggleRight, Users, 
@@ -24,7 +25,7 @@ const SpotlightCard = ({ children, className = "", onClick }) => {
 
 const InputField = ({ label, type = "text", value, onChange, name, placeholder, required, min }) => (
   <div className="group flex flex-col gap-1.5">
-    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest group-focus-within:text-[#018790] transition-colors">
+    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest group-focus-within:text-[#2563EB] transition-colors">
       {label} {required && <span className="text-red-400">*</span>}
     </label>
     <div className="relative">
@@ -36,7 +37,7 @@ const InputField = ({ label, type = "text", value, onChange, name, placeholder, 
         placeholder={placeholder}
         required={required}
         min={min}
-        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-semibold focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all"
+        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-semibold focus:bg-white focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all"
       />
     </div>
   </div>
@@ -44,7 +45,7 @@ const InputField = ({ label, type = "text", value, onChange, name, placeholder, 
 
 const TextAreaField = ({ label, value, onChange, name, placeholder, required, rows = 3 }) => (
     <div className="group flex flex-col gap-1.5">
-      <label className="text-xs font-bold text-slate-500 uppercase tracking-widest group-focus-within:text-[#018790] transition-colors">
+      <label className="text-xs font-bold text-slate-500 uppercase tracking-widest group-focus-within:text-[#2563EB] transition-colors">
         {label} {required && <span className="text-red-400">*</span>}
       </label>
       <div className="relative">
@@ -55,7 +56,7 @@ const TextAreaField = ({ label, value, onChange, name, placeholder, required, ro
           placeholder={placeholder}
           required={required}
           rows={rows}
-          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-semibold focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all resize-none"
+          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-semibold focus:bg-white focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all resize-none"
         />
       </div>
     </div>
@@ -80,7 +81,7 @@ export default function Challenges() {
     startDate: '',
     endDate: '',
     image: '',
-    color: '#018790', // Default Teal
+    color: '#2563EB', // Default Blue
     active: true,
     winners: [] 
   });
@@ -93,7 +94,7 @@ export default function Challenges() {
   ];
 
   const predefinedColors = [
-    { name: 'Teal', value: '#018790' },
+    { name: 'Bleu', value: '#2563EB' },
     { name: 'Bleu', value: '#2563EB' },
     { name: 'Violet', value: '#7C3AED' },
     { name: 'Emeraude', value: '#059669' },
@@ -131,7 +132,7 @@ export default function Challenges() {
         startDate: '',
         endDate: '',
         image: '',
-        color: '#018790',
+        color: '#2563EB',
         active: true,
         winners: []
       });
@@ -163,7 +164,7 @@ export default function Challenges() {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce challenge ?')) {
+    if (window.confirm('ÃŠtes-vous sÃ»r de vouloir supprimer ce challenge ?')) {
       const filtered = challenges.filter(c => c.id !== id);
       saveChallenges(filtered);
     }
@@ -190,21 +191,21 @@ export default function Challenges() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800 animate-[fade-in_0.5s_ease-out]">
+    <div className="w-full min-h-screen bg-transparent p-8 font-sans text-slate-800 dark:text-slate-200 animate-[fade-in_0.5s_ease-out]">
       
       {/* Header */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-3">
-              <Trophy className="text-[#018790]" size={32} />
+              <Trophy className="text-[#2563EB]" size={32} />
               Gestion des Challenges
             </h1>
-            <p className="text-slate-500 mt-1 font-medium">Motivez votre équipe avec des objectifs et des récompenses.</p>
+            <p className="text-slate-500 mt-1 font-medium">Motivez votre Ã©quipe avec des objectifs et des rÃ©compenses.</p>
           </div>
           <button 
             onClick={() => handleOpenModal()}
-            className="flex items-center gap-2 px-6 py-3 bg-[#018790] text-white rounded-xl hover:bg-[#006a70] transition-all shadow-lg shadow-teal-900/20 font-bold"
+            className="flex items-center gap-2 px-6 py-3 bg-[#1e3a8a] text-white rounded-xl hover:bg-[#1e40af] transition-all shadow-lg shadow-blue-900/20 font-bold"
           >
             <Plus size={20} />
             Nouveau Challenge
@@ -219,7 +220,7 @@ export default function Challenges() {
                 <div className="bg-white p-8 rounded-3xl inline-flex flex-col items-center shadow-sm border border-slate-200">
                     <Trophy size={64} className="mb-4 opacity-20" />
                     <p className="font-medium text-lg">Aucun challenge actif</p>
-                    <p className="text-sm">Commencez par en créer un !</p>
+                    <p className="text-sm">Commencez par en crÃ©er un !</p>
                 </div>
             </div>
         ) : (
@@ -241,7 +242,7 @@ export default function Challenges() {
                         <button
                             onClick={(e) => { e.stopPropagation(); handleToggleActive(challenge.id); }}
                             className="absolute top-4 right-4 bg-white/20 backdrop-blur-md border border-white/30 p-1.5 rounded-lg hover:bg-white/30 transition-all group"
-                            title={challenge.active ? 'Désactiver' : 'Activer'}
+                            title={challenge.active ? 'DÃ©sactiver' : 'Activer'}
                         >
                             {challenge.active ? (
                                 <ToggleRight className="text-white" size={24} />
@@ -280,7 +281,7 @@ export default function Challenges() {
                         <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
                             <button 
                                 onClick={() => handleShowWinners(challenge)}
-                                className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#018790] transition-colors"
+                                className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#2563EB] transition-colors"
                             >
                                 <Award size={16} />
                                 {challenge.winners?.length || 0} Gagnant(s)
@@ -289,7 +290,7 @@ export default function Challenges() {
                             <div className="flex items-center gap-1">
                                 <button 
                                     onClick={() => handleOpenModal(challenge)}
-                                    className="p-2 text-slate-400 hover:text-[#018790] hover:bg-[#018790]/10 rounded-lg transition-colors"
+                                    className="p-2 text-slate-400 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg transition-colors"
                                 >
                                     <Edit2 size={18} />
                                 </button>
@@ -308,15 +309,15 @@ export default function Challenges() {
       </div>
 
       {/* CREATE / EDIT MODAL */}
-      {showModal && (
+      {showModal && createPortal(
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
                 
                 {/* Modal Header */}
                 <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
                     <div>
                         <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
-                            {editingChallenge ? <Edit2 className="text-[#018790]" /> : <Plus className="text-[#018790]" />}
+                            {editingChallenge ? <Edit2 className="text-[#2563EB]" /> : <Plus className="text-[#2563EB]" />}
                             {editingChallenge ? 'Modifier le Challenge' : 'Nouveau Challenge'}
                         </h2>
                     </div>
@@ -327,23 +328,23 @@ export default function Challenges() {
 
                 <form onSubmit={handleSubmit} className="p-8 overflow-y-auto custom-scrollbar">
                     <div className="space-y-6">
-                        <InputField label="Titre du Challenge" name="title" value={formData.title} onChange={handleChange} required placeholder="Ex: Sprint de Noël" />
+                        <InputField label="Titre du Challenge" name="title" value={formData.title} onChange={handleChange} required placeholder="Ex: Sprint de NoÃ«l" />
                         
-                        <TextAreaField label="Description" name="description" value={formData.description} onChange={handleChange} required placeholder="Détails du challenge..." />
+                        <TextAreaField label="Description" name="description" value={formData.description} onChange={handleChange} required placeholder="DÃ©tails du challenge..." />
 
                         <div className="grid grid-cols-2 gap-5">
                             <InputField label="Objectif (Ventes)" type="number" name="target" value={formData.target} onChange={handleChange} required min="1" placeholder="20" />
-                            <InputField label="Récompense" name="reward" value={formData.reward} onChange={handleChange} required placeholder="500 DH" />
+                            <InputField label="RÃ©compense" name="reward" value={formData.reward} onChange={handleChange} required placeholder="500 DH" />
                         </div>
 
                         <div className="grid grid-cols-2 gap-5">
-                            <InputField label="Date de début" type="date" name="startDate" value={formData.startDate} onChange={handleChange} required />
+                            <InputField label="Date de dÃ©but" type="date" name="startDate" value={formData.startDate} onChange={handleChange} required />
                             <InputField label="Date de fin" type="date" name="endDate" value={formData.endDate} onChange={handleChange} required />
                         </div>
 
                         {/* Color Picker */}
                         <div>
-                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 block">Couleur du thème</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 block">Couleur du thÃ¨me</label>
                             <div className="flex flex-wrap gap-3">
                                 {predefinedColors.map((color) => (
                                     <button
@@ -394,12 +395,12 @@ export default function Challenges() {
                                     style={{
                                         right: formData.active ? '0' : 'auto',
                                         left: formData.active ? 'auto' : '0',
-                                        borderColor: formData.active ? '#018790' : '#cbd5e1'
+                                        borderColor: formData.active ? '#2563EB' : '#cbd5e1'
                                     }}
                                 />
                                 <label 
                                     htmlFor="active" 
-                                    className={`toggle-label block overflow-hidden h-6 rounded-full cursor-pointer ${formData.active ? 'bg-[#018790]' : 'bg-slate-300'}`}
+                                    className={`toggle-label block overflow-hidden h-6 rounded-full cursor-pointer ${formData.active ? 'bg-[#2563EB]' : 'bg-slate-300'}`}
                                 ></label>
                             </div>
                             <label htmlFor="active" className="text-sm font-bold text-slate-700 cursor-pointer">
@@ -418,20 +419,21 @@ export default function Challenges() {
                         </button>
                         <button 
                             type="submit"
-                            className="px-8 py-2.5 rounded-xl text-white font-bold flex items-center gap-2 bg-[#018790] hover:bg-[#006a70] shadow-lg shadow-teal-900/20 transition-all"
+                            className="px-8 py-2.5 rounded-xl text-white font-bold flex items-center gap-2 bg-[#1e3a8a] hover:bg-[#1e40af] shadow-lg shadow-blue-900/20 transition-all"
                         >
-                            <Save size={18} /> {editingChallenge ? 'Mettre à jour' : 'Créer'}
+                            <Save size={18} /> {editingChallenge ? 'Mettre Ã  jour' : 'CrÃ©er'}
                         </button>
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* WINNERS MODAL */}
-      {showWinnersModal && selectedChallenge && (
+      {showWinnersModal && selectedChallenge && createPortal(
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col animate-in zoom-in-95 duration-200">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-lg flex flex-col animate-in zoom-in-95 duration-200">
                 <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
                     <div>
                         <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -447,7 +449,7 @@ export default function Challenges() {
                 <div className="p-8">
                     <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
                         <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Objectif Atteint</span>
-                        <span className="font-black text-[#018790] text-lg">{selectedChallenge.target} Ventes</span>
+                        <span className="font-black text-[#2563EB] text-lg">{selectedChallenge.target} Ventes</span>
                     </div>
 
                     <div className="space-y-3">
@@ -475,7 +477,8 @@ export default function Challenges() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

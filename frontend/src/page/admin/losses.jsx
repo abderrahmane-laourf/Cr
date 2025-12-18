@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Plus, Trash2, Search, X, Check, Package, Calendar, CheckCircle, AlertCircle, User } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { lossAPI, productAPI, employeeAPI } from '../../services/api';
@@ -16,7 +16,7 @@ const Toast = ({ message, type = 'success', onClose }) => {
         ${type === 'success' ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800' : 'bg-red-50/90 border-red-200 text-red-800'}`}>
         {type === 'success' ? <CheckCircle size={24} className="text-emerald-500" /> : <AlertCircle size={24} className="text-red-500" />}
         <div>
-          <h4 className="font-bold text-sm">{type === 'success' ? 'Succès' : 'Erreur'}</h4>
+          <h4 className="font-bold text-sm">{type === 'success' ? 'SuccÃ¨s' : 'Erreur'}</h4>
           <p className="text-xs opacity-90">{message}</p>
         </div>
         <button onClick={onClose} className="ml-4 opacity-50 hover:opacity-100"><X size={16}/></button>
@@ -68,7 +68,7 @@ export default function LossesPage() {
 
   const handleSave = async () => {
     if (!formData.productId || !formData.quantity || !formData.date || !formData.employeeId) {
-      showToast('Veuillez remplir tous les champs obligatoires (Date, Produit, Employé, Quantité)', 'error');
+      showToast('Veuillez remplir tous les champs obligatoires (Date, Produit, EmployÃ©, QuantitÃ©)', 'error');
       return;
     }
 
@@ -92,7 +92,7 @@ export default function LossesPage() {
           quantity: 1,
           reason: ''
       });
-      showToast('Perte enregistrée avec succès !', 'success');
+      showToast('Perte enregistrÃ©e avec succÃ¨s !', 'success');
     } catch (error) {
       console.error('Error saving loss:', error);
       showToast('Impossible d\'enregistrer la perte.', 'error');
@@ -105,8 +105,8 @@ export default function LossesPage() {
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
-      title: 'Êtes-vous sûr ?',
-      text: "Cette action est irréversible !",
+      title: 'ÃŠtes-vous sÃ»r ?',
+      text: "Cette action est irrÃ©versible !",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -119,7 +119,7 @@ export default function LossesPage() {
       try {
         await lossAPI.delete(id);
         setLosses(losses.filter(l => l.id !== id));
-        Swal.fire('Supprimé !', 'L\'enregistrement a été supprimé.', 'success');
+        Swal.fire('SupprimÃ© !', 'L\'enregistrement a Ã©tÃ© supprimÃ©.', 'success');
       } catch (error) {
         console.error('Error deleting:', error);
         Swal.fire('Erreur', 'Erreur lors de la suppression', 'error');
@@ -128,7 +128,7 @@ export default function LossesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800 relative">
+    <div className="min-h-screen bg-transparent p-8 font-sans text-slate-800 relative">
       
       {/* Toast Notification */}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
@@ -142,7 +142,7 @@ export default function LossesPage() {
              </div>
              <div>
                 <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestion des Pertes</h1>
-                <p className="text-slate-500 mt-1 font-medium">Suivi des produits perdus ou endommagés</p>
+                <p className="text-slate-500 mt-1 font-medium">Suivi des produits perdus ou endommagÃ©s</p>
              </div>
           </div>
           <button 
@@ -162,8 +162,8 @@ export default function LossesPage() {
               <tr>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Produit</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Employé</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Quantité</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">EmployÃ©</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">QuantitÃ©</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Raison</th>
                 <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -187,7 +187,7 @@ export default function LossesPage() {
                     <td className="px-6 py-4">
                        <div className="flex items-center gap-2">
                          <User size={16} className="text-emerald-500" />
-                         <span className="font-medium text-slate-700">{loss.employeeName || <span className="italic text-slate-400">Non spécifié</span>}</span>
+                         <span className="font-medium text-slate-700">{loss.employeeName || <span className="italic text-slate-400">Non spÃ©cifiÃ©</span>}</span>
                        </div>
                     </td>
                     <td className="px-6 py-4">
@@ -214,7 +214,7 @@ export default function LossesPage() {
                    <td colSpan="6" className="px-6 py-12 text-center text-slate-400">
                       <div className="flex flex-col items-center gap-2">
                          <AlertTriangle size={32} className="opacity-20" />
-                         <span>Aucune perte enregistrée</span>
+                         <span>Aucune perte enregistrÃ©e</span>
                       </div>
                    </td>
                 </tr>
@@ -271,7 +271,7 @@ export default function LossesPage() {
                             onChange={(e) => setFormData({...formData, productId: e.target.value})}
                             className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 appearance-none cursor-pointer"
                          >
-                            <option value="">Sélectionner un produit</option>
+                            <option value="">SÃ©lectionner un produit</option>
                             {products.map(p => (
                                <option key={p.id} value={p.id}>{p.nom}</option>
                             ))}
@@ -280,10 +280,10 @@ export default function LossesPage() {
                       </div>
                    </div>
 
-                   {/* Employé */}
+                   {/* EmployÃ© */}
                    <div className="group">
                       <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
-                         Employé <span className="text-red-400">*</span>
+                         EmployÃ© <span className="text-red-400">*</span>
                       </label>
                       <div className="relative">
                          <select
@@ -291,7 +291,7 @@ export default function LossesPage() {
                             onChange={(e) => setFormData({...formData, employeeId: e.target.value})}
                             className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 appearance-none cursor-pointer"
                          >
-                            <option value="">Sélectionner un employé</option>
+                            <option value="">SÃ©lectionner un employÃ©</option>
                             {employees.map(e => (
                                <option key={e.id} value={e.id}>{e.name}</option>
                             ))}
@@ -300,10 +300,10 @@ export default function LossesPage() {
                       </div>
                    </div>
 
-                   {/* Quantité */}
+                   {/* QuantitÃ© */}
                    <div className="group">
                       <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">
-                         Quantité Perdue/Endommagée <span className="text-red-400">*</span>
+                         QuantitÃ© Perdue/EndommagÃ©e <span className="text-red-400">*</span>
                       </label>
                       <input 
                          type="number"
@@ -325,7 +325,7 @@ export default function LossesPage() {
                           value={formData.reason}
                           onChange={(e) => setFormData({...formData, reason: e.target.value})}
                           className="w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all duration-200 resize-none"
-                          placeholder="Ex: Cassé lors du transport, Péremption..."
+                          placeholder="Ex: CassÃ© lors du transport, PÃ©remption..."
                        />
                    </div>
 
@@ -355,3 +355,4 @@ export default function LossesPage() {
     </div>
   );
 }
+

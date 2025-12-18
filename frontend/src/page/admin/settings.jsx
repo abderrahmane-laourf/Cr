@@ -76,14 +76,14 @@ const ListManager = ({ title, icon: Icon, dataKey, fetcher, placeholder = "Nouve
         <SpotlightCard theme="light" className="h-full flex flex-col !p-0 overflow-hidden border border-slate-200">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-[#005461]/5">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-[#1e3a8a]/5">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-[#005461]/10 text-[#005461] rounded-lg">
+                    <div className="p-2 bg-[#1e3a8a]/10 text-[#1e3a8a] rounded-lg">
                         <Icon size={18} />
                     </div>
-                    <h3 className="font-bold text-[#005461]">{title}</h3>
+                    <h3 className="font-bold text-[#1e3a8a]">{title}</h3>
                 </div>
-                <span className="text-xs font-bold text-[#018790] bg-[#018790]/10 px-2.5 py-1 rounded-full">{items.length}</span>
+                <span className="text-xs font-bold text-[#2563EB] bg-[#2563EB]/10 px-2.5 py-1 rounded-full">{items.length}</span>
             </div>
 
             <div className="p-4 border-b border-slate-100 bg-white">
@@ -93,12 +93,12 @@ const ListManager = ({ title, icon: Icon, dataKey, fetcher, placeholder = "Nouve
                         value={newItem}
                         onChange={(e) => setNewItem(e.target.value)}
                         placeholder={placeholder}
-                        className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 transition-all placeholder:text-slate-400"
+                        className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all placeholder:text-slate-400"
                     />
                     <button 
                         type="submit" 
                         disabled={loading || !newItem.trim()}
-                        className="p-2.5 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-cyan-900/20"
+                        className="p-2.5 bg-[#1e3a8a] text-white rounded-xl hover:bg-[#1e40af] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-blue-900/20"
                     >
                         <Plus size={20} />
                     </button>
@@ -167,12 +167,12 @@ const DebtPrintConfigSection = () => {
         <SpotlightCard theme="light" className="flex flex-col md:col-span-2 lg:col-span-3 !p-0 overflow-hidden border border-slate-200">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             
-            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-[#005461]/5">
+            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-[#1e3a8a]/5">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-100/50 text-blue-600 rounded-lg">
                         <Printer size={18} />
                     </div>
-                    <h3 className="font-bold text-[#005461]">Configuration Impression Dettes</h3>
+                    <h3 className="font-bold text-[#1e3a8a]">Configuration Impression Dettes</h3>
                 </div>
             </div>
 
@@ -189,7 +189,7 @@ const DebtPrintConfigSection = () => {
                             { key: 'showDescription', label: 'Description' }
                         ].map((item) => (
                             <label key={item.key} className="flex items-center gap-3 cursor-pointer group">
-                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${config[item.key] ? 'bg-[#018790] border-[#018790]' : 'bg-white border-slate-300 group-hover:border-[#018790]'}`}>
+                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${config[item.key] ? 'bg-[#2563EB] border-[#2563EB]' : 'bg-white border-slate-300 group-hover:border-[#2563EB]'}`}>
                                     {config[item.key] && <CheckCircle size={14} className="text-white" />}
                                 </div>
                                 <input 
@@ -208,22 +208,22 @@ const DebtPrintConfigSection = () => {
                 <div className="space-y-4">
                     <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">En-tête et Pied de page</h4>
                     <div className="group">
-                        <label className="block text-xs font-bold text-[#005461] mb-2 ml-1 uppercase tracking-wider">Nom de la Société (En-tête)</label>
+                        <label className="block text-xs font-bold text-[#1e3a8a] mb-2 ml-1 uppercase tracking-wider">Nom de la Société (En-tête)</label>
                         <input 
                             type="text"
                             value={config.companyName}
                             onChange={(e) => handleInputChange('companyName', e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 transition-all"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all"
                             placeholder="Ex: Ma Société SARL"
                         />
                     </div>
                     <div className="group">
-                        <label className="block text-xs font-bold text-[#005461] mb-2 ml-1 uppercase tracking-wider">Texte Pied de page</label>
+                        <label className="block text-xs font-bold text-[#1e3a8a] mb-2 ml-1 uppercase tracking-wider">Texte Pied de page</label>
                         <input 
                             type="text"
                             value={config.footerText}
                             onChange={(e) => handleInputChange('footerText', e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 transition-all"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all"
                             placeholder="Ex: Merci de votre confiance."
                         />
                     </div>
@@ -233,7 +233,7 @@ const DebtPrintConfigSection = () => {
                     <button 
                         onClick={handleSave}
                         disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-cyan-900/20 font-bold"
+                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#1e3a8a] text-white rounded-xl hover:bg-[#1e40af] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-900/20 font-bold"
                     >
                         <Save size={18} /> Sauvegarder la Configuration
                     </button>
@@ -246,15 +246,15 @@ const DebtPrintConfigSection = () => {
 const SettingsPage = () => {
     const navigate = useNavigate();
     return (
-         <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 relative">
+         <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 dark:text-slate-200 relative">
             <div className="w-full space-y-8">
                 
                 {/* Header */}
                  <SpotlightCard theme="light" className="mb-6">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-3xl font-extrabold text-[#018790] tracking-tight flex items-center gap-3">
-                                <Settings className="text-[#005461]" size={32} />
+                            <h1 className="text-3xl font-extrabold text-[#2563EB] tracking-tight flex items-center gap-3">
+                                <Settings className="text-[#1e3a8a]" size={32} />
                                 Paramètres Généraux
                             </h1>
                             <p className="text-slate-500 mt-1 font-medium">
@@ -320,23 +320,23 @@ const SettingsPage = () => {
 
                     {/* SECTION: BUSINESS UNITS (Table View) */}
                     <SpotlightCard theme="light" className="flex flex-col md:col-span-2 lg:col-span-3 !p-0 overflow-hidden border border-slate-200">
-                        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-[#005461]/5">
+                        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-[#1e3a8a]/5">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-[#005461]/10 text-[#005461] rounded-lg">
+                                <div className="p-2 bg-[#1e3a8a]/10 text-[#1e3a8a] rounded-lg">
                                     <Briefcase size={18} />
                                 </div>
-                                <h3 className="font-bold text-[#005461]">Business Units (Détails API)</h3>
+                                <h3 className="font-bold text-[#1e3a8a]">Business Units (Détails API)</h3>
                             </div>
                             <button 
                                 onClick={() => navigate('/admin/business')}
-                                className="flex items-center gap-2 px-4 py-2 bg-[#005461] text-white rounded-lg text-xs font-bold hover:bg-[#016f76] transition-all shadow-md shadow-cyan-900/20"
+                                className="flex items-center gap-2 px-4 py-2 bg-[#1e3a8a] text-white rounded-lg text-xs font-bold hover:bg-[#1e40af] transition-all shadow-md shadow-blue-900/20"
                             >
                                 <Plus size={14} /> Ajouter
                             </button>
                         </div>
                         <div className="overflow-x-auto bg-white">
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-slate-50/50 text-[#005461] font-bold uppercase text-xs border-b border-slate-100">
+                                <thead className="bg-slate-50/50 text-[#1e3a8a] font-bold uppercase text-xs border-b border-slate-100">
                                     <tr>
                                         <th className="px-6 py-4">Business</th>
                                         <th className="px-6 py-4">API ID</th>
@@ -393,16 +393,16 @@ const DeliveryConfigSection = () => {
         <SpotlightCard theme="light" className="flex flex-col md:col-span-2 lg:col-span-3 !p-0 overflow-hidden border border-slate-200">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             
-            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-[#005461]/5">
+            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-[#1e3a8a]/5">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-emerald-100/50 text-emerald-600 rounded-lg">
+                    <div className="p-2 bg-blue-100/50 text-blue-600 rounded-lg">
                         <Truck size={18} />
                     </div>
-                    <h3 className="font-bold text-[#005461]">Configuration Livraison</h3>
+                    <h3 className="font-bold text-[#1e3a8a]">Configuration Livraison</h3>
                 </div>
                 <button 
                     onClick={() => navigate('/admin/historiquepaiementlivraison')}
-                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-colors shadow-md shadow-emerald-500/20"
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shadow-md shadow-blue-500/20"
                 >
                     Historique Paiements
                 </button>
@@ -410,7 +410,7 @@ const DeliveryConfigSection = () => {
 
             <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white">
                 <div className="group">
-                    <label className="block text-xs font-bold text-[#005461] mb-2 ml-1 uppercase tracking-wider group-focus-within:text-[#018790] transition-colors">
+                    <label className="block text-xs font-bold text-[#1e3a8a] mb-2 ml-1 uppercase tracking-wider group-focus-within:text-[#2563EB] transition-colors">
                         Prix Livraison Ammex
                     </label>
                     <div className="relative">
@@ -419,7 +419,7 @@ const DeliveryConfigSection = () => {
                             step="0.01"
                             value={config.prixLivraisonAmmex}
                             onChange={(e) => handleInputChange('prixLivraisonAmmex', e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">DH</span>
                     </div>
@@ -427,7 +427,7 @@ const DeliveryConfigSection = () => {
                 </div>
 
                 <div className="group">
-                    <label className="block text-xs font-bold text-[#005461] mb-2 ml-1 uppercase tracking-wider group-focus-within:text-[#018790] transition-colors">
+                    <label className="block text-xs font-bold text-[#1e3a8a] mb-2 ml-1 uppercase tracking-wider group-focus-within:text-[#2563EB] transition-colors">
                         Prix Livraison Agadir
                     </label>
                     <div className="relative">
@@ -436,7 +436,7 @@ const DeliveryConfigSection = () => {
                             step="0.01"
                             value={config.prixLivraisonAgadir}
                             onChange={(e) => handleInputChange('prixLivraisonAgadir', e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">DH</span>
                     </div>
@@ -447,7 +447,7 @@ const DeliveryConfigSection = () => {
                     <button 
                         onClick={handleSave}
                         disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-cyan-900/20 font-bold"
+                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#1e3a8a] text-white rounded-xl hover:bg-[#1e40af] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-900/20 font-bold"
                     >
                         <Save size={18} /> Sauvegarder la Configuration
                     </button>
@@ -484,7 +484,7 @@ const BusinessListRow = () => {
                 <tr key={b.id} className="hover:bg-slate-50 transition-colors group border-b border-slate-50 last:border-0">
                     <td className="px-6 py-4 font-bold text-slate-700">{b.name}</td>
                     <td className="px-6 py-4">
-                        <span className="font-mono text-xs text-[#005461] bg-[#005461]/5 px-2 py-1 rounded border border-[#005461]/10">{b.apiId || '-'}</span>
+                        <span className="font-mono text-xs text-[#1e3a8a] bg-[#1e3a8a]/5 px-2 py-1 rounded border border-[#1e3a8a]/10">{b.apiId || '-'}</span>
                     </td>
                     <td className="px-6 py-4 font-mono text-xs text-slate-400 group-hover:text-slate-500 transition-colors">{b.apiToken ? '••••••••' + b.apiToken.slice(-4) : '-'}</td>
                 </tr>

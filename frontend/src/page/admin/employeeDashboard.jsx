@@ -16,7 +16,7 @@ import { useEffect } from 'react';
 const Section = ({ title, icon: Icon, children }) => (
     <div className="space-y-4">
         <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#018790]/10 rounded-lg text-[#018790]">
+            <div className="p-2 bg-[#2563EB]/10 rounded-lg text-[#2563EB]">
                 {Icon ? <Icon size={24} /> : <Activity size={24} />}
             </div>
             <h2 className="text-xl font-bold text-slate-800">{title}</h2>
@@ -29,7 +29,7 @@ const StatCard = ({ label, value, icon: Icon, sub, color }) => (
     <SpotlightCard theme="light" className="flex flex-col justify-between h-full"> 
         <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{label}</span>
-            {Icon && <Icon size={18} className="text-[#018790]" />}
+            {Icon && <Icon size={18} className="text-[#2563EB]" />}
         </div>
         <div>
             <div className={`text-2xl font-black ${color || 'text-slate-800'}`}>{value}</div>
@@ -240,25 +240,25 @@ export default function EmployeeDashboard() {
   if (loading && !employeeList.length) return <div className="p-10 text-center text-slate-500">Chargement des données...</div>;
 
   return (
-    <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out]">
+    <div className="w-full min-h-screen bg-transparent p-6 space-y-8 animate-[fade-in_0.6s_ease-out] dark:text-slate-200">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
         <div>
-          <h1 className="text-2xl font-extrabold text-[#018790]">Dashboard RH & Performance</h1>
+          <h1 className="text-2xl font-extrabold text-[#2563EB]">Dashboard RH & Performance</h1>
           <p className="text-slate-500">Vue d'ensemble des ressources et de la production</p>
         </div>
         <div className="flex gap-3 mt-4 sm:mt-0">
             <button 
                 onClick={handleFilter}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-[#018790] rounded-xl hover:bg-slate-100 transition-colors font-bold border border-slate-200"
+                className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-[#2563EB] rounded-xl hover:bg-slate-100 transition-colors font-bold border border-slate-200"
              >
                 <RefreshCw size={18} />
                 <span>Actualiser</span>
             </button>
             <button 
                 onClick={() => navigate('/admin/paiement')}
-                className="flex items-center gap-2 px-4 py-2 bg-[#005461] hover:bg-[#016f76] text-white rounded-xl transition-colors font-bold shadow-lg shadow-cyan-900/20"
+                className="flex items-center gap-2 px-4 py-2 bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-xl transition-colors font-bold shadow-lg shadow-blue-900/20"
             >
                 <CreditCard size={18} /> 
                 <span>Gérer Paie</span>
@@ -275,7 +275,7 @@ export default function EmployeeDashboard() {
                      type="date" 
                      value={dateFrom} 
                      onChange={(e) => setDateFrom(e.target.value)} 
-                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 transition-all"
+                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all"
                  />
              </div>
              <div className="flex flex-col gap-1.5">
@@ -284,7 +284,7 @@ export default function EmployeeDashboard() {
                      type="date" 
                      value={dateTo} 
                      onChange={(e) => setDateTo(e.target.value)} 
-                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 transition-all"
+                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all"
                  />
              </div>
              <div className="flex flex-col gap-1.5">
@@ -293,7 +293,7 @@ export default function EmployeeDashboard() {
                     <select 
                         value={selectedEmployee} 
                         onChange={(e) => setSelectedEmployee(e.target.value)} 
-                        className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 transition-all appearance-none cursor-pointer"
+                        className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all appearance-none cursor-pointer"
                     >
                         <option value="all">Tous les employés</option>
                         {employeeList.map(e => <option key={e.id} value={e.id}>{e.nom || e.name}</option>)}
@@ -305,7 +305,7 @@ export default function EmployeeDashboard() {
              </div>
              <button 
                 onClick={handleFilter}
-                className="w-full px-4 py-2.5 bg-[#018790] hover:bg-[#006c73] text-white rounded-xl font-bold text-sm shadow-lg shadow-cyan-900/20 transition-all flex items-center justify-center gap-2"
+                className="w-full px-4 py-2.5 bg-[#2563EB] hover:bg-[#1e40af] text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-900/20 transition-all flex items-center justify-center gap-2"
              >
                 <RefreshCw size={18} /> Appliquer Filtres
             </button>
@@ -339,8 +339,8 @@ export default function EmployeeDashboard() {
                 <ComposedChart data={financeChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <defs>
                         <linearGradient id="colorSal" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#005461" stopOpacity={0.2}/>
-                            <stop offset="95%" stopColor="#005461" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#1e3a8a" stopOpacity={0.2}/>
+                            <stop offset="95%" stopColor="#1e3a8a" stopOpacity={0}/>
                         </linearGradient>
                         <linearGradient id="colorCom" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
@@ -355,7 +355,7 @@ export default function EmployeeDashboard() {
                     itemStyle={{ color: '#fff' }}
                     />
                     <Legend iconType="circle" />
-                    <Area type="monotone" dataKey="salaire" stackId="1" stroke="#005461" fill="url(#colorSal)" name="Salaires" strokeWidth={2} />
+                    <Area type="monotone" dataKey="salaire" stackId="1" stroke="#1e3a8a" fill="url(#colorSal)" name="Salaires" strokeWidth={2} />
                     <Area type="monotone" dataKey="commission" stackId="1" stroke="#10b981" fill="url(#colorCom)" name="Commissions" strokeWidth={2} />
                     {/* Red Line for Deductions */}
                     <Line type="monotone" dataKey="deduction" stroke="#ef4444" strokeWidth={3} dot={{r: 4}} name="Déductions" />
@@ -379,7 +379,7 @@ export default function EmployeeDashboard() {
                             <XAxis type="number" hide />
                             <YAxis dataKey="name" type="category" width={80} tick={{fontSize: 11, fill: '#64748b'}} tickLine={false} axisLine={false}/>
                             <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px' }} />
-                            <Bar dataKey="count" fill="#018790" radius={[0, 4, 4, 0]} barSize={20} name="Quantité" />
+                            <Bar dataKey="count" fill="#2563EB" radius={[0, 4, 4, 0]} barSize={20} name="Quantité" />
                         </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -415,7 +415,7 @@ export default function EmployeeDashboard() {
           <Section title="Téléphonie" icon={Smartphone}>
              <SpotlightCard theme="light">
                 <div className="flex items-center gap-3 mb-4 border-b border-slate-100 pb-3">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#018790]">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#2563EB]">
                         <Smartphone size={16} />
                     </div>
                     <div>
@@ -451,7 +451,7 @@ export default function EmployeeDashboard() {
           <Section title="Assiduité" icon={CalendarCheck}>
              <SpotlightCard theme="light">
                  <div className="flex items-center gap-3 mb-4 border-b border-slate-100 pb-3">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#005461]">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#1e3a8a]">
                         <CalendarCheck size={16} />
                     </div>
                     <div>

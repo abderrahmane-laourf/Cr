@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Search, Plus, Edit2, Trash2, X, Check, 
   Briefcase, Key, ChevronLeft, ChevronRight, AlertCircle, CheckCircle
@@ -20,7 +21,7 @@ const Toast = ({ message, type = 'success', onClose }) => {
         ${type === 'success' ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800' : 'bg-red-50/90 border-red-200 text-red-800'}`}>
         {type === 'success' ? <CheckCircle size={24} className="text-emerald-500" /> : <AlertCircle size={24} className="text-red-500" />}
         <div>
-          <h4 className="font-bold text-sm">{type === 'success' ? 'Succès' : 'Erreur'}</h4>
+          <h4 className="font-bold text-sm">{type === 'success' ? 'SuccÃ¨s' : 'Erreur'}</h4>
           <p className="text-xs opacity-90">{message}</p>
         </div>
         <button onClick={onClose} className="ml-4 opacity-50 hover:opacity-100"><X size={16}/></button>
@@ -149,7 +150,7 @@ const BusinessModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
   if (!isOpen) return null;
 
   const isViewMode = mode === 'view';
-  const modalTitle = mode === 'add' ? 'Ajouter un Business' : mode === 'edit' ? 'Modifier le Business' : 'Détails du Business';
+  const modalTitle = mode === 'add' ? 'Ajouter un Business' : mode === 'edit' ? 'Modifier le Business' : 'DÃ©tails du Business';
 
   const handleInputChange = (field, e) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
@@ -159,9 +160,9 @@ const BusinessModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
     onSave(formData);
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
           <div><h2 className="text-2xl font-bold text-slate-800">{modalTitle}</h2></div>
           <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors"><X size={24} /></button>
@@ -175,21 +176,22 @@ const BusinessModal = ({ isOpen, onClose, mode, initialData, onSave }) => {
         
         <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 rounded-b-3xl flex justify-between items-center">
           {step > 1 ? (
-            <button onClick={() => setStep(step - 1)} className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-white border border-transparent hover:border-slate-200 flex items-center gap-2 transition-all"><ChevronLeft size={18} /> Précédent</button>
+            <button onClick={() => setStep(step - 1)} className="px-6 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-white border border-transparent hover:border-slate-200 flex items-center gap-2 transition-all"><ChevronLeft size={18} /> PrÃ©cÃ©dent</button>
           ) : <div />}
           
           {step < 2 ? (
              <button onClick={() => setStep(step + 1)} className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all">Suivant <ChevronRight size={18} /></button>
           ) : (
              !isViewMode && (
-                <button onClick={handleSubmit} className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all">
-                    <Check size={18} /> {mode === 'add' ? 'Créer' : 'Sauvegarder'}
+                <button onClick={handleSubmit} className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all">
+                    <Check size={18} /> {mode === 'add' ? 'CrÃ©er' : 'Sauvegarder'}
                 </button>
              )
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -225,10 +227,10 @@ export default function BusinessPage() {
     try {
       if (modalMode === 'add') {
         await businessAPI.create(data);
-        showToast("Business ajouté avec succès !", "success");
+        showToast("Business ajoutÃ© avec succÃ¨s !", "success");
       } else if (modalMode === 'edit') {
         await businessAPI.update(selectedBusiness.id, data);
-        showToast("Modifications enregistrées !", "success");
+        showToast("Modifications enregistrÃ©es !", "success");
       }
       setIsModalOpen(false);
       loadBusinesses();
@@ -240,8 +242,8 @@ export default function BusinessPage() {
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
-      title: 'Êtes-vous sûr ?',
-      text: "Cette action est irréversible !",
+      title: 'ÃŠtes-vous sÃ»r ?',
+      text: "Cette action est irrÃ©versible !",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -253,7 +255,7 @@ export default function BusinessPage() {
     if (result.isConfirmed) {
       try {
         await businessAPI.delete(id);
-        Swal.fire('Supprimé !', 'Le business a été supprimé.', 'success');
+        Swal.fire('SupprimÃ© !', 'Le business a Ã©tÃ© supprimÃ©.', 'success');
         loadBusinesses();
       } catch (error) {
         console.error('Error deleting business:', error);
@@ -272,14 +274,14 @@ export default function BusinessPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800 relative">
+    <div className="min-h-screen bg-transparent p-8 font-sans text-slate-800 relative">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Gestion des Business</h1>
-            <p className="text-slate-500 mt-1 font-medium">Gérez vos entités commerciales et leurs accès API.</p>
+            <p className="text-slate-500 mt-1 font-medium">GÃ©rez vos entitÃ©s commerciales et leurs accÃ¨s API.</p>
           </div>
           <button 
             onClick={() => { setModalMode('add'); setSelectedBusiness(null); setIsModalOpen(true); }}
@@ -329,7 +331,7 @@ export default function BusinessPage() {
                      </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-400 font-mono">
-                    {business.apiToken ? '••••••••••••••••' : '-'}
+                    {business.apiToken ? 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢' : '-'}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -345,7 +347,7 @@ export default function BusinessPage() {
           {filteredBusinesses.length === 0 && (
             <div className="p-10 text-center text-slate-400 flex flex-col items-center">
                 <Briefcase size={40} className="mb-2 opacity-20" />
-                <p>Aucun business trouvé</p>
+                <p>Aucun business trouvÃ©</p>
             </div>
           )}
         </div>
@@ -361,3 +363,4 @@ export default function BusinessPage() {
     </div>
   );
 }
+

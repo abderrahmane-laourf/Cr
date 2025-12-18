@@ -123,7 +123,7 @@ const AssetModal = ({ isOpen, onClose, onSave, initialData, mode }) => {
 
     return (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-            <SpotlightCard theme="light" className="w-full max-w-2xl max-h-[90vh] flex flex-col !p-0 !bg-white/90 overflow-hidden">
+            <SpotlightCard theme="light" className="w-full max-w-2xl max-h-[90vh] flex flex-col !p-0 bg-white/90 dark:bg-slate-900 overflow-hidden">
                 <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100 bg-[#005461]/5">
                     <div>
                         <h2 className="text-2xl font-bold text-[#005461]">
@@ -268,7 +268,7 @@ const DamageReportModal = ({ isOpen, onClose, asset, onSave }) => {
 
     return (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[60] p-4">
-            <SpotlightCard theme="light" className="w-full max-w-lg flex flex-col !p-0 !bg-white/90 border-l-4 border-rose-500 overflow-hidden">
+            <SpotlightCard theme="light" className="w-full max-w-lg flex flex-col !p-0 bg-white/90 dark:bg-slate-900 border-l-4 border-rose-500 overflow-hidden">
                 <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100 bg-rose-50">
                     <div>
                         <h2 className="text-xl font-bold text-rose-700 flex items-center gap-2">

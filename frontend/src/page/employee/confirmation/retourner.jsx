@@ -201,11 +201,11 @@ export default function Retourner() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-4 font-sans">
+    <div className="min-h-screen bg-transparent p-4 font-sans dark:text-slate-200">
       <div className="w-full mx-auto max-w-[1800px]">
         
         {/* HEADER */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xl shadow-slate-200/50 mb-6">
+        <div className="glass-card p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-amber-600 rounded-lg flex items-center justify-center text-white">
@@ -280,19 +280,19 @@ export default function Retourner() {
         </div>
 
         {/* KANBAN STAGE - RETOURNER */}
-        <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-xl shadow-slate-200/50">
+        <div className="frosted-panel p-4">
           {/* Stage Header */}
-          <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-amber-200">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-amber-200 dark:border-amber-500/30">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-amber-600 rounded-lg flex items-center justify-center">
                 <RotateCcw size={18} className="text-white" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-800 text-sm">Retourner</h3>
-                <p className="text-xs text-slate-500">{sortedColis.length} colis</p>
+                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">Retourner</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{sortedColis.length} colis</p>
               </div>
             </div>
-            <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">
+            <span className="px-3 py-1 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 rounded-full text-xs font-bold">
               {sortedColis.length}
             </span>
           </div>
@@ -314,8 +314,8 @@ export default function Retourner() {
                 return (
                   <div 
                     key={colisItem.id} 
-                    className={`bg-white rounded-xl p-4 border-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${
-                      hasDateAlert ? 'border-red-300 bg-red-50' : 'border-slate-200'
+                    className={`premium-card rounded-xl p-4 transition-all cursor-pointer ${
+                      hasDateAlert ? 'border-2 border-red-300 !bg-red-50/50 dark:!bg-red-900/20' : ''
                     }`}
                     onClick={() => { setSelectedColisForTracking(colisItem); setShowTrackingModal(true); }}
                   >

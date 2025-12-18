@@ -77,7 +77,7 @@ export default function ProductDashboard() {
   if (loading) {
      return (
         <div className="min-h-screen bg-transparent flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#018790] border-t-transparent"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#2563EB] border-t-transparent"></div>
         </div>
      );
   }
@@ -88,20 +88,20 @@ export default function ProductDashboard() {
       {/* Header */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 bg-transparent p-6 rounded-3xl border border-slate-100/50">
         <div>
-          <h1 className="text-2xl font-extrabold text-[#018790]">Tableau de Bord Produits</h1>
+          <h1 className="text-2xl font-extrabold text-[#2563EB]">Tableau de Bord Produits</h1>
           <p className="text-slate-500">Vue d'ensemble et gestion du catalogue</p>
         </div>
 
         <div className="flex flex-wrap items-end gap-3 w-full xl:w-auto">
              {/* Text Search */}
              <div className="flex-1 min-w-[200px] xl:w-64 relative group">
-                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#018790]" size={16} />
+                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#2563EB]" size={16} />
                  <input 
                      type="text" 
                      placeholder="Rechercher un produit..." 
                      value={searchTerm}
                      onChange={(e) => setSearchTerm(e.target.value)}
-                     className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/10 transition-all"
+                     className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition-all"
                  />
              </div>
 
@@ -111,7 +111,7 @@ export default function ProductDashboard() {
                  <select 
                      value={selectedCategory} 
                      onChange={(e) => setSelectedCategory(e.target.value)} 
-                     className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-[#018790] w-full"
+                     className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-[#2563EB] w-full"
                  >
                      <option value="all">Toutes</option>
                      {categories.map(c => <option key={c} value={c}>{c}</option>)}
@@ -124,7 +124,7 @@ export default function ProductDashboard() {
                  <select 
                      value={selectedType} 
                      onChange={(e) => setSelectedType(e.target.value)} 
-                     className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-[#018790] w-full"
+                     className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-[#2563EB] w-full"
                  >
                      <option value="all">Tous</option>
                      {types.map(t => <option key={t} value={t}>{t}</option>)}
@@ -133,7 +133,7 @@ export default function ProductDashboard() {
 
              <button 
                 onClick={() => navigate('/admin/products')}
-                className="px-5 py-2.5 bg-[#005461] hover:bg-[#016f76] text-white rounded-xl shadow-lg shadow-cyan-900/20 transition-all text-sm font-bold flex items-center gap-2 h-[42px]"
+                className="px-5 py-2.5 bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-xl shadow-lg shadow-blue-900/20 transition-all text-sm font-bold flex items-center gap-2 h-[42px]"
             >
                 <Package size={16} />
                 Gérer
@@ -162,7 +162,7 @@ export default function ProductDashboard() {
                 value={`${fmt(totalStockValue)} DH`} 
                 icon={DollarSign} 
                 sub="Coût d'achat total"
-                color="text-[#018790]"
+                color="text-[#2563EB]"
             />
             <StatCard 
                 label="Fragiles" 
@@ -227,7 +227,7 @@ export default function ProductDashboard() {
                                      </div>
                                      <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                                          <div 
-                                             className="h-full bg-gradient-to-r from-cyan-500 to-[#018790] rounded-full transition-all duration-500"
+                                             className="h-full bg-gradient-to-r from-blue-400 to-[#2563EB] rounded-full transition-all duration-500"
                                              style={{ width: `${percentage}%` }}
                                          />
                                      </div>
@@ -290,7 +290,7 @@ export default function ProductDashboard() {
              <SpotlightCard theme="light" className="h-[400px] flex flex-col">
                  <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
                     <h3 className="font-bold text-slate-800">Derniers Ajouts</h3>
-                    <Link to="/admin/products" className="text-xs font-bold text-[#018790] hover:underline flex items-center gap-1">
+                    <Link to="/admin/products" className="text-xs font-bold text-[#2563EB] hover:underline flex items-center gap-1">
                         Tout voir <Search size={10} />
                     </Link>
                  </div>
@@ -306,11 +306,11 @@ export default function ProductDashboard() {
                              )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-bold text-sm text-slate-800 truncate group-hover:text-[#018790] transition-colors">{product.nom}</p>
+                            <p className="font-bold text-sm text-slate-800 truncate group-hover:text-[#2563EB] transition-colors">{product.nom}</p>
                             <p className="text-xs text-slate-500">{product.type} • {product.categorie}</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm font-black text-[#018790]">{product.prix1} <span className="text-[10px] text-slate-400 font-normal">MAD</span></p>
+                            <p className="text-sm font-black text-[#2563EB]">{product.prix1} <span className="text-[10px] text-slate-400 font-normal">MAD</span></p>
                           </div>
                       </div>
                     ))}
@@ -330,7 +330,7 @@ export default function ProductDashboard() {
 const Section = ({ title, icon: Icon, children }) => (
     <div className="space-y-4">
         <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#018790]/10 rounded-lg text-[#018790]">
+            <div className="p-2 bg-[#2563EB]/10 rounded-lg text-[#2563EB]">
                 {Icon ? <Icon size={24} /> : <Activity size={24} />}
             </div>
             <h2 className="text-xl font-bold text-slate-800">{title}</h2>
@@ -343,7 +343,7 @@ const StatCard = ({ label, value, icon: Icon, sub, color }) => (
     <SpotlightCard theme="light" className="flex flex-col justify-between h-full"> 
         <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{label}</span>
-            {Icon && <Icon size={18} className="text-[#018790]" />}
+            {Icon && <Icon size={18} className="text-[#2563EB]" />}
         </div>
         <div>
             <div className={`text-2xl font-black ${color || 'text-slate-800'}`}>{value}</div>

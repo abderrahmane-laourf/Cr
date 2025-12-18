@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, RotateCw, X, Package, AlertTriangle, Eye, Calendar, 
@@ -394,32 +395,32 @@ export default function ConfirmationClients() {
   const stats = calculateDailyStats();
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-4 font-sans">
+    <div className="min-h-screen bg-transparent p-4 font-sans dark:text-slate-200">
       <div className="w-full mx-auto max-w-[1800px]">
         
         {/* GAMIFIED DASHBOARD HEADER */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 animate-in slide-in-from-top duration-500">
             {/* Card 1: Productivity (High Energy) */}
-            <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-[2rem] p-6 text-white shadow-xl shadow-purple-500/20 relative overflow-hidden group hover:scale-[1.02] transition-transform">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><Zap size={100} /></div>
+            <div className="glass-card bg-white dark:bg-gradient-to-br dark:from-violet-600/90 dark:to-purple-700/90 p-6 relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><Zap size={100} className="text-blue-500 dark:text-yellow-300" /></div>
                 <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-2">
-                        <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm"><Zap size={20} className="text-yellow-300 fill-yellow-300" /></div>
-                        <h3 className="font-bold text-lg">Productivité Fort ⚡</h3>
+                        <div className="p-2 bg-blue-100 dark:bg-white/20 rounded-xl backdrop-blur-sm"><Zap size={20} className="text-blue-500 dark:text-yellow-300 fill-blue-500 dark:fill-yellow-300" /></div>
+                        <h3 className="font-bold text-lg text-slate-800 dark:text-white">Productivité Fort ⚡</h3>
                     </div>
                     <div className="flex items-end gap-2">
-                        <span className="text-5xl font-black tracking-tight">{stats.confirmedToday}</span>
-                        <span className="mb-2 font-medium text-purple-200">validations jour</span>
+                        <span className="text-5xl font-black tracking-tight text-blue-600 dark:text-white">{stats.confirmedToday}</span>
+                        <span className="mb-2 font-medium text-slate-500 dark:text-purple-200">validations jour</span>
                     </div>
-                    <div className="mt-4 bg-black/20 rounded-full h-2 w-full overflow-hidden">
-                        <div className="bg-yellow-400 h-full rounded-full" style={{ width: `${Math.min(stats.confirmedToday * 10, 100)}%` }}></div>
+                    <div className="mt-4 bg-slate-100 dark:bg-black/20 rounded-full h-2 w-full overflow-hidden">
+                        <div className="bg-blue-500 dark:bg-yellow-400 h-full rounded-full" style={{ width: `${Math.min(stats.confirmedToday * 10, 100)}%` }}></div>
                     </div>
-                    <p className="text-xs mt-2 text-purple-200">Objectif: 10 🔥 - Keep Pushing!</p>
+                    <p className="text-xs mt-2 text-slate-500 dark:text-purple-200">Objectif: 10 🔥 - Keep Pushing!</p>
                 </div>
             </div>
 
             {/* Card 2: Motivational Commission (Cagnotte) */}
-            <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/50 relative overflow-hidden group hover:scale-[1.02] transition-transform">
+            <div className="glass-card p-6 relative overflow-hidden group hover:scale-[1.02] transition-transform">
                  <div className="absolute -right-6 -top-6 w-32 h-32 bg-emerald-50 rounded-full group-hover:bg-emerald-100 transition-colors"></div>
                  <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-2">
@@ -452,7 +453,7 @@ export default function ConfirmationClients() {
         </div>
 
         {/* LIVRAISON AMMEX */}
-        <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/50">
+        <div className="glass-card p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white">
@@ -472,7 +473,7 @@ export default function ConfirmationClients() {
           </div>
           
           {/* Filters for Ammex */}
-          <div className="flex flex-wrap gap-3 mb-4 p-4 bg-blue-50 rounded-xl">
+          <div className="flex flex-wrap gap-3 mb-4 p-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-xl">
             <div className="flex-1 min-w-[200px]">
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Recherche</label>
               <div className="relative">
@@ -556,11 +557,11 @@ export default function ConfirmationClients() {
 
               return (
                 <div key={stage.id} className="flex-1 min-w-[240px]" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, stage.name)}>
-                  <div className={`bg-white rounded-t-xl border-t-4 ${stage.color} p-3 shadow-sm flex justify-between`}>
-                    <span className="font-bold text-slate-700">{stage.name}</span>
-                    <span className="bg-slate-100 text-xs px-2 py-1 rounded-full font-bold">{stageColis.length}</span>
+                  <div className={`frosted-panel !rounded-b-none border-t-4 ${stage.color} p-3 flex justify-between`}>
+                    <span className="font-bold text-slate-700 dark:text-slate-200">{stage.name}</span>
+                    <span className="bg-slate-100 dark:bg-slate-800 text-xs px-2 py-1 rounded-full font-bold">{stageColis.length}</span>
                   </div>
-                  <div className={`${stage.bgColor} rounded-b-xl p-2 min-h-[500px] space-y-2 border-x border-b border-slate-200`}>
+                  <div className={`frosted-panel !rounded-t-none p-2 min-h-[500px] space-y-2`}>
                     {stageColis.map((colisItem) => {
                       const product = products.find(p => p.id === colisItem.productId);
                       const ville = villes.find(v => v.id === colisItem.ville);
@@ -573,8 +574,8 @@ export default function ConfirmationClients() {
                           key={colisItem.id} 
                           draggable={canDrag}
                           onDragStart={e => handleDragStart(e, colisItem)} 
-                          className={`bg-white rounded-lg p-2.5 shadow-sm hover:shadow-md cursor-move border-2 transition-all ${
-                            hasDateAlert ? 'border-red-500 animate-pulse bg-red-50/10' : 'border-slate-200'
+                          className={`premium-card rounded-lg p-2.5 cursor-move transition-all ${
+                            hasDateAlert ? 'border-2 border-red-500 animate-pulse !bg-red-50/20 dark:!bg-red-900/20' : ''
                           }`}
                         >
                           <div className="flex gap-2 items-center">
@@ -624,7 +625,7 @@ export default function ConfirmationClients() {
                       return (
                         <div 
                           key={colisItem.id} 
-                          className="bg-white rounded-lg p-2.5 shadow-sm border border-slate-200 opacity-90"
+                          className="premium-card rounded-lg p-2.5 opacity-90"
                         >
                         <div className="flex gap-2 items-start">
                           <div className="w-10 h-10 rounded-full bg-slate-100 shrink-0 overflow-hidden border-2 border-white shadow-sm">
@@ -653,7 +654,7 @@ export default function ConfirmationClients() {
                     );
                     }
                   })}
-                  {stageColis.length === 0 && <div className="text-center p-8 text-slate-400 text-sm">Vide</div>}
+                  {stageColis.length === 0 && <div className="text-center p-8 text-slate-400 dark:text-slate-500 text-sm">Vide</div>}
                 </div>
               </div>
             );
@@ -676,9 +677,9 @@ export default function ConfirmationClients() {
           />
         )}
         
-        {showMoveModal && (
-            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-2xl shadow-xl w-full max-w-xs p-4">
+        {showMoveModal && createPortal(
+            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[9999] p-4">
+              <div className="bg-white rounded-2xl shadow-xl w-full max-w-xs p-4 animate-in zoom-in-95 duration-200">
                 <h3 className="font-bold text-lg mb-3">Déplacer vers...</h3>
                 <div className="space-y-2">
                   {stages
@@ -691,7 +692,8 @@ export default function ConfirmationClients() {
                 </div>
                 <button onClick={() => setShowMoveModal(false)} className="mt-4 w-full py-2 text-slate-400 hover:text-slate-600">Annuler</button>
               </div>
-            </div>
+            </div>,
+            document.body
         )}
         
         {showTrackingModal && selectedColisForTracking && (
@@ -770,8 +772,8 @@ function AddClientModal({ onClose, onAdd, employees, currentUser, products, vill
 
   const inputClasses = "w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-pink-400 transition-all font-medium text-slate-700 placeholder:text-slate-400";
 
-  return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[9999] p-4 animate-in fade-in duration-200">
       <div className="bg-white rounded-[2rem] w-full max-w-lg p-8 shadow-2xl shadow-purple-500/20 max-h-[90vh] overflow-y-auto scrollbar-hide">
         
         {/* Header Friendly */}
@@ -966,7 +968,8 @@ function AddClientModal({ onClose, onAdd, employees, currentUser, products, vill
             </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -974,9 +977,9 @@ function TrackingModal({ colis, onClose, products, villes }) {
     const product = products.find(p => p.id === colis.productId);
     const ville = villes.find(v => v.id === colis.ville);
     
-    return (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+    return createPortal(
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[9999] p-4">
+            <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
                 <div className="p-4 bg-slate-50 border-b flex justify-between items-center">
                     <h3 className="font-bold text-slate-800">Détails du Colis</h3>
                     <button onClick={onClose}><X size={20} className="text-slate-400 hover:text-red-500"/></button>
@@ -1005,6 +1008,7 @@ function TrackingModal({ colis, onClose, products, villes }) {
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

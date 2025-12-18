@@ -17,7 +17,7 @@ const SpotlightCard = ({ children, className = "", spotlightColor = "rgba(255, 2
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl bg-transparent border border-[#018790] ${className}`}
+      className={`relative overflow-hidden rounded-2xl bg-transparent border border-[#2563EB] ${className}`}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -214,8 +214,8 @@ const LogisticsDashboard = () => {
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 rounded-xl">
-                <Package className="text-emerald-600 w-8 h-8" />
+              <div className="p-2 bg-blue-100 rounded-xl">
+                <Package className="text-blue-600 w-8 h-8" />
               </div>
               Logistics Tracking
             </h1>
@@ -247,7 +247,7 @@ const LogisticsDashboard = () => {
                 type="date" 
                 value={filters.dateFrom}
                 onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
-                className="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-emerald-500 transition-all"
+                className="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all"
               />
             </div>
             <div className="flex-1 min-w-[150px]">
@@ -256,7 +256,7 @@ const LogisticsDashboard = () => {
                 type="date" 
                 value={filters.dateTo}
                 onChange={(e) => handleFilterChange('dateTo', e.target.value)}
-                className="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-emerald-500 transition-all"
+                className="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all"
               />
             </div>
             <div className="flex-2 min-w-[200px]">
@@ -265,7 +265,7 @@ const LogisticsDashboard = () => {
                 <select 
                   value={filters.productName}
                   onChange={(e) => handleFilterChange('productName', e.target.value)}
-                  className="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-emerald-500 transition-all appearance-none"
+                  className="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all appearance-none"
                 >
                   <option value="">All Products</option>
                   {[...new Set(products.map(p => p.name))].sort().map(name => (
@@ -282,7 +282,7 @@ const LogisticsDashboard = () => {
               <select 
                 value={filters.category}
                 onChange={(e) => handleFilterChange('category', e.target.value)}
-                className="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-emerald-500 transition-all"
+                className="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="all">All Categories</option>
                 {categories.map(cat => (
@@ -295,7 +295,7 @@ const LogisticsDashboard = () => {
               <select 
                 value={filters.sequence}
                 onChange={(e) => handleFilterChange('sequence', e.target.value)}
-                className="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-emerald-500 transition-all"
+                className="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="non">NON</option>
                 <option value="oui">OUI</option>
@@ -306,7 +306,7 @@ const LogisticsDashboard = () => {
 
       {/* KPI Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-          <SpotlightCard spotlightColor="rgba(1, 135, 144, 0.3)">
+          <SpotlightCard spotlightColor="rgba(37, 99, 235, 0.3)">
             <div className="relative z-10 p-5 h-full flex flex-col justify-between">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-blue-50 rounded-lg">
@@ -321,7 +321,7 @@ const LogisticsDashboard = () => {
             </div>
           </SpotlightCard>
 
-          <SpotlightCard spotlightColor="rgba(1, 135, 144, 0.3)">
+          <SpotlightCard spotlightColor="rgba(37, 99, 235, 0.3)">
             <div className="relative z-10 p-5 h-full flex flex-col justify-between">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-emerald-50 rounded-lg">
@@ -336,7 +336,7 @@ const LogisticsDashboard = () => {
             </div>
           </SpotlightCard>
           
-          <SpotlightCard spotlightColor="rgba(1, 135, 144, 0.3)">
+          <SpotlightCard spotlightColor="rgba(37, 99, 235, 0.3)">
             <div className="relative z-10 p-5 h-full flex flex-col justify-between">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-green-50 rounded-lg">
@@ -351,7 +351,7 @@ const LogisticsDashboard = () => {
             </div>
           </SpotlightCard>
 
-          <SpotlightCard spotlightColor="rgba(1, 135, 144, 0.3)">
+          <SpotlightCard spotlightColor="rgba(37, 99, 235, 0.3)">
             <div className="relative z-10 p-5 h-full flex flex-col justify-between">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-amber-50 rounded-lg">
@@ -366,7 +366,7 @@ const LogisticsDashboard = () => {
             </div>
           </SpotlightCard>
 
-          <SpotlightCard spotlightColor="rgba(1, 135, 144, 0.3)">
+          <SpotlightCard spotlightColor="rgba(37, 99, 235, 0.3)">
             <div className="relative z-10 p-5 h-full flex flex-col justify-between">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-cyan-50 rounded-lg">
@@ -381,7 +381,7 @@ const LogisticsDashboard = () => {
             </div>
           </SpotlightCard>
 
-          <SpotlightCard spotlightColor="rgba(1, 135, 144, 0.3)">
+          <SpotlightCard spotlightColor="rgba(37, 99, 235, 0.3)">
             <div className="relative z-10 p-5 h-full flex flex-col justify-between">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-red-50 rounded-lg">
@@ -415,7 +415,7 @@ const LogisticsDashboard = () => {
                   <div key={wh.id} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-center mb-6">
                       <span className="font-bold text-lg text-slate-800 flex items-center gap-2">
-                        <div className="w-2 h-8 bg-emerald-500 rounded-full"></div>
+                        <div className="w-2 h-8 bg-blue-500 rounded-full"></div>
                         {wh.name}
                       </span>
                       <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">#{wh.id}</span>
@@ -471,12 +471,12 @@ const LogisticsDashboard = () => {
           <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                <TrendingUp className="text-emerald-500" />
+                <TrendingUp className="text-blue-500" />
                 Detailed Product Movement
               </h3>
               <p className="text-slate-500 text-sm mt-1">Comprehensive breakdown of stock and shipping status</p>
             </div>
-            <span className="px-4 py-2 bg-emerald-50 text-emerald-700 text-sm font-bold rounded-xl border border-emerald-100">
+            <span className="px-4 py-2 bg-blue-50 text-blue-700 text-sm font-bold rounded-xl border border-blue-100">
               {filteredProducts.length} Active Items
             </span>
           </div>

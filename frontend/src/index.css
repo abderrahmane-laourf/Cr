@@ -1,80 +1,652 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 @layer base {
-  html {
-    font-size: 14px;
-    /* Reduced base font size */
-  }
+    html {
+        font-size: 14px;
+        /* Reduced base font size */
+    }
 
-  body {
-    @apply antialiased text-slate-800;
-  }
+    body {
+        @apply antialiased text-slate-800;
+    }
 
-  /* Compact Tables Globally */
-  table {
-    @apply w-full text-sm;
-  }
+    /* Compact Tables Globally */
+    table {
+        @apply w-full text-sm;
+    }
 
-  thead th {
-    @apply px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-50/50;
-  }
+    thead th {
+        @apply px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-50/50;
+    }
 
-  tbody td {
-    @apply px-3 py-2.5 text-sm;
-  }
+    tbody td {
+        @apply px-3 py-2.5 text-sm;
+    }
 
-  /* Compact Buttons & Inputs */
-  button,
-  input,
-  select {
-    @apply text-sm;
-  }
+    /* Compact Buttons & Inputs */
+    button,
+    input,
+    select {
+        @apply text-sm;
+    }
 
-  /* Reduction of large paddings in Cards/Containers */
-  .p-6 {
-    @apply !p-4;
-  }
+    /* Reduction of large paddings in Cards/Containers */
+    .p-6 {
+        @apply !p-4;
+    }
 
-  .p-8 {
-    @apply !p-5;
-  }
+    .p-8 {
+        @apply !p-5;
+    }
 
-  .gap-6 {
-    @apply !gap-4;
-  }
+    .gap-6 {
+        @apply !gap-4;
+    }
 
-  .h-12 {
-    @apply !h-10;
-  }
+    .h-12 {
+        @apply !h-10;
+    }
 }
 
 /* Custom Scrollbar for tighter lists */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+    width: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Hide scrollbar for Chrome, Safari and Opera */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* ============================================
+   GLOBAL DARK MODE OVERRIDES
+   These automatically apply dark variants to 
+   common UI patterns used across all pages
+   ============================================ */
+
+/* Cards, containers, and panels - SEMI-TRANSPARENT for background visibility */
+/* Cards, containers, and panels - NAVY BLUE TINTED */
+.dark .bg-white {
+    background-color: rgba(10, 15, 40, 0.7) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.dark .bg-slate-50 {
+    background-color: rgba(20, 30, 60, 0.6) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.dark .bg-slate-100 {
+    background-color: rgba(30, 45, 80, 0.5) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.dark .bg-gray-50 {
+    background-color: rgba(20, 30, 60, 0.6) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.dark .bg-gray-100 {
+    background-color: rgba(30, 45, 80, 0.5) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.dark .bg-slate-800 {
+    background-color: rgba(20, 30, 60, 0.9) !important;
+}
+
+.dark .bg-slate-900 {
+    background-color: rgb(5, 10, 30) !important;
+}
+
+/* Text colors - Cool White/Blue-ish */
+.dark .text-slate-800,
+.dark .text-slate-900,
+.dark .text-gray-800,
+.dark .text-gray-900 {
+    color: rgb(240, 245, 255) !important;
+}
+
+.dark .text-slate-700,
+.dark .text-gray-700 {
+    color: rgb(210, 225, 250) !important;
+}
+
+.dark .text-slate-600,
+.dark .text-gray-600 {
+    color: rgb(160, 180, 220) !important;
+}
+
+.dark .text-slate-500,
+.dark .text-gray-500 {
+    color: rgb(110, 130, 180) !important;
+}
+
+/* Borders - DEEP BLUE for premium feel */
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-gray-100,
+.dark .border-gray-200 {
+    border-color: rgba(40, 60, 120, 0.3) !important;
+}
+
+.dark .border-slate-300,
+.dark .border-gray-300 {
+    border-color: rgba(60, 90, 180, 0.3) !important;
+}
+
+.dark .divide-slate-100> :not([hidden])~ :not([hidden]),
+.dark .divide-slate-200> :not([hidden])~ :not([hidden]) {
+    border-color: rgba(40, 60, 120, 0.2) !important;
+}
+
+/* Table specific styles */
+.dark thead {
+    background-color: rgb(30, 41, 59) !important;
+    /* slate-800 */
+}
+
+.dark thead th {
+    color: rgb(148, 163, 184) !important;
+    /* slate-400 */
+    background-color: rgb(30, 41, 59) !important;
+    /* slate-800 */
+}
+
+.dark tbody tr:hover {
+    background-color: rgb(30, 41, 59) !important;
+    /* slate-800 */
+}
+
+.dark tbody td {
+    color: rgb(203, 213, 225) !important;
+    /* slate-300 */
+}
+
+/* Form inputs and selects */
+.dark input,
+.dark select,
+.dark textarea {
+    background-color: rgb(30, 41, 59) !important;
+    /* slate-800 */
+    border-color: rgb(51, 65, 85) !important;
+    /* slate-700 */
+    color: rgb(241, 245, 249) !important;
+    /* slate-100 */
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: rgb(100, 116, 139) !important;
+    /* slate-500 */
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+    border-color: rgb(59, 130, 246) !important;
+    /* blue-500 */
+    outline-color: rgb(59, 130, 246) !important;
+}
+
+/* Hover states */
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-gray-50:hover {
+    background-color: rgb(30, 41, 59) !important;
+    /* slate-800 */
+}
+
+.dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-gray-100:hover {
+    background-color: rgb(51, 65, 85) !important;
+    /* slate-700 */
+}
+
+/* Badge backgrounds that need dark variants */
+.dark .bg-blue-50 {
+    background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+.dark .bg-emerald-50 {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+.dark .bg-green-50 {
+    background-color: rgba(34, 197, 94, 0.15) !important;
+}
+
+.dark .bg-red-50 {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+.dark .bg-orange-50 {
+    background-color: rgba(249, 115, 22, 0.15) !important;
+}
+
+.dark .bg-yellow-50 {
+    background-color: rgba(234, 179, 8, 0.15) !important;
+}
+
+.dark .bg-purple-50 {
+    background-color: rgba(168, 85, 247, 0.15) !important;
+}
+
+.dark .bg-indigo-50 {
+    background-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+.dark .bg-cyan-50 {
+    background-color: rgba(6, 182, 212, 0.15) !important;
+}
+
+/* Badge 100 backgrounds */
+.dark .bg-blue-100 {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+}
+
+.dark .bg-emerald-100 {
+    background-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.dark .bg-green-100 {
+    background-color: rgba(34, 197, 94, 0.2) !important;
+}
+
+.dark .bg-red-100 {
+    background-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+.dark .bg-orange-100 {
+    background-color: rgba(249, 115, 22, 0.2) !important;
+}
+
+.dark .bg-yellow-100 {
+    background-color: rgba(234, 179, 8, 0.2) !important;
+}
+
+.dark .bg-purple-100 {
+    background-color: rgba(168, 85, 247, 0.2) !important;
+}
+
+/* Shadows */
+.dark .shadow-sm,
+.dark .shadow,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl {
+    --tw-shadow-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ============================================
+   GLASSMORPHISM & FROSTED GLASS UTILITIES
+   Premium visual effects for modern UI
+   ============================================ */
+
+/* Light Mode Glassmorphism */
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border-radius: 1rem;
+}
+
+/* Dark Mode Glassmorphism - PREMIUM DARK BLUE */
+.dark .glass-card {
+    background: rgba(15, 23, 42, 0.6) !important;
+    /* Slate 900 base */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    /* Subtle blue border */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Frosted Glass Panels - For Livraison/Colis pages */
+.frosted-panel {
+    background: rgba(240, 240, 240, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+}
+
+/* Dark Mode - HIGHLY TRANSPARENT for beautiful background visibility */
+.dark .frosted-panel {
+    background: rgba(15, 23, 42, 0.35) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+/* Premium Card - For Product Cards & Reports */
+.premium-card {
+    background: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Bouncy transition */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Dark Mode - Semi-transparent for depth effect */
+.dark .premium-card {
+    background: rgba(30, 41, 59, 0.4) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    /* Blue tint border */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+.premium-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    border-color: rgba(59, 130, 246, 0.4);
+    z-index: 10;
+}
+
+.dark .premium-card:hover {
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(59, 130, 246, 0.3);
+    /* Glow effect */
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(30, 41, 59, 0.8) !important;
+}
+
+/* Glossy highlight effect */
+.premium-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: 0.6s;
+}
+
+.premium-card:hover::after {
+    transform: translateX(100%);
+}
+
+/* ============================================
+   PIPELINE STAGE SMOOTH STYLING
+   For Kanban columns in Livraison pages
+   ============================================ */
+
+/* Base pipeline stage styling */
+.pipeline-stage {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+/* Dark mode pipeline stages - Smoother glass effect */
+.dark .pipeline-stage {
+    background: rgba(30, 41, 59, 0.45) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+/* ============================================
+   STAGE COLOR BACKGROUNDS FOR DARK MODE
+   Subtle colored tints for each pipeline stage
+   ============================================ */
+
+/* Reporter - Amber/Yellow tint */
+.dark .bg-amber-50 {
+    background: rgba(245, 158, 11, 0.15) !important;
+    border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+.dark .bg-amber-100 {
+    background: rgba(245, 158, 11, 0.2) !important;
+}
+
+/* Confirmé - Purple tint */
+.dark .bg-purple-50 {
+    background: rgba(168, 85, 247, 0.15) !important;
+    border-color: rgba(168, 85, 247, 0.25) !important;
+}
+
+/* Packaging - Orange tint */
+.dark .bg-orange-50 {
+    background: rgba(249, 115, 22, 0.15) !important;
+    border-color: rgba(249, 115, 22, 0.25) !important;
+}
+
+/* Out for Delivery - Blue tint */
+.dark .bg-blue-50 {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-color: rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Livré - Green tint */
+.dark .bg-green-50 {
+    background: rgba(34, 197, 94, 0.15) !important;
+    border-color: rgba(34, 197, 94, 0.25) !important;
+}
+
+/* Annulé - Red tint */
+.dark .bg-red-50 {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Teal stages */
+.dark .bg-teal-50 {
+    background: rgba(20, 184, 166, 0.15) !important;
+    border-color: rgba(20, 184, 166, 0.25) !important;
+}
+
+.dark .bg-teal-100 {
+    background: rgba(20, 184, 166, 0.2) !important;
+}
+
+/* Indigo stages */
+.dark .bg-indigo-50 {
+    background: rgba(99, 102, 241, 0.15) !important;
+    border-color: rgba(99, 102, 241, 0.25) !important;
+}
+
+/* Slate stages (Retourner) */
+.dark .bg-slate-50 {
+    background: rgba(100, 116, 139, 0.15) !important;
+}
+
+/* ============================================
+   CHART COLOR PALETTE
+   Consistent colors for data visualization
+   Works in both light and dark modes
+   ============================================ */
+:root {
+    /* Primary Chart Colors */
+    --chart-electric-blue: #3B82F6;
+    --chart-emerald: #10B981;
+    --chart-amber: #F59E0B;
+    --chart-rose: #F43F5E;
+    --chart-violet: #8B5CF6;
+    --chart-cyan: #06B6D4;
+
+    /* Secondary/Softer variants */
+    --chart-blue-soft: rgba(59, 130, 246, 0.7);
+    --chart-green-soft: rgba(16, 185, 129, 0.7);
+    --chart-amber-soft: rgba(245, 158, 11, 0.7);
+    --chart-rose-soft: rgba(244, 63, 94, 0.7);
+}
+
+
+/* Modal backdrops - make sure they stay visible in dark mode */
+.dark .bg-slate-900\/40,
+.dark .bg-slate-900\/60 {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Gradient backgrounds with transparency */
+.dark .bg-gradient-to-br.from-blue-50 {
+    --tw-gradient-from: rgba(59, 130, 246, 0.1) !important;
+}
+
+.dark .bg-gradient-to-br.to-indigo-50 {
+    --tw-gradient-to: rgba(99, 102, 241, 0.1) !important;
+}
+
+/* Ring colors for focus states */
+.dark .focus\:ring-blue-100:focus,
+.dark .ring-blue-100 {
+    --tw-ring-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+
+@theme inline {
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --radius-2xl: calc(var(--radius) + 8px);
+    --radius-3xl: calc(var(--radius) + 12px);
+    --radius-4xl: calc(var(--radius) + 16px);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+    --radius: 0.625rem;
+    --background: oklch(0.985 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+    --background: oklch(0.12 0.04 260);
+    /* Deep Navy Blue Background */
+    --foreground: oklch(0.98 0.01 260);
+    /* White with tiny blue tint */
+    --card: oklch(0.15 0.05 260);
+    /* Lighter Navy for cards */
+    --card-foreground: oklch(0.98 0.01 260);
+    --popover: oklch(0.15 0.05 260);
+    --popover-foreground: oklch(0.98 0.01 260);
+    --primary: oklch(0.6 0.2 260);
+    /* Bright Blue for primary actions */
+    --primary-foreground: oklch(0.98 0.01 260);
+    --secondary: oklch(0.25 0.05 260);
+    /* Secondary elements */
+    --secondary-foreground: oklch(0.98 0.01 260);
+    --muted: oklch(0.25 0.05 260);
+    --muted-foreground: oklch(0.7 0.05 260);
+    --accent: oklch(0.25 0.05 260);
+    --accent-foreground: oklch(0.98 0.01 260);
+    --destructive: oklch(0.6 0.2 20);
+    /* Keep Red for destructive */
+    --border: oklch(0.3 0.05 260);
+    /* Blue-tinted borders */
+    --input: oklch(0.3 0.05 260);
+    --ring: oklch(0.5 0.2 260);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: oklch(0.12 0.04 260);
+    /* Match background */
+    --sidebar-foreground: oklch(0.98 0.01 260);
+    --sidebar-primary: oklch(0.6 0.2 260);
+    --sidebar-primary-foreground: oklch(0.98 0.01 260);
+    --sidebar-accent: oklch(0.25 0.05 260);
+    --sidebar-accent-foreground: oklch(0.98 0.01 260);
+    --sidebar-border: oklch(0.3 0.05 260);
+    --sidebar-ring: oklch(0.5 0.2 260);
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-background text-foreground transition-colors duration-300;
+    }
 }

@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Plus, GripVertical, Edit2, X, Trash2, AlertTriangle, RotateCw } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { pipelineAPI } from '../../services/api';
@@ -252,10 +253,13 @@ export default function PipelineSettings() {
   const handleAddStage = async () => {
     if (!newStageName.trim()) return;
 
+    // Get color from the selected delivery status
+    const statusColor = DELIVERY_STATUSES.find(s => s.id === selectedStatus)?.color || 'bg-blue-500';
+
     const newStage = {
       id: Date.now(),
       name: newStageName,
-      color: selectedColor,
+      color: statusColor,
       active: true,
       status: selectedStatus,
       locked: false
@@ -493,7 +497,7 @@ export default function PipelineSettings() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
             <div className="flex items-center justify-between">
                 <div>
-                <h1 className="text-3xl font-extrabold text-[#005461] tracking-tight">Configuration Pipeline</h1>
+                <h1 className="text-3xl font-extrabold text-[#2563EB] tracking-tight">Configuration Pipeline</h1>
                 <p className="text-slate-500 mt-1 font-medium">Gérez les étapes et les status</p>
                 </div>
                 <div className="flex gap-3">
@@ -504,7 +508,7 @@ export default function PipelineSettings() {
                   </button>
                   <button 
                     onClick={() => setShowNewPipelineModal(true)}
-                    className="flex items-center gap-2 px-6 py-3 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] transition-all shadow-lg shadow-cyan-900/30 font-semibold">
+                    className="flex items-center gap-2 px-6 py-3 bg-[#1e3a8a] text-white rounded-xl hover:bg-[#1e40af] transition-all shadow-lg shadow-blue-900/30 font-semibold">
                     <Plus size={20} /> Nouveau Pipeline
                   </button>
                 </div>
@@ -515,7 +519,7 @@ export default function PipelineSettings() {
             {loading ? (
               <div className="flex items-center justify-center py-20">
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#005461] mx-auto mb-4"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e3a8a] mx-auto mb-4"></div>
                   <p className="text-slate-600 font-medium">Chargement des pipelines...</p>
                 </div>
               </div>
@@ -635,7 +639,7 @@ export default function PipelineSettings() {
                     setCurrentPipelineId(pipeline.id);
                     setShowNewStageModal(true);
                     }}
-                    className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-600 hover:border-[#005461] hover:text-[#005461] hover:bg-[#005461]/5 transition-all font-medium flex items-center justify-center gap-2"
+                    className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-600 hover:border-[#1e3a8a] hover:text-[#1e3a8a] hover:bg-[#1e3a8a]/5 transition-all font-medium flex items-center justify-center gap-2"
                 >
                     <Plus size={20} />
                     Ajouter Stage
@@ -649,9 +653,9 @@ export default function PipelineSettings() {
       </div>
 
       {/* Modal for New Pipeline */}
-      {showNewPipelineModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
+      {showNewPipelineModal && createPortal(
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 z-[100]">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-slate-800">Nouveau Pipeline</h3>
               <button onClick={() => setShowNewPipelineModal(false)} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
@@ -667,7 +671,7 @@ export default function PipelineSettings() {
                 value={newPipelineName}
                 onChange={(e) => setNewPipelineName(e.target.value)}
                 placeholder="Ex: Pipeline de Vente"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all"
               />
             </div>
 
@@ -698,19 +702,20 @@ export default function PipelineSettings() {
               <button
                 onClick={handleAddPipeline}
                 disabled={!newPipelineName.trim()}
-                className="flex-1 px-4 py-2.5 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-900/30"
+                className="flex-1 px-4 py-2.5 bg-[#1e3a8a] text-white rounded-xl hover:bg-[#1e40af] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/30"
               >
                 Créer
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Modal for Edit Pipeline */}
-      {showEditPipelineModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
+      {showEditPipelineModal && createPortal(
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 z-[100]">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-slate-800">Modifier Pipeline</h3>
               <button onClick={() => setShowEditPipelineModal(false)} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition">
@@ -726,7 +731,7 @@ export default function PipelineSettings() {
                 value={newPipelineName}
                 onChange={(e) => setNewPipelineName(e.target.value)}
                 placeholder="Ex: Pipeline de Vente"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all"
               />
             </div>
 
@@ -757,19 +762,20 @@ export default function PipelineSettings() {
               <button
                 onClick={handleUpdatePipeline}
                 disabled={!newPipelineName.trim()}
-                className="flex-1 px-4 py-2.5 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-900/30"
+                className="flex-1 px-4 py-2.5 bg-[#1e3a8a] text-white rounded-xl hover:bg-[#1e40af] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/30"
               >
                 Mettre à jour
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Modal for New/Edit Stage */}
-      {showNewStageModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
+      {showNewStageModal && createPortal(
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 z-[100]">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-slate-800">
                 {editingStage ? 'Modifier Stage' : 'Nouveau Stage'}
@@ -787,25 +793,11 @@ export default function PipelineSettings() {
                 value={newStageName}
                 onChange={(e) => setNewStageName(e.target.value)}
                 placeholder="Ex: Livraison en cours"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:bg-white focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all"
               />
             </div>
 
-            {/* Color Picker (Stage) */}
-            <div className="mb-4">
-              <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Couleur</label>
-              <div className="flex gap-2 flex-wrap">
-                {colors.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    className={`w-10 h-10 ${color} rounded-lg transition-transform hover:scale-110 ${
-                      selectedColor === color ? 'ring-2 ring-offset-2 ring-slate-400' : ''
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
+            {/* Note: Color is automatically determined by delivery status */}
 
             {/* Delivery Status */}
             <div className="mb-6">
@@ -853,7 +845,8 @@ export default function PipelineSettings() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle, XCircle, Package, DollarSign, User, Calendar, 
   Phone, MapPin, AlertTriangle, Filter, Clock, Truck, FileText
@@ -32,7 +32,7 @@ export default function AdminApprovals() {
     setVilles(villesData);
 
     const pending = savedColis.filter(c => 
-      (c.stage === 'Livré-AG' || c.stage === 'Livré') &&
+      (c.stage === 'LivrÃ©-AG' || c.stage === 'LivrÃ©') &&
       c.isPaid &&
       c.pendingApproval &&
       c.pipelineId === 2
@@ -191,16 +191,16 @@ export default function AdminApprovals() {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🔴 Approbations Admin</h1>
+            <h1>ðŸ”´ Approbations Admin</h1>
             <div class="meta">
-              <span>Généré le ${currentDate.toLocaleString('fr-FR')}</span>
+              <span>GÃ©nÃ©rÃ© le ${currentDate.toLocaleString('fr-FR')}</span>
               <span style="font-weight: 600;">Admin: ${currentUser.name || 'N/A'}</span>
             </div>
           </div>
 
           <div class="alert-box">
-            <h3>🔒 Validation Finale Requise</h3>
-            <p>Les commandes suivantes nécessitent votre validation finale pour compléter les paiements.</p>
+            <h3>ðŸ”’ Validation Finale Requise</h3>
+            <p>Les commandes suivantes nÃ©cessitent votre validation finale pour complÃ©ter les paiements.</p>
           </div>
 
           <div class="stats-grid">
@@ -224,7 +224,7 @@ export default function AdminApprovals() {
                 <th>ID</th>
                 <th>Date Paiement</th>
                 <th>Client</th>
-                <th>Téléphone</th>
+                <th>TÃ©lÃ©phone</th>
                 <th>Produit</th>
                 <th>Livreur</th>
                 <th>Montant</th>
@@ -250,7 +250,7 @@ export default function AdminApprovals() {
 
           <div class="footer">
             <p><strong>Document administratif</strong></p>
-            <p>Liste des paiements en attente de validation finale - Généré le ${currentDate.toLocaleString('fr-FR')}</p>
+            <p>Liste des paiements en attente de validation finale - GÃ©nÃ©rÃ© le ${currentDate.toLocaleString('fr-FR')}</p>
           </div>
         </div>
 
@@ -271,7 +271,7 @@ export default function AdminApprovals() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-transparent p-4 sm:p-6 lg:p-8">
       <div className="w-full">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 mb-6">
           <div className="flex items-center gap-3 mb-4">
@@ -283,7 +283,7 @@ export default function AdminApprovals() {
                 Approbations Paiements
               </h1>
               <p className="text-sm text-slate-500 mt-1">
-                Validez les paiements marqués par les livreurs
+                Validez les paiements marquÃ©s par les livreurs
               </p>
             </div>
           </div>
@@ -377,7 +377,7 @@ export default function AdminApprovals() {
               }}
               className="mt-3 text-xs sm:text-sm text-orange-600 hover:text-orange-700 font-bold flex items-center gap-1"
             >
-              Réinitialiser tous les filtres
+              RÃ©initialiser tous les filtres
             </button>
           )}
         </div>
@@ -387,7 +387,7 @@ export default function AdminApprovals() {
             <div className="bg-white p-12 rounded-2xl text-center">
               <CheckCircle className="w-16 h-16 mx-auto mb-4 text-slate-300" />
               <h3 className="text-lg font-bold text-slate-900 mb-2">Aucune approbation</h3>
-              <p className="text-slate-500">Toutes les commandes ont été traitées</p>
+              <p className="text-slate-500">Toutes les commandes ont Ã©tÃ© traitÃ©es</p>
             </div>
           ) : (
             filteredOrders.map(order => {
@@ -414,7 +414,7 @@ export default function AdminApprovals() {
                       <div className="flex items-center gap-2">
                         <Phone className="text-slate-400" size={16} />
                         <div>
-                          <p className="text-xs text-slate-500">Téléphone</p>
+                          <p className="text-xs text-slate-500">TÃ©lÃ©phone</p>
                           <p className="font-mono">{order.tel}</p>
                         </div>
                       </div>
@@ -437,13 +437,13 @@ export default function AdminApprovals() {
                     <div className="bg-orange-50 p-3 rounded-lg">
                       <p className="text-xs font-bold text-orange-900 mb-2">Paiement</p>
                       <p className="text-xs text-orange-700">
-                        Payé le {new Date(order.paidAt).toLocaleString('fr-FR')}
+                        PayÃ© le {new Date(order.paidAt).toLocaleString('fr-FR')}
                       </p>
                     </div>
 
                     <div className="bg-orange-50 p-3 rounded-lg text-center">
                       <p className="text-orange-700 font-bold">En attente de validation</p>
-                      <p className="text-orange-600 text-sm mt-1">Validation désactivée</p>
+                      <p className="text-orange-600 text-sm mt-1">Validation dÃ©sactivÃ©e</p>
                     </div>
                   </div>
                 </div>

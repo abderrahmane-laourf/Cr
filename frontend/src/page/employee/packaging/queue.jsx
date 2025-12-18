@@ -198,10 +198,10 @@ export default function PackagingQueue() {
 
   // --- RENDER ---
   return (
-    <div className="w-full min-h-screen bg-slate-50/50 p-4 md:p-8 font-sans text-slate-800 animate-[fade-in_0.5s_ease-out]">
+    <div className="w-full min-h-screen bg-transparent p-4 md:p-8 font-sans text-slate-800 dark:text-slate-200 animate-[fade-in_0.5s_ease-out]">
       
       {/* TOP STATS CARD */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 w-full">
+      <div className="glass-card p-6 mb-6 w-full">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
               <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                   <Box className="text-orange-500" /> État de l'Emballage
@@ -233,7 +233,7 @@ export default function PackagingQueue() {
       </div>
       
       {/* 1. HEADER & PROGRESS */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+      <div className="glass-card p-6 mb-6">
         
         {/* Pickup Timer Banner */}
         <div className="bg-gradient-to-r from-[#018790] to-teal-600 text-white p-4 rounded-xl mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg shadow-teal-900/10">
@@ -275,7 +275,7 @@ export default function PackagingQueue() {
       </div>
 
       {/* 2. PIPELINE STAGE SELECTOR */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 mb-6 flex flex-col sm:flex-row gap-2">
+      <div className="frosted-panel p-2 mb-6 flex flex-col sm:flex-row gap-2">
           
           <button
             onClick={() => setActiveStage('prepare')}
@@ -333,7 +333,7 @@ export default function PackagingQueue() {
                <EmptyState icon={Package} message="Tout est prêt ! Aucune commande en attente." />
             ) : (
               ordersInPrepare.map(order => (
-                <div key={order.id} className="group bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all hover:border-blue-300 relative overflow-hidden">
+                <div key={order.id} className="group premium-card p-5 rounded-2xl hover:shadow-md transition-all hover:border-blue-300 relative overflow-hidden">
                   <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500"></div>
                   
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pl-3">
@@ -370,12 +370,12 @@ export default function PackagingQueue() {
                <EmptyState icon={Box} message="Aucune commande en attente de stickers." />
             ) : (
               ordersInStickers.map(order => (
-                <div key={order.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all">
+                <div key={order.id} className="premium-card rounded-2xl overflow-hidden hover:shadow-md transition-all">
                   
                   {/* Header */}
                   <div 
                     onClick={() => toggleExpand(order.id)}
-                    className="flex items-center justify-between p-5 cursor-pointer bg-white hover:bg-slate-50 transition-colors border-l-4 border-l-orange-500"
+                    className="flex items-center justify-between p-5 cursor-pointer hover:bg-white/10 dark:hover:bg-white/5 transition-colors border-l-4 border-l-orange-500"
                   >
                     <div>
                       <div className="flex items-center gap-3 mb-1">
@@ -398,9 +398,9 @@ export default function PackagingQueue() {
 
                   {/* Body */}
                   {expandedOrderId === order.id && (
-                    <div className="p-5 border-t border-slate-100 bg-slate-50/50 space-y-3">
+                    <div className="p-5 border-t border-slate-100 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-800/30 space-y-3">
                       {order.products.map(product => (
-                        <div key={product.id} className="flex flex-col sm:flex-row items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm gap-4">
+                        <div key={product.id} className="flex flex-col sm:flex-row items-center justify-between p-4 bg-white/80 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm gap-4">
                           
                           <div className="flex-1 flex items-center gap-4 w-full">
                              <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${product.scanned ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
@@ -460,7 +460,7 @@ export default function PackagingQueue() {
                <EmptyState icon={CheckCircle} message="Aucune commande livrée aujourd'hui." />
             ) : (
               ordersDelivered.map(order => (
-                <div key={order.id} className="bg-white/60 p-5 rounded-2xl border border-slate-200/60 flex items-center justify-between opacity-80 hover:opacity-100 hover:bg-white transition-all">
+                <div key={order.id} className="premium-card p-5 rounded-2xl flex items-center justify-between opacity-80 hover:opacity-100 transition-all">
                    <div className="flex items-center gap-4">
                        <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
                            <Check size={24} strokeWidth={3} />
@@ -560,7 +560,7 @@ export default function PackagingQueue() {
 // Helper for Empty State
 function EmptyState({ icon: Icon, message }) {
     return (
-        <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200">
+        <div className="flex flex-col items-center justify-center py-16 text-center glass-card rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
                 <Icon className="w-8 h-8 text-slate-300" />
             </div>

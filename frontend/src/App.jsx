@@ -4,6 +4,7 @@ import ForgotPassword from './components/login/forgotpassword';
 import VerifyIdentity from './components/login/verifytocken';
 import NewPassword from './components/login/newpassword';
 import { AdminLayout } from './components/layout/layout';
+import { ThemeProvider } from './context/ThemeContext';
 
 
 // Import Pages
@@ -48,6 +49,7 @@ import HistoriquePaiementLivraison from './page/admin/historiquepaiementlivraiso
 import PipelineAgadir from './page/admin/pipelineAgadir';
 import TrackingLivreur from './page/admin/trackingLivreur';
 import Retourner from './page/admin/retourner';
+import LivraisonAmmexAgadir from './page/admin/livraisonAmmexAgadir';
 import ProtectedRetourner from './components/ProtectedRetourner';
 import SettlementManagement from './page/admin/settlementManagement';
 import InvestmentManagement from './page/admin/investissement';
@@ -76,6 +78,7 @@ import MarketingPage from './page/admin/marketing';
 
 export default function App() {
   return (
+    <ThemeProvider>
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Login />} />
@@ -129,6 +132,7 @@ export default function App() {
       <Route path="/admin/pipeline/list" element={<AdminLayout><ListPipeline /></AdminLayout>} />
       <Route path="/admin/retourner" element={<AdminLayout><ProtectedRetourner><Retourner /></ProtectedRetourner></AdminLayout>} />
       <Route path="/admin/tracking-livreur" element={<AdminLayout><TrackingLivreur /></AdminLayout>} />
+      <Route path="/admin/livraison-ammex-agadir" element={<AdminLayout><LivraisonAmmexAgadir /></AdminLayout>} />
       <Route path="/admin/approvals" element={<AdminLayout><AdminApprovals /></AdminLayout>} />
       <Route path="/admin/settlements" element={<AdminLayout><SettlementManagement /></AdminLayout>} />
       <Route path="/admin/investissement" element={<AdminLayout><InvestmentManagement /></AdminLayout>} />
@@ -198,6 +202,9 @@ export default function App() {
       <Route path="/employee/confirmation-manager/investissement" element={<EmployeeLayout mode="confirmation_manager"><ConfirmationManagerInvestment /></EmployeeLayout>} />
       <Route path="/employee/confirmation-manager/versements" element={<EmployeeLayout mode="confirmation_manager"><VersementEmployeeManager /></EmployeeLayout>} />
       <Route path="/employee/confirmation-manager/tasks" element={<EmployeeLayout mode="confirmation_manager"><EmployeeTaskPage /></EmployeeLayout>} />
+      <Route path="/employee/confirmation-manager/livraison-ammex" element={<EmployeeLayout mode="confirmation_manager"><ListPipeline /></EmployeeLayout>} />
+      <Route path="/employee/confirmation-manager/livraison-agadir" element={<EmployeeLayout mode="confirmation_manager"><PipelineAgadir /></EmployeeLayout>} />
+      <Route path="/employee/confirmation-manager/retourner" element={<EmployeeLayout mode="confirmation_manager"><ProtectedRetourner><Retourner /></ProtectedRetourner></EmployeeLayout>} />
 
       {/* Delivery Role Routes */}
       <Route path="/employee/delivery/dashboard" element={<EmployeeLayout mode="delivery"><DeliveryDashboard /></EmployeeLayout>} />
@@ -210,5 +217,6 @@ export default function App() {
       <Route path="/admin/logs" element={<AdminLayout><LogsPage /></AdminLayout>} />
 
     </Routes>
+    </ThemeProvider>
   );
 }

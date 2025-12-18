@@ -270,27 +270,27 @@ export default function Portefeuille() {
   const getStatusBadge = (status) => {
     switch (status) {
       case "En cours de livraison":
-        return <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-bold">
+        return <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full text-xs font-bold ring-1 ring-slate-200 dark:ring-slate-700">
           <Truck size={12} />
           En cours
         </span>;
       case "À verser":
-        return <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
+        return <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-bold ring-1 ring-blue-200 dark:ring-blue-800/30">
           <DollarSign size={12} />
           À verser
         </span>;
       case "En attente":
-        return <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold">
+        return <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-xs font-bold ring-1 ring-orange-200 dark:ring-orange-800/30">
           <Clock size={12} />
           En attente
         </span>;
       case "Terminé":
-        return <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">
+        return <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-xs font-bold ring-1 ring-emerald-200 dark:ring-emerald-800/30">
           <CheckCircle size={12} />
           Terminé
         </span>;
       default:
-        return <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-bold">
+        return <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full text-xs font-bold">
           <AlertTriangle size={12} />
           {status}
         </span>;
@@ -305,26 +305,26 @@ export default function Portefeuille() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-4 md:p-8 font-sans text-slate-800 pb-24">
+    <div className="min-h-screen bg-transparent p-4 md:p-8 font-sans text-slate-800 dark:text-slate-200 pb-24">
       <div className="w-full mx-auto space-y-6">
         
         {/* HEADER */}
-        <SpotlightCard className="bg-white border-slate-200 shadow-sm">
+        <SpotlightCard className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                <Wallet className="w-6 h-6 text-emerald-600" />
+              <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800/30">
+                <Wallet className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-800">Mon Portefeuille</h1>
-                <p className="text-slate-500 text-sm">Gérez vos versements et commissions</p>
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Mon Portefeuille</h1>
+                <p className="text-slate-500 dark:text-slate-400 text-sm">Gérez vos versements et commissions</p>
               </div>
             </div>
             
             <div className="flex gap-3">
               <button 
                 onClick={generateSettlementPDF}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors text-sm font-bold shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-sm font-bold shadow-sm"
               >
                 <FileText size={16} />
                 <span>Bon de versement</span>
@@ -335,55 +335,55 @@ export default function Portefeuille() {
 
         {/* STATS CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <SpotlightCard className="bg-white border-slate-200 shadow-sm p-6">
+          <SpotlightCard className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-emerald-50 rounded-lg">
-                <DollarSign className="w-5 h-5 text-emerald-600" />
+              <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+                <DollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full">
                 À verser
               </span>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-slate-500 font-medium">Montant à remettre</p>
-              <h3 className="text-2xl font-bold text-slate-800">{totals.totalCashToPay.toFixed(2)} DH</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Montant à remettre</p>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{totals.totalCashToPay.toFixed(2)} DH</h3>
             </div>
           </SpotlightCard>
 
-          <SpotlightCard className="bg-white border-slate-200 shadow-sm p-6">
+          <SpotlightCard className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-blue-50 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-blue-600" />
+              <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+              <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-full">
                 Gains
               </span>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-slate-500 font-medium">Mes Commissions</p>
-              <h3 className="text-2xl font-bold text-slate-800">{totals.totalEarnings.toFixed(2)} DH</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Mes Commissions</p>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{totals.totalEarnings.toFixed(2)} DH</h3>
             </div>
           </SpotlightCard>
 
-          <SpotlightCard className="bg-white border-slate-200 shadow-sm p-6">
+          <SpotlightCard className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-amber-50 rounded-lg">
-                <Package className="w-5 h-5 text-amber-600" />
+              <div className="p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+                <Package className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               </div>
-              <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
+              <span className="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-full">
                 En attente
               </span>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-slate-500 font-medium">Colis à verser</p>
-              <h3 className="text-2xl font-bold text-slate-800">{totals.count}</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Colis à verser</p>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{totals.count}</h3>
             </div>
           </SpotlightCard>
         </div>
 
         {/* ACTION BANNER */}
         {totals.count > 0 && (
-          <div className="bg-emerald-900 rounded-2xl p-6 text-white shadow-lg shadow-emerald-900/20 relative overflow-hidden">
+          <div className="bg-emerald-900 dark:bg-emerald-950 rounded-2xl p-6 text-white shadow-lg shadow-emerald-900/20 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex items-center gap-4">
@@ -407,10 +407,10 @@ export default function Portefeuille() {
         )}
 
         {/* ORDERS LIST */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-            <h3 className="font-bold text-slate-800">Historique des commandes</h3>
-            <div className="text-sm text-slate-500">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/30 dark:bg-slate-800/20">
+            <h3 className="font-bold text-slate-800 dark:text-slate-100">Historique des commandes</h3>
+            <div className="text-sm text-slate-500 dark:text-slate-400">
               {orders.length} commandes
             </div>
           </div>
@@ -418,7 +418,7 @@ export default function Portefeuille() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/50 border-b border-slate-100 text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                <tr className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
                   <th className="p-4">Commande</th>
                   <th className="p-4">Client</th>
                   <th className="p-4">Date</th>
@@ -427,24 +427,24 @@ export default function Portefeuille() {
                   <th className="p-4 text-center">Statut</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
                 {orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <tr key={order.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
                     <td className="p-4">
-                      <span className="font-mono text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">
+                      <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
                         {order.id}
                       </span>
                     </td>
                     <td className="p-4">
-                      <div className="font-bold text-slate-700 text-sm">{order.clientName}</div>
+                      <div className="font-bold text-slate-700 dark:text-slate-200 text-sm">{order.clientName}</div>
                     </td>
-                    <td className="p-4 text-sm text-slate-500">
+                    <td className="p-4 text-sm text-slate-500 dark:text-slate-400">
                       {new Date(order.date).toLocaleDateString('fr-FR')}
                     </td>
-                    <td className="p-4 text-right font-bold text-slate-700">
+                    <td className="p-4 text-right font-bold text-slate-700 dark:text-slate-200">
                       {order.cashCollected.toFixed(2)} DH
                     </td>
-                    <td className="p-4 text-right font-bold text-emerald-600">
+                    <td className="p-4 text-right font-bold text-emerald-600 dark:text-emerald-400">
                       +{order.commission.toFixed(2)} DH
                     </td>
                     <td className="p-4 text-center">

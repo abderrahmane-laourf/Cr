@@ -100,10 +100,10 @@ export default function ProductionDashboard() {
     }
   };
 
-  const COLORS = ['#018790', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+  const COLORS = ['#2563EB', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
   const cards = [
-    { title: 'Total Productions', value: stats.totalProductions, icon: Factory, color: 'text-[#018790]', bg: 'bg-[#018790]/10' },
+    { title: 'Total Productions', value: stats.totalProductions, icon: Factory, color: 'text-[#2563EB]', bg: 'bg-[#2563EB]/10' },
     { title: 'Quantité Totale', value: stats.totalQuantity, icon: Package, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     { title: 'Coût Total', value: `${Math.round(stats.totalCost).toLocaleString()} DH`, icon: DollarSign, color: 'text-purple-600', bg: 'bg-purple-50' },
     { title: 'Ce Mois', value: stats.thisMonthProductions, icon: Calendar, color: 'text-orange-600', bg: 'bg-orange-50' }
@@ -119,13 +119,13 @@ export default function ProductionDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
         <div>
-          <h1 className="text-2xl font-extrabold text-[#018790]">Dashboard Production</h1>
+          <h1 className="text-2xl font-extrabold text-[#2563EB]">Dashboard Production</h1>
           <p className="text-slate-500">Vue d'ensemble et analytique de fabrication</p>
         </div>
         <div className="mt-4 sm:mt-0">
             <button 
                 onClick={() => navigate('/admin/production')}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-[#005461] hover:bg-[#016f76] text-white rounded-xl transition-all shadow-lg shadow-cyan-900/20 font-bold"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-xl transition-all shadow-lg shadow-blue-900/20 font-bold"
             >
                 Gérer Production <ArrowRight size={18} />
             </button>
@@ -141,7 +141,7 @@ export default function ProductionDashboard() {
               <card.icon className={card.color} size={18} />
             </div>
             <div>
-              <div className={`text-2xl font-black ${card.color === 'text-[#018790]' ? 'text-[#005461]' : 'text-slate-800'}`}>{card.value}</div>
+              <div className={`text-2xl font-black ${card.color === 'text-[#2563EB]' ? 'text-[#1e3a8a]' : 'text-slate-800'}`}>{card.value}</div>
             </div>
           </SpotlightCard>
         ))}
@@ -154,7 +154,7 @@ export default function ProductionDashboard() {
         <SpotlightCard theme="light" className="lg:col-span-2">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
-              <BarChart3 className="text-[#018790]" size={20} />
+              <BarChart3 className="text-[#2563EB]" size={20} />
               Évolution des Coûts & Productions
             </h3>
           </div>
@@ -163,8 +163,8 @@ export default function ProductionDashboard() {
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorCost" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#018790" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#018790" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#2563EB" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#2563EB" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
@@ -174,7 +174,7 @@ export default function ProductionDashboard() {
                   contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }}
                   itemStyle={{ color: '#fff' }}
                 />
-                <Area type="monotone" dataKey="cost" stroke="#018790" strokeWidth={3} fillOpacity={1} fill="url(#colorCost)" name="Coût (DH)" />
+                <Area type="monotone" dataKey="cost" stroke="#2563EB" strokeWidth={3} fillOpacity={1} fill="url(#colorCost)" name="Coût (DH)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -221,7 +221,7 @@ export default function ProductionDashboard() {
         </div>
         <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-                <thead className="bg-[#005461]/5 text-[#005461] uppercase font-bold text-xs">
+                <thead className="bg-[#1e3a8a]/5 text-[#1e3a8a] uppercase font-bold text-xs">
                     <tr>
                         <th className="px-6 py-4">Date</th>
                         <th className="px-6 py-4">Produit</th>
@@ -246,7 +246,7 @@ export default function ProductionDashboard() {
                                 <td className="px-6 py-4 text-slate-600">
                                     {p.quantity} <span className="text-xs text-slate-400">{product?.uniteCalcul}</span>
                                 </td>
-                                <td className="px-6 py-4 text-right font-bold text-[#018790]">
+                                <td className="px-6 py-4 text-right font-bold text-[#2563EB]">
                                     {parseFloat(p.totalCost || 0).toFixed(2)} DH
                                 </td>
                             </tr>

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Check, Package, X, Scan, CheckCircle2, AlertTriangle, Truck, 
   CheckCircle, ChevronDown, ChevronUp, Printer, ArrowRight, Trash2, Box 
@@ -16,7 +17,7 @@ const MOCK_ORDERS = [
     barcode: '123456',
     products: [
       { id: 'P1', name: 'Serum Vitamine C', sku: 'SER001', price: 250, scanned: false },
-      { id: 'P2', name: 'Crème Nuit', sku: 'CRE002', price: 180, scanned: false }
+      { id: 'P2', name: 'CrÃ¨me Nuit', sku: 'CRE002', price: 180, scanned: false }
     ]
   },
   { 
@@ -28,7 +29,7 @@ const MOCK_ORDERS = [
     date: '2025-12-11',
     barcode: '789012',
     products: [
-      { id: 'P3', name: 'Crème Hydratante', sku: 'CRE003', price: 200, scanned: false }
+      { id: 'P3', name: 'CrÃ¨me Hydratante', sku: 'CRE003', price: 200, scanned: false }
     ]
   },
   { 
@@ -49,7 +50,7 @@ const MOCK_ORDERS = [
     id: 'CMD-311', 
     client: 'Youssef M.', 
     phone: '0667890123',
-    address: 'Fès, Ville Nouvelle',
+    address: 'FÃ¨s, Ville Nouvelle',
     status: 'stickers',
     date: '2025-12-11',
     barcode: '456789',
@@ -66,7 +67,7 @@ const MOCK_ORDERS = [
     date: '2025-12-12',
     barcode: '567890',
     products: [
-      { id: 'P8', name: 'Sérum Anti-Rides', sku: 'SER002', price: 280, scanned: true }
+      { id: 'P8', name: 'SÃ©rum Anti-Rides', sku: 'SER002', price: 280, scanned: true }
     ]
   }
 ];
@@ -129,7 +130,7 @@ export default function AdminTrackingPackaging() {
       }));
       setShowScanModal(false);
     } else {
-      setScanError('Code incorrect! Vérifiez le SKU.');
+      setScanError('Code incorrect! VÃ©rifiez le SKU.');
     }
   };
 
@@ -140,7 +141,7 @@ export default function AdminTrackingPackaging() {
   const handleToggleDelivered = (orderId) => {
     const order = orders.find(o => o.id === orderId);
     if (!allProductsScanned(order)) {
-      alert('Tous les produits doivent être scannés avant la livraison!');
+      alert('Tous les produits doivent Ãªtre scannÃ©s avant la livraison!');
       return;
     }
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'delivered' } : o));
@@ -175,24 +176,24 @@ export default function AdminTrackingPackaging() {
 
   // --- RENDER ---
   return (
-    <div className="w-full min-h-screen bg-slate-50/50 p-4 md:p-8 font-sans text-slate-800 animate-[fade-in_0.5s_ease-out]">
+    <div className="w-full min-h-screen bg-transparent p-4 md:p-8 font-sans text-slate-800 animate-[fade-in_0.5s_ease-out]">
       
       {/* 1. HEADER & PROGRESS */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
         
         {/* Pickup Timer Banner */}
-        <div className="bg-gradient-to-r from-[#018790] to-teal-600 text-white p-4 rounded-xl mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg shadow-teal-900/10">
+        <div className="bg-gradient-to-r from-[#1e3a8a] to-blue-600 text-white p-4 rounded-xl mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg shadow-blue-900/10">
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm shadow-inner">
               <Truck className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-xs font-bold text-teal-100 uppercase tracking-wider">Ramassage Global</p>
+              <p className="text-xs font-bold text-blue-100 uppercase tracking-wider">Ramassage Global</p>
               <p className="text-2xl font-black">{GLOBAL_PICKUP_TIME.replace(':', 'h')}</p>
             </div>
           </div>
           <div className="text-center sm:text-right bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/10 w-full sm:w-auto">
-            <p className="text-[10px] font-bold text-teal-100 uppercase mb-0.5">Temps Restant</p>
+            <p className="text-[10px] font-bold text-blue-100 uppercase mb-0.5">Temps Restant</p>
             <p className="text-xl font-bold font-mono">
               {timeRemaining.hours}h {timeRemaining.minutes}m
             </p>
@@ -203,24 +204,24 @@ export default function AdminTrackingPackaging() {
         <div className="flex flex-col sm:flex-row justify-between items-end mb-2 gap-1">
           <div>
             <h1 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-                <Package className="text-[#018790]" /> Suivi Packaging (Admin)
+                <Package className="text-[#2563EB]" /> Suivi Packaging (Admin)
             </h1>
             <p className="text-sm text-slate-500 font-medium mt-1">
-              <span className="text-slate-900 font-bold">{ordersDelivered.length}</span> / {totalOrders} commandes livrées aujourd'hui
+              <span className="text-slate-900 font-bold">{ordersDelivered.length}</span> / {totalOrders} commandes livrÃ©es aujourd'hui
             </p>
           </div>
-          <span className="text-3xl font-black text-[#018790]">{progress}%</span>
+          <span className="text-3xl font-black text-[#1e3a8a]">{progress}%</span>
         </div>
         <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
           <div 
-            className="h-full bg-gradient-to-r from-[#018790] to-teal-400 rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_#018790]"
+            className="h-full bg-gradient-to-r from-[#1e3a8a] to-blue-400 rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_#1e3a8a]"
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
       {/* 2. PIPELINE STAGE SELECTOR */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 mb-6 flex flex-col sm:flex-row gap-2">
+      <div className="bg-transparent p-0 mb-6 flex flex-col sm:flex-row gap-2">
           
           <button
             onClick={() => setActiveStage('prepare')}
@@ -231,7 +232,7 @@ export default function AdminTrackingPackaging() {
             }`}
           >
             <Package size={18} />
-            <span>À Préparer</span>
+            <span>Ã€ PrÃ©parer</span>
             <span className={`px-2 py-0.5 rounded-md text-xs font-black ${activeStage === 'prepare' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'}`}>
               {ordersInPrepare.length}
             </span>
@@ -261,7 +262,7 @@ export default function AdminTrackingPackaging() {
             }`}
           >
             <CheckCircle size={18} />
-            <span>Livrée</span>
+            <span>LivrÃ©e</span>
             <span className={`px-2 py-0.5 rounded-md text-xs font-black ${activeStage === 'delivered' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'}`}>
               {ordersDelivered.length}
             </span>
@@ -271,11 +272,11 @@ export default function AdminTrackingPackaging() {
       {/* 3. CONTENT AREA */}
       <div className="min-h-[400px]">
         
-        {/* STAGE 1: À PRÉPARER */}
+        {/* STAGE 1: Ã€ PRÃ‰PARER */}
         {activeStage === 'prepare' && (
           <div className="space-y-4 animate-[slide-in-from-left_0.3s_ease-out]">
             {ordersInPrepare.length === 0 ? (
-               <EmptyState icon={Package} message="Tout est prêt ! Aucune commande en attente." />
+               <EmptyState icon={Package} message="Tout est prÃªt ! Aucune commande en attente." />
             ) : (
               ordersInPrepare.map(order => (
                 <div key={order.id} className="group bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all hover:border-blue-300 relative overflow-hidden">
@@ -299,7 +300,7 @@ export default function AdminTrackingPackaging() {
                         onClick={() => handleTogglePrepare(order.id)}
                         className="w-full sm:w-auto px-6 py-3 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 group-hover:shadow-lg shadow-blue-500/20"
                     >
-                        <Check size={18} /> Marquer Prêt
+                        <Check size={18} /> Marquer PrÃªt
                     </button>
                   </div>
                 </div>
@@ -328,12 +329,12 @@ export default function AdminTrackingPackaging() {
                         <span className="text-sm font-bold text-slate-600">{order.client}</span>
                         {allProductsScanned(order) && (
                           <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-                            <CheckCircle2 size={12} /> Prêt à livrer
+                            <CheckCircle2 size={12} /> PrÃªt Ã  livrer
                           </span>
                         )}
                       </div>
                       <p className="text-xs font-medium text-slate-400">
-                        {order.products.filter(p => p.scanned).length} / {order.products.length} scannés
+                        {order.products.filter(p => p.scanned).length} / {order.products.length} scannÃ©s
                       </p>
                     </div>
                     <div className={`p-2 rounded-full bg-slate-100 transition-transform duration-300 ${expandedOrderId === order.id ? 'rotate-180' : ''}`}>
@@ -353,7 +354,7 @@ export default function AdminTrackingPackaging() {
                              </div>
                              <div>
                                  <p className="font-bold text-slate-800 text-sm">{product.name}</p>
-                                 <p className="text-xs font-mono text-slate-500 mt-0.5">{product.sku} • <span className="text-slate-400">{product.price} DH</span></p>
+                                 <p className="text-xs font-mono text-slate-500 mt-0.5">{product.sku} â€¢ <span className="text-slate-400">{product.price} DH</span></p>
                              </div>
                           </div>
 
@@ -387,7 +388,7 @@ export default function AdminTrackingPackaging() {
                                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                              }`}
                           >
-                              <Truck size={18} /> Marquer comme Livré
+                              <Truck size={18} /> Marquer comme LivrÃ©
                           </button>
                       </div>
                     </div>
@@ -398,11 +399,11 @@ export default function AdminTrackingPackaging() {
           </div>
         )}
 
-        {/* STAGE 3: LIVRÉE */}
+        {/* STAGE 3: LIVRÃ‰E */}
         {activeStage === 'delivered' && (
           <div className="space-y-4 animate-[fade-in_0.5s_ease-out]">
             {ordersDelivered.length === 0 ? (
-               <EmptyState icon={CheckCircle} message="Aucune commande livrée aujourd'hui." />
+               <EmptyState icon={CheckCircle} message="Aucune commande livrÃ©e aujourd'hui." />
             ) : (
               ordersDelivered.map(order => (
                 <div key={order.id} className="bg-white/60 p-5 rounded-2xl border border-slate-200/60 flex items-center justify-between opacity-80 hover:opacity-100 hover:bg-white transition-all">
@@ -412,7 +413,7 @@ export default function AdminTrackingPackaging() {
                        </div>
                        <div>
                            <h3 className="font-bold text-slate-800 text-lg line-through decoration-slate-300 decoration-2">{order.id}</h3>
-                           <p className="text-sm font-medium text-slate-500">{order.client} • {order.address}</p>
+                           <p className="text-sm font-medium text-slate-500">{order.client} â€¢ {order.address}</p>
                        </div>
                    </div>
                    <div className="text-right hidden sm:block">
@@ -428,11 +429,11 @@ export default function AdminTrackingPackaging() {
       </div>
 
       {/* SCAN MODAL (Bottom Sheet Style on Mobile) */}
-      {showScanModal && currentScanProduct && (
-        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4">
+      {showScanModal && currentScanProduct && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4">
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowScanModal(false)} />
           
-          <div className="bg-white w-full sm:w-[400px] rounded-t-3xl sm:rounded-3xl shadow-2xl relative z-10 animate-[slide-up_0.3s_ease-out] overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 w-full sm:w-[400px] rounded-t-3xl sm:rounded-3xl shadow-2xl relative z-10 animate-[slide-up_0.3s_ease-out] overflow-hidden">
             
             {/* Header */}
             <div className="bg-orange-500 p-6 text-center pt-8 pb-10 relative overflow-hidden">
@@ -447,10 +448,10 @@ export default function AdminTrackingPackaging() {
             </div>
 
             {/* Content */}
-            <div className="p-6 -mt-4 bg-white rounded-t-3xl relative">
+            <div className="p-6 -mt-4 bg-white dark:bg-slate-900 rounded-t-3xl relative">
                 
                 {scanError && (
-                    <div className="mb-4 bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2 border border-red-100 animate-pulse">
+                    <div className="mb-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2 border border-red-100 dark:border-red-800 animate-pulse">
                         <AlertTriangle className="w-4 h-4" /> {scanError}
                     </div>
                 )}
@@ -468,7 +469,7 @@ export default function AdminTrackingPackaging() {
                                 }}
                                 onKeyDown={(e) => e.key === 'Enter' && handleVerifyScan()}
                                 placeholder="Scanner ici..."
-                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl font-mono text-lg font-bold text-slate-800 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all text-center tracking-wider"
+                                className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl font-mono text-lg font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all text-center tracking-wider"
                                 autoFocus
                             />
                             <Scan className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -478,7 +479,7 @@ export default function AdminTrackingPackaging() {
                     <div className="flex gap-3 pt-2">
                         <button
                             onClick={() => setShowScanModal(false)}
-                            className="flex-1 py-3.5 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition-colors"
+                            className="flex-1 py-3.5 text-slate-500 dark:text-slate-400 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
                         >
                             Annuler
                         </button>
@@ -495,7 +496,8 @@ export default function AdminTrackingPackaging() {
                 </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>
@@ -505,7 +507,7 @@ export default function AdminTrackingPackaging() {
 // Helper for Empty State
 function EmptyState({ icon: Icon, message }) {
     return (
-        <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200">
+        <div className="flex flex-col items-center justify-center py-16 text-center bg-white dark:bg-slate-900 rounded-3xl border-2 border-dashed border-slate-200">
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
                 <Icon className="w-8 h-8 text-slate-300" />
             </div>

@@ -132,7 +132,7 @@ const CommissionsPage = () => {
       text: 'Les modifications seront enregistrées',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#005461',
+      confirmButtonColor: '#1e3a8a',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Oui, sauvegarder',
       cancelButtonText: 'Annuler'
@@ -166,7 +166,7 @@ const CommissionsPage = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 relative">
+    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 dark:text-slate-200 relative">
       {/* Toast Notification */}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
@@ -174,8 +174,8 @@ const CommissionsPage = () => {
       <SpotlightCard theme="light" className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-[#018790] tracking-tight flex items-center gap-3">
-              <DollarSign className="text-[#005461]" size={32} />
+            <h1 className="text-3xl font-extrabold text-[#2563EB] tracking-tight flex items-center gap-3">
+              <DollarSign className="text-[#1e3a8a]" size={32} />
               Gestion des Commissions
             </h1>
             <p className="text-slate-500 mt-1 font-medium">
@@ -197,13 +197,13 @@ const CommissionsPage = () => {
               Sélectionner un employé
             </label>
            <div className="relative max-w-md">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]">
                 <User size={20} />
             </div>
             <select
                 value={selectedEmployee?.id || ''}
                 onChange={(e) => loadTable(e.target.value)}
-                className="w-full pl-11 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-semibold focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] focus:bg-white transition-all appearance-none cursor-pointer"
+                className="w-full pl-11 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-semibold focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] focus:bg-white transition-all appearance-none cursor-pointer"
             >
                 <option value="">-- Choisir un employé --</option>
                 {employees.map(emp => (
@@ -219,15 +219,15 @@ const CommissionsPage = () => {
 
       {/* Bulk Apply */}
       {selectedEmployee && (
-        <SpotlightCard theme="light" className="mb-6 !bg-[#005461]/5 border-[#005461]/10">
-          <h3 className="text-lg font-bold text-[#005461] mb-6 flex items-center gap-2">
-            <TrendingUp className="text-[#018790]" size={20} />
+        <SpotlightCard theme="light" className="mb-6 !bg-[#2563EB]/5 border-[#2563EB]/10">
+          <h3 className="text-lg font-bold text-[#1e3a8a] mb-6 flex items-center gap-2">
+            <TrendingUp className="text-[#2563EB]" size={20} />
             Application Rapide (Bulk Apply)
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Prix 1 */}
             <div>
-              <label className="block text-xs font-bold text-[#005461]/70 mb-2 ml-1">
+              <label className="block text-xs font-bold text-[#1e3a8a]/70 mb-2 ml-1">
                 Commission Prix 1
               </label>
               <input
@@ -235,13 +235,13 @@ const CommissionsPage = () => {
                 value={bulkValues.c1}
                 onChange={(e) => setBulkValues({ ...bulkValues, c1: e.target.value })}
                 placeholder="Ex: 10"
-                className="w-full px-4 py-3 bg-white border border-[#005461]/20 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all placeholder:text-slate-300"
+                className="w-full px-4 py-3 bg-white border border-[#1e3a8a]/20 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all placeholder:text-slate-300"
               />
             </div>
 
             {/* Prix 2 */}
             <div>
-              <label className="block text-xs font-bold text-[#005461]/70 mb-2 ml-1">
+              <label className="block text-xs font-bold text-[#1e3a8a]/70 mb-2 ml-1">
                 Commission Prix 2
               </label>
               <input
@@ -249,13 +249,13 @@ const CommissionsPage = () => {
                 value={bulkValues.c2}
                 onChange={(e) => setBulkValues({ ...bulkValues, c2: e.target.value })}
                 placeholder="Ex: 25"
-                className="w-full px-4 py-3 bg-white border border-[#005461]/20 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all placeholder:text-slate-300"
+                className="w-full px-4 py-3 bg-white border border-[#1e3a8a]/20 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all placeholder:text-slate-300"
               />
             </div>
 
             {/* Prix 3 */}
             <div>
-              <label className="block text-xs font-bold text-[#005461]/70 mb-2 ml-1">
+              <label className="block text-xs font-bold text-[#1e3a8a]/70 mb-2 ml-1">
                 Commission Prix 3
               </label>
               <input
@@ -263,7 +263,7 @@ const CommissionsPage = () => {
                 value={bulkValues.c3}
                 onChange={(e) => setBulkValues({ ...bulkValues, c3: e.target.value })}
                 placeholder="Ex: 40"
-                className="w-full px-4 py-3 bg-white border border-[#005461]/20 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all placeholder:text-slate-300"
+                className="w-full px-4 py-3 bg-white border border-[#1e3a8a]/20 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all placeholder:text-slate-300"
               />
             </div>
 
@@ -274,7 +274,7 @@ const CommissionsPage = () => {
                 className={`w-full py-3 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 ${
                   applySuccess
                     ? 'bg-emerald-600 text-white shadow-emerald-500/30'
-                    : 'bg-[#005461] text-white hover:bg-[#016f76] shadow-cyan-900/20'
+                    : 'bg-[#1e3a8a] text-white hover:bg-[#1e40af] shadow-blue-900/20'
                 }`}
               >
                 {applySuccess ? (
@@ -296,8 +296,8 @@ const CommissionsPage = () => {
       {selectedEmployee ? (
         <SpotlightCard theme="light" className="p-0 overflow-hidden">
           {/* Boutons d'action Header Table */}
-          <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-[#005461]/5">
-            <h3 className="text-lg font-bold text-[#005461]">Commissions par produit</h3>
+          <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-[#2563EB]/5">
+            <h3 className="text-lg font-bold text-[#1e3a8a]">Commissions par produit</h3>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => loadTable(selectedEmployee.id)}
@@ -307,7 +307,7 @@ const CommissionsPage = () => {
               </button>
               <button
                 onClick={saveData}
-                className="px-6 py-2.5 bg-[#018790] text-white rounded-lg hover:bg-[#005461] transition-all font-semibold shadow-lg shadow-cyan-900/20 flex items-center gap-2"
+                className="px-6 py-2.5 bg-[#1e3a8a] text-white rounded-lg hover:bg-[#1e40af] transition-all font-semibold shadow-lg shadow-blue-900/20 flex items-center gap-2"
               >
                 <Save size={18} />
                 Sauvegarder
@@ -317,18 +317,18 @@ const CommissionsPage = () => {
 
           <div className="overflow-x-auto">
             <table className="w-full">
-                <thead className="bg-[#005461]/5 border-b border-[#005461]/10">
+                <thead className="bg-[#2563EB]/5 border-b border-[#2563EB]/10">
                 <tr>
-                    <th className="px-6 py-5 text-left text-xs font-bold text-[#005461] uppercase tracking-wider">
+                    <th className="px-6 py-5 text-left text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">
                     Produit
                     </th>
-                    <th className="px-6 py-5 text-center text-xs font-bold text-[#005461] uppercase tracking-wider">
+                    <th className="px-6 py-5 text-center text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">
                     Prix 1
                     </th>
-                    <th className="px-6 py-5 text-center text-xs font-bold text-[#005461] uppercase tracking-wider">
+                    <th className="px-6 py-5 text-center text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">
                     Prix 2
                     </th>
-                    <th className="px-6 py-5 text-center text-xs font-bold text-[#005461] uppercase tracking-wider">
+                    <th className="px-6 py-5 text-center text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">
                     Prix 3
                     </th>
                 </tr>
@@ -338,12 +338,12 @@ const CommissionsPage = () => {
                     <tr key={product.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-[#005461]/5 flex items-center justify-center text-[#018790]">
+                        <div className="w-12 h-12 rounded-xl bg-[#2563EB]/5 flex items-center justify-center text-[#2563EB]">
                             <Package size={24} strokeWidth={1.5} />
                         </div>
                         <div>
                             <div className="font-bold text-slate-800 text-sm">{product.name || product.nom}</div>
-                            <div className="text-xs text-[#018790] font-medium">{product.categorie || 'Produit'}</div>
+                            <div className="text-xs text-[#2563EB] font-medium">{product.categorie || 'Produit'}</div>
                         </div>
                         </div>
                     </td>
@@ -359,7 +359,7 @@ const CommissionsPage = () => {
                                 value={getCommission(selectedEmployee.id, product.id, col)}
                                 onChange={(e) => updateCommission(selectedEmployee.id, product.id, col, e.target.value)}
                                 placeholder="0"
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[#005461] font-bold text-center focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] focus:bg-white transition-all shadow-sm placeholder:text-slate-300"
+                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[#1e3a8a] font-bold text-center focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] focus:bg-white transition-all shadow-sm placeholder:text-slate-300"
                             />
                             </div>
                         </div>

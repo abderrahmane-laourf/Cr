@@ -8,7 +8,7 @@ import {
 } from 'recharts';
 import SpotlightCard from '../../util/SpotlightCard';
 
-const COLORS = ['#018790', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
 const DebtsDashboard = () => {
   // --- STATE ---
@@ -85,7 +85,7 @@ const DebtsDashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
         <div>
-          <h1 className="text-2xl font-extrabold text-[#018790]">Tableau de Bord des Dettes</h1>
+          <h1 className="text-2xl font-extrabold text-[#2563EB]">Tableau de Bord des Dettes</h1>
           <p className="text-slate-500">Suivi des créances et paiements fournisseurs</p>
         </div>
       </div>
@@ -100,7 +100,7 @@ const DebtsDashboard = () => {
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -109,7 +109,7 @@ const DebtsDashboard = () => {
                   type="date"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 />
             </div>
 
@@ -119,7 +119,7 @@ const DebtsDashboard = () => {
                 <select
                   value={selectedSupplier}
                   onChange={(e) => setSelectedSupplier(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 >
                   <option value="All">Tous les fournisseurs</option>
                   {suppliers.map((s, i) => <option key={i} value={s}>{s}</option>)}
@@ -132,7 +132,7 @@ const DebtsDashboard = () => {
                 <select
                   value={debtType}
                   onChange={(e) => setDebtType(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 >
                   <option value="All">Tous les types</option>
                   <option value="Good">Marchandises</option>
@@ -149,12 +149,12 @@ const DebtsDashboard = () => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">Total Dettes</p>
-              <h3 className="text-2xl font-black text-[#018790] mt-1">
+              <h3 className="text-2xl font-black text-[#2563EB] mt-1">
                 {totalDebt.toLocaleString()} DH
               </h3>
             </div>
-            <div className="p-3 bg-[#018790]/10 rounded-xl">
-              <Wallet className="w-6 h-6 text-[#018790]" />
+            <div className="p-3 bg-[#2563EB]/10 rounded-xl">
+              <Wallet className="w-6 h-6 text-[#2563EB]" />
             </div>
           </div>
         </SpotlightCard>
@@ -206,7 +206,7 @@ const DebtsDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Type Distribution */}
         <SpotlightCard theme="light" className="bg-white border-slate-100">
-          <h3 className="text-lg font-bold text-[#005461] mb-6 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-[#1e3a8a] mb-6 flex items-center gap-2">
             <Briefcase className="w-5 h-5" />
             Répartition par Type
           </h3>
@@ -237,7 +237,7 @@ const DebtsDashboard = () => {
 
         {/* Status Distribution */}
         <SpotlightCard theme="light" className="bg-white border-slate-100">
-          <h3 className="text-lg font-bold text-[#005461] mb-6 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-[#1e3a8a] mb-6 flex items-center gap-2">
             <DollarSign className="w-5 h-5" />
             État des Paiements
           </h3>

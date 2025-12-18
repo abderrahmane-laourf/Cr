@@ -26,6 +26,9 @@ import {
   Loader2
 } from 'lucide-react';
 import { taskAPI } from '../../services/api';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '../../context/ThemeContext';
+import DarkVeil from '../../util/darkvielle';
 
 // ----------------------------------------------------------------------
 // DATA
@@ -60,7 +63,9 @@ const MODULES = {
   ],
   confirmation_manager: [
     { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/employee/confirmation-manager/dashboard' },
-    { id: 'clients', label: 'Liste Clients', icon: Users, path: '/employee/confirmation-manager/clients' },
+    { id: 'livraison-ammex', label: 'Livraison Ammex', icon: Users, path: '/employee/confirmation-manager/livraison-ammex' },
+    { id: 'livraison-agadir', label: 'Livraison Agadir', icon: MapPin, path: '/employee/confirmation-manager/livraison-agadir' },
+    { id: 'retourner', label: 'Retourner', icon: Package, path: '/employee/confirmation-manager/retourner' },
     { id: 'investissement', label: 'Investissement', icon: Wallet, path: '/employee/confirmation-manager/investissement' },
     { id: 'versements', label: 'Gestion des Versements', icon: DollarSign, path: '/employee/confirmation-manager/versements' },
     { id: 'tasks', label: 'Tâches', icon: ClipboardList, path: '/employee/confirmation-manager/tasks' },
@@ -102,13 +107,13 @@ const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick, isSide
         <button
           onClick={toggleExpand}
           className={`w-full flex items-center rounded-xl text-sm font-medium transition-all duration-200 py-2.5 relative group
-            ${isActive ? 'text-emerald-800 font-bold bg-emerald-50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 group-hover/sidebar:bg-gray-50'}
+            ${isActive ? 'text-blue-800 dark:text-blue-300 font-bold bg-blue-50 dark:bg-blue-900/30' : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'}
             ${showLabel ? 'px-3 justify-between' : 'justify-center px-0'} 
           `}
         >
           <div className={`flex items-center ${showLabel ? 'gap-3' : 'gap-0'}`}>
             <div className="flex-shrink-0 flex items-center justify-center">
-               <item.icon size={22} className={isActive ? 'text-emerald-600' : 'text-gray-400'} />
+               <item.icon size={22} className={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-slate-500'} />
             </div>
             {showLabel && (
                 <span className="truncate transition-opacity duration-200">{item.label}</span>
@@ -117,7 +122,7 @@ const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick, isSide
           {showLabel && (
             <ChevronRight 
                 size={16} 
-                className={`transition-transform duration-200 ${isExpanded ? 'rotate-90 text-emerald-600' : 'text-gray-400'}`} 
+                className={`transition-transform duration-200 ${isExpanded ? 'rotate-90 text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-slate-500'}`} 
             />
           )}
 
@@ -134,7 +139,7 @@ const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick, isSide
           ${isExpanded && showLabel ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}`
         }>
           <div className="pl-3 space-y-1 relative">
-            <div className={`absolute left-[21px] top-0 bottom-0 w-px ${isActive ? 'bg-emerald-200' : 'bg-gray-200'}`} />
+            <div className={`absolute left-[21px] top-0 bottom-0 w-px ${isActive ? 'bg-blue-200 dark:bg-blue-800' : 'bg-gray-200 dark:bg-slate-700'}`} />
             {item.subItems.map((sub) => (
               <NavLink
                 key={sub.id}
@@ -143,13 +148,13 @@ const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick, isSide
                 end
                 className={({ isActive }) => `
                   relative flex items-center pl-9 pr-3 py-2 rounded-lg text-sm transition-all duration-200
-                  ${isActive ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}
+                  ${isActive ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800'}
                 `}
               >
                 {({ isActive }) => (
                   <>
                     {isActive && (
-                      <span className="absolute left-[18px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-sm ring-4 ring-emerald-50/50"></span>
+                      <span className="absolute left-[18px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-blue-500 rounded-full shadow-sm ring-4 ring-blue-50/50 dark:ring-blue-900/50"></span>
                     )}
                     <span className="truncate">{sub.label}</span>
                   </>
@@ -169,23 +174,23 @@ const SidebarItem = ({ item, isActive, isExpanded, toggleExpand, onClick, isSide
       end
       className={({ isActive }) => `
         flex items-center mb-1 rounded-xl text-sm font-medium transition-all duration-200 group py-2.5 relative
-        ${isActive ? 'bg-emerald-100 text-emerald-900 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}
+        ${isActive ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-200 shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'}
         ${showLabel ? 'px-3 gap-3 justify-start' : 'px-0 gap-0 justify-center'}
       `}
     >
       {({ isActive }) => (
         <>
             <div className="flex-shrink-0 flex items-center justify-center relative">
-                <item.icon size={22} className={isActive ? 'text-emerald-700' : 'text-gray-400'} />
+                <item.icon size={22} className={isActive ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400 dark:text-slate-500'} />
                 {badgeCount > 0 && !showLabel && (
-                   <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                   <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
                 )}
             </div>
             {showLabel && (
                 <span className="truncate transition-opacity duration-200 flex-1">{item.label}</span>
             )}
             {showLabel && badgeCount > 0 && (
-               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-white text-emerald-600' : 'bg-red-500 text-white'}`}>
+               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isActive ? 'bg-white dark:bg-blue-800 text-blue-600 dark:text-blue-200' : 'bg-red-500 text-white'}`}>
                  {badgeCount}
                </span>
             )}
@@ -220,24 +225,24 @@ const Header = ({ isSidebarOpen, setSidebarOpen, pageTitle, notifications, onAcc
   };
 
   return (
-    <header className="h-16 bg-white flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 transition-all duration-300">
+    <header className="h-16 bg-transparent flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 transition-all duration-300">
       <div className="flex items-center gap-4 flex-1">
         <button 
           onClick={() => setSidebarOpen(!isSidebarOpen)}
-          className="p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-lg lg:hidden transition-colors"
+          className="p-2 -ml-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg lg:hidden transition-colors"
         >
           <Menu size={24} />
         </button>
 
         <button 
           onClick={toggleSidebarLock}
-          className="hidden lg:flex p-1.5 text-slate-400 hover:text-emerald-600 transition-colors"
+          className="hidden lg:flex p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           title={isSidebarLocked ? "Unlock Sidebar" : "Lock Sidebar"}
         >
            <CircleArrowLeft strokeWidth={1.5} size={28} className={`transition-transform duration-300 ${!isSidebarLocked ? 'rotate-180' : ''}`} />
         </button>
 
-        <h1 className="text-lg font-bold text-slate-800 hidden sm:block ml-2">
+        <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200 hidden sm:block ml-2">
           {pageTitle}
         </h1>
 
@@ -246,12 +251,13 @@ const Header = ({ isSidebarOpen, setSidebarOpen, pageTitle, notifications, onAcc
             <input 
                 type="text"
                 placeholder="Rechercher..."
-                className="w-full bg-slate-50 border-none rounded-full py-2 pl-10 pr-4 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-emerald-100 transition-all"
+                className="w-full bg-slate-50 dark:bg-slate-800/50 border-none rounded-full py-2 pl-10 pr-4 text-sm text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all"
             />
         </div>
       </div>
 
       <div className="flex items-center gap-3">
+        <ThemeToggle />
         <button 
             className="p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full transition-colors"
             title="Messages"
@@ -265,11 +271,11 @@ const Header = ({ isSidebarOpen, setSidebarOpen, pageTitle, notifications, onAcc
         <div className="relative">
           <button 
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full relative transition-colors"
+            className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 rounded-full relative transition-colors"
           >
             <Bell size={20} />
             {notifications.length > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
+              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
             )}
           </button>
           
@@ -437,8 +443,11 @@ export function EmployeeLayout({ children, mode = 'default' }) {
 
   const isSidebarFull = isLocked || isHovered;
 
+  /* Get actual theme for visual elements */
+  const { actualTheme } = useTheme();
+
   return (
-    <div className="flex h-screen bg-white font-sans text-slate-800">
+    <div className="flex h-screen bg-transparent font-sans text-slate-800 dark:text-slate-200 overflow-hidden">
       
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
@@ -453,9 +462,9 @@ export function EmployeeLayout({ children, mode = 'default' }) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`
-          fixed inset-y-0 left-0 z-40 bg-white shadow-xl lg:shadow-none lg:static 
+          fixed inset-y-0 left-0 z-40 bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl lg:shadow-none lg:static 
           transition-[width,transform] duration-300 ease-in-out flex flex-col justify-between
-          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}
           ${isSidebarFull ? 'w-64' : 'w-20'}
         `}
       >
@@ -503,7 +512,7 @@ export function EmployeeLayout({ children, mode = 'default' }) {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-transparent">
         <Header 
           isSidebarOpen={isSidebarOpen} 
           setSidebarOpen={setSidebarOpen} 
@@ -513,8 +522,11 @@ export function EmployeeLayout({ children, mode = 'default' }) {
           toggleSidebarLock={toggleSidebarLock}
           isSidebarLocked={isLocked}
         />
-        <main className="flex-1 overflow-hidden bg-slate-50/50 rounded-tl-3xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] border-t border-l border-gray-200/50 relative">
-          <div className="h-full overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth no-scrollbar">
+        <main className="flex-1 overflow-hidden bg-transparent relative lg:rounded-tl-[2rem]">
+          <div className="absolute inset-0 pointer-events-none">
+             <DarkVeil isLight={actualTheme === 'light'} hueShift={120} speed={0.12} />
+          </div>
+          <div className="h-full overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth no-scrollbar relative z-10">
             <div className="w-full">
                {children}
                <Outlet />

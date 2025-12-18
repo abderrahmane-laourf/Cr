@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Plus, RotateCw, X, Package, AlertTriangle, Eye, Calendar, 
   CheckCircle, Search as SearchIcon, Printer, MapPin, User, Truck, Building, Phone, Clock, ArrowRight
@@ -160,7 +161,7 @@ export default function PipelineAgadir() {
         id: s.name, // Use name as ID to match colis.stage
         title: s.name,
         color: s.color.replace('bg-', 'border-'),
-        bgColor: s.color.replace('bg-', 'bg-').replace('-500', '-50').replace('-600', '-50')
+        bgColor: s.color.replace('bg-', 'bg-').replace('-500', '-100').replace('-600', '-100')
       }));
     console.log('🎯 Setting stages:', activeStages.map(s => s.id));
     setStages(activeStages);
@@ -420,16 +421,16 @@ export default function PipelineAgadir() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-4">
+    <div className="min-h-screen bg-transparent p-4 dark:text-slate-200">
       <div className="w-full">
         {/* Header Controls */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 mb-6">
+        <div className="glass-card p-4 md:p-6 mb-6 rounded-2xl">
           <div className="flex justify-between items-center gap-4 flex-wrap">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white"><Truck size={24} /></div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Centre Agadir - Pipeline</h1>
-                <p className="text-xs text-slate-500">Kanban Livreur Agadir</p>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Centre Agadir - Pipeline</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Kanban Livreur Agadir</p>
               </div>
             </div>
             <div className="flex gap-2 flex-wrap">
@@ -524,11 +525,11 @@ export default function PipelineAgadir() {
 
             return (
               <div key={stage.id} className="flex-1 min-w-[240px]" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, stage.id)}>
-                <div className={`bg-white rounded-t-xl border-t-4 ${stage.color} p-3 shadow-sm flex justify-between`}>
-                  <span className="font-bold text-slate-700">{stage.title}</span>
-                  <span className="bg-slate-100 text-xs px-2 py-1 rounded-full font-bold">{stageColis.length}</span>
+                <div className={`backdrop-blur-md rounded-t-xl !rounded-b-none border-t-4 ${stage.color} border-x border-slate-200 dark:border-slate-800 p-3 flex justify-between ${stage.bgColor}`}>
+                  <span className="font-bold text-slate-700 dark:text-slate-200">{stage.title}</span>
+                  <span className="bg-white/50 dark:bg-slate-900/50 text-xs px-2 py-1 rounded-full font-bold">{stageColis.length}</span>
                 </div>
-                <div className={`${stage.bgColor} rounded-b-xl p-2 min-h-[500px] space-y-2 border-x border-b border-slate-200`}>
+                <div className={`custom-scrollbar backdrop-blur-md rounded-b-xl border-x border-b border-slate-200 dark:border-slate-800 p-2 min-h-[500px] space-y-2 ${stage.bgColor}`}>
                   {stageColis.map((colisItem) => {
                     const product = products.find(p => p.id === colisItem.productId);
                     const ville = villes.find(v => v.id === colisItem.ville);
@@ -538,7 +539,7 @@ export default function PipelineAgadir() {
                       const reportDate = new Date(colisItem.dateReport);
                       const now = new Date();
                       const hoursUntil = (reportDate - now) / (1000 * 60 * 60);
-                      return hoursUntil <= 24 && hoursUntil >= 0;
+                      return hoursUntil <= 24;
                     })();
                     
                     // Unified Card Design
@@ -549,8 +550,8 @@ export default function PipelineAgadir() {
                         onDragStart={e => handleDragStart(e, colisItem)} 
                         onDragOver={e => e.preventDefault()}
                         onDrop={e => handleLinkDrop(e, colisItem.id)}
-                        className={`bg-white rounded-lg p-2.5 shadow-sm hover:shadow-md cursor-move border-2 transition-all group ${
-                          hasDateAlert ? 'border-red-500 animate-pulse bg-red-50/10' : 'border-slate-200 hover:border-blue-300'
+                        className={`premium-card p-3 cursor-move group relative ${
+                          hasDateAlert ? 'border border-red-500 animate-pulse !bg-red-50/10 dark:!bg-red-900/20' : ''
                         }`}
                       >
                         <div className="flex gap-2 items-center">
@@ -669,9 +670,9 @@ export default function PipelineAgadir() {
         />
       )}
       
-      {showMoveModal && (
+      {showMoveModal && createPortal(
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-xs p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-xs p-4">
             <h3 className="font-bold text-lg mb-3">Déplacer vers...</h3>
             <div className="space-y-2">
               {stages.map(s => (
@@ -682,7 +683,8 @@ export default function PipelineAgadir() {
             </div>
             <button onClick={() => setShowMoveModal(false)} className="mt-4 w-full py-2 text-slate-400 hover:text-slate-600">Annuler</button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {showTrackingModal && selectedColisForTracking && (
@@ -742,7 +744,7 @@ function AddCommercialModal({ onClose, onAdd, employees, businesses, products, v
     </label>
   );
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
          <div className="flex justify-between items-center mb-6">
@@ -849,7 +851,8 @@ function AddCommercialModal({ onClose, onAdd, employees, businesses, products, v
             <button onClick={handleSubmit} className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700">Enregistrer</button>
          </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -888,7 +891,7 @@ function AddLogisticsModal({ onClose, onAdd, employees, businesses, products, vi
     </label>
   );
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
          <div className="flex justify-between items-center mb-6">
@@ -991,7 +994,8 @@ function AddLogisticsModal({ onClose, onAdd, employees, businesses, products, vi
             <button onClick={handleSubmit} className="px-6 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700">Enregistrer Stock</button>
          </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -1012,7 +1016,7 @@ function TrackingModal({ colis, onClose, products, villes, handlePrint }) {
     { id: 'produit', label: 'Produit', icon: Package }
   ];
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
@@ -1092,7 +1096,8 @@ function TrackingModal({ colis, onClose, products, villes, handlePrint }) {
            <button onClick={onClose} className="px-6 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-medium transition-colors">Fermer</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   TrendingUp, TrendingDown, Package, Users, Filter,
   BarChart3, Activity, PieChart as PieChartIcon, ArrowUpRight,
@@ -60,9 +60,9 @@ const PipelineDashboard = () => {
 
   // KPI Calculation
   const totalLeads = filteredColis.length;
-  const confirmedLeads = filteredColis.filter(c => ['Confirmé', 'Confirmé-AG', 'Expédié', 'En livraison', 'Livré', 'Livré-AG'].includes(c.stage)).length;
-  const deliveredLeads = filteredColis.filter(c => ['Livré', 'Livré-AG'].includes(c.stage)).length;
-  const returnedLeads = filteredColis.filter(c => ['Retourné', 'Retourné-RS', 'Annulé', 'Annulé-AG'].includes(c.stage)).length;
+  const confirmedLeads = filteredColis.filter(c => ['ConfirmÃ©', 'ConfirmÃ©-AG', 'ExpÃ©diÃ©', 'En livraison', 'LivrÃ©', 'LivrÃ©-AG'].includes(c.stage)).length;
+  const deliveredLeads = filteredColis.filter(c => ['LivrÃ©', 'LivrÃ©-AG'].includes(c.stage)).length;
+  const returnedLeads = filteredColis.filter(c => ['RetournÃ©', 'RetournÃ©-RS', 'AnnulÃ©', 'AnnulÃ©-AG'].includes(c.stage)).length;
 
   const confirmationRate = totalLeads ? ((confirmedLeads / totalLeads) * 100).toFixed(1) : 0;
   const deliveryRate = confirmedLeads ? ((deliveredLeads / confirmedLeads) * 100).toFixed(1) : 0;
@@ -82,10 +82,10 @@ const PipelineDashboard = () => {
   const TEAL_COLORS = ['#005461', '#018790', '#2E939D', '#66B7BE', '#A3DADD', '#E0F5F6'];
   
   // Additional KPIs
-  const totalRevenue = deliveredLeads > 0 ? filteredColis.filter(c => ['Livré', 'Livré-AG'].includes(c.stage)).reduce((sum, c) => sum + (parseFloat(c.prix || 0)), 0) : 0;
+  const totalRevenue = deliveredLeads > 0 ? filteredColis.filter(c => ['LivrÃ©', 'LivrÃ©-AG'].includes(c.stage)).reduce((sum, c) => sum + (parseFloat(c.prix || 0)), 0) : 0;
   const avgOrderValue = deliveredLeads > 0 ? totalRevenue / deliveredLeads : 0;
   const pendingLeads = filteredColis.filter(c => ['En attente', 'Reporter', 'Packaging'].includes(c.stage)).length;
-  const inTransitLeads = filteredColis.filter(c => ['Expédié', 'En livraison'].includes(c.stage)).length;
+  const inTransitLeads = filteredColis.filter(c => ['ExpÃ©diÃ©', 'En livraison'].includes(c.stage)).length;
 
   // Format numbers
   const fmt = (n) => parseFloat(n).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -97,8 +97,8 @@ const PipelineDashboard = () => {
       const p = getPipelineForStage(c.stage);
       return p && p.id === pipeline.id;
     });
-    const confirmed = pipelineColis.filter(c => ['Confirmé', 'Confirmé-AG', 'Expédié', 'En livraison', 'Livré', 'Livré-AG'].includes(c.stage)).length;
-    const delivered = pipelineColis.filter(c => ['Livré', 'Livré-AG'].includes(c.stage)).length;
+    const confirmed = pipelineColis.filter(c => ['ConfirmÃ©', 'ConfirmÃ©-AG', 'ExpÃ©diÃ©', 'En livraison', 'LivrÃ©', 'LivrÃ©-AG'].includes(c.stage)).length;
+    const delivered = pipelineColis.filter(c => ['LivrÃ©', 'LivrÃ©-AG'].includes(c.stage)).length;
     return {
       name: pipeline.name,
       total: pipelineColis.length,
@@ -112,7 +112,7 @@ const PipelineDashboard = () => {
   // Loading State
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#018790] border-t-transparent"></div>
       </div>
     );
@@ -126,7 +126,7 @@ const PipelineDashboard = () => {
         <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
           <div>
             <h1 className="text-2xl font-extrabold text-[#018790]">Tableau de Bord Pipeline</h1>
-            <p className="text-slate-500">Vue d'ensemble des performances opérationnelles</p>
+            <p className="text-slate-500">Vue d'ensemble des performances opÃ©rationnelles</p>
           </div>
 
           <div className="flex items-center gap-3 bg-slate-50 p-1.5 rounded-xl border border-slate-200 mt-4 sm:mt-0">
@@ -150,15 +150,15 @@ const PipelineDashboard = () => {
         <Section title="Vue d'ensemble Pipeline" icon={BarChart3}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <StatCard label="Total Leads" value={num(totalLeads)} icon={Package} />
-            <StatCard label="Confirmés" value={num(confirmedLeads)} icon={CheckCircle} sub={`Taux: ${confirmationRate}%`} />
-            <StatCard label="Livrés" value={num(deliveredLeads)} icon={Truck} sub={`Taux: ${deliveryRate}%`} color="text-emerald-600" />
-            <StatCard label="Retournés" value={num(returnedLeads)} icon={XCircle} color="text-red-600" />
+            <StatCard label="ConfirmÃ©s" value={num(confirmedLeads)} icon={CheckCircle} sub={`Taux: ${confirmationRate}%`} />
+            <StatCard label="LivrÃ©s" value={num(deliveredLeads)} icon={Truck} sub={`Taux: ${deliveryRate}%`} color="text-emerald-600" />
+            <StatCard label="RetournÃ©s" value={num(returnedLeads)} icon={XCircle} color="text-red-600" />
             <StatCard label="En Attente" value={num(pendingLeads)} icon={Clock} color="text-blue-600" />
           </div>
         </Section>
 
         {/* Revenue Section */}
-        <Section title="Performance Financière" icon={DollarSign}>
+        <Section title="Performance FinanciÃ¨re" icon={DollarSign}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <SpotlightCard theme="light" className="col-span-1 md:col-span-2 !bg-[#018790] !border-[#018790] group">
               <div className="flex items-center justify-between text-white">
@@ -177,7 +177,7 @@ const PipelineDashboard = () => {
         </Section>
 
         {/* CHARTS SECTION - Matching "Gestion de Stock" Style */}
-        <Section title="Analyse des Étapes" icon={Activity}>
+        <Section title="Analyse des Ã‰tapes" icon={Activity}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Wrapper for grid cards - Same as Stock Section */}
             <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -197,7 +197,7 @@ const PipelineDashboard = () => {
               <div className="flex justify-between items-center mb-4 z-10">
                 <div>
                   <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Distribution Pipeline</h3>
-                  <p className="text-[10px] text-slate-500 font-mono mt-0.5">LIVE ANALYTICS • 30 DAYS</p>
+                  <p className="text-[10px] text-slate-500 font-mono mt-0.5">LIVE ANALYTICS â€¢ 30 DAYS</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="relative flex h-2 w-2">
@@ -283,14 +283,14 @@ const PipelineDashboard = () => {
                   }}
                   series={[
                     { 
-                      name: 'Livré', 
+                      name: 'LivrÃ©', 
                       data: Array.from({length: 30}, (_, i) => {
                         const total = deliveredLeads;
                         return Math.max(0, Math.floor((i / 29) * total));
                       })
                     },
                     { 
-                      name: 'Confirmé', 
+                      name: 'ConfirmÃ©', 
                       data: Array.from({length: 30}, (_, i) => {
                         const total = confirmedLeads;
                         return Math.max(0, Math.floor((i / 29) * total));
@@ -328,7 +328,7 @@ const PipelineDashboard = () => {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-slate-800">Performance par Pipeline</h2>
-                <p className="text-[10px] font-medium text-slate-500 font-arabic">الأداء حسب خط الأنابيب</p>
+                <p className="text-[10px] font-medium text-slate-500 font-arabic">Ø§Ù„Ø£Ø¯Ø§Ø¡ Ø­Ø³Ø¨ Ø®Ø· Ø§Ù„Ø£Ù†Ø§Ø¨ÙŠØ¨</p>
               </div>
             </div>
 
@@ -337,7 +337,7 @@ const PipelineDashboard = () => {
                 <SpotlightCard key={idx} theme="dark" className="!bg-[#018790] !border-[#016f76] text-white shadow-xl shadow-[#018790]/20 !p-5">
                   <div className="mb-4">
                     <h3 className="text-base font-bold text-white mb-0.5">{pipeline.name}</h3>
-                    <p className="text-[10px] text-white/70 font-arabic">خط الأنابيب</p>
+                    <p className="text-[10px] text-white/70 font-arabic">Ø®Ø· Ø§Ù„Ø£Ù†Ø§Ø¨ÙŠØ¨</p>
                   </div>
                   
                   <div className="space-y-4">
@@ -348,7 +348,7 @@ const PipelineDashboard = () => {
                     
                     <div className="space-y-2">
                       <div className="flex justify-between text-xs">
-                        <span className="text-white/80">Confirmés</span>
+                        <span className="text-white/80">ConfirmÃ©s</span>
                         <span className="text-white font-bold">{num(pipeline.confirmed)} ({fmt(pipeline.confRate)}%)</span>
                       </div>
                       <div className="h-2 w-full bg-black/20 rounded-full overflow-hidden">
@@ -361,7 +361,7 @@ const PipelineDashboard = () => {
 
                     <div className="space-y-2">
                       <div className="flex justify-between text-xs">
-                        <span className="text-white/80">Livrés</span>
+                        <span className="text-white/80">LivrÃ©s</span>
                         <span className="text-emerald-200 font-bold">{num(pipeline.delivered)} ({fmt(pipeline.delRate)}%)</span>
                       </div>
                       <div className="h-2 w-full bg-black/20 rounded-full overflow-hidden">
@@ -391,7 +391,7 @@ const PipelineDashboard = () => {
                 icon={Database}
               />
               <ProgressCard 
-                label="Confirmés" 
+                label="ConfirmÃ©s" 
                 value={num(confirmedLeads)} 
                 total={totalLeads}
                 rate={parseFloat(confirmationRate)}
@@ -399,7 +399,7 @@ const PipelineDashboard = () => {
                 icon={CheckCircle}
               />
               <ProgressCard 
-                label="Livrés" 
+                label="LivrÃ©s" 
                 value={num(deliveredLeads)} 
                 total={confirmedLeads}
                 rate={parseFloat(deliveryRate)}
@@ -407,7 +407,7 @@ const PipelineDashboard = () => {
                 icon={Truck}
               />
               <ProgressCard 
-                label="Retournés" 
+                label="RetournÃ©s" 
                 value={num(returnedLeads)} 
                 total={totalLeads}
                 rate={totalLeads > 0 ? (returnedLeads / totalLeads) * 100 : 0}
@@ -477,3 +477,4 @@ const ProgressCard = ({ label, value, total, rate, color, icon: Icon }) => (
 );
 
 export default PipelineDashboard;
+

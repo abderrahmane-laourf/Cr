@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { 
   TrendingUp, TrendingDown, DollarSign, Calendar, 
   PieChart as PieIcon, BarChart2, Filter, Download, Activity
@@ -96,8 +96,8 @@ const ReportsDashboard = () => {
     // Note: Assuming 'dateCreated' for clients and 'date' for ads
     const filteredClients = clients.filter(c => {
       const d = new Date(c.dateCreated);
-      // Filter out Cancelled/Returned if necessary (assuming 'Livré' or all valid orders for now)
-      const validStage = c.stage !== 'Annulé' && c.stage !== 'Retour'; 
+      // Filter out Cancelled/Returned if necessary (assuming 'LivrÃ©' or all valid orders for now)
+      const validStage = c.stage !== 'AnnulÃ©' && c.stage !== 'Retour'; 
       return d >= start && d <= end && validStage;
     });
 
@@ -137,7 +137,7 @@ const ReportsDashboard = () => {
       netProfit,
       margin,
       breakdown: [
-        { name: 'Publicité (Ads)', value: totalAdsMetric },
+        { name: 'PublicitÃ© (Ads)', value: totalAdsMetric },
         { name: 'Livraison (Est.)', value: totalShipping },
         { name: 'Marchandise (COGS)', value: totalCOGS },
       ],
@@ -175,7 +175,7 @@ const ReportsDashboard = () => {
   if (loading) return <div className="p-10 text-center">Chargement des rapports...</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800">
+    <div className="min-h-screen bg-transparent p-8 font-sans text-slate-800">
       
       {/* HEADER */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
@@ -184,7 +184,7 @@ const ReportsDashboard = () => {
                 <Activity size={32} />
                 Rapports Financiers
             </h1>
-            <p className="text-slate-500 mt-2 font-medium">Analyse détaillée des revenus, dépenses et marges bénéficiaires.</p>
+            <p className="text-slate-500 mt-2 font-medium">Analyse dÃ©taillÃ©e des revenus, dÃ©penses et marges bÃ©nÃ©ficiaires.</p>
         </div>
         
         <div className="flex flex-col md:flex-row gap-4 w-full xl:w-auto items-end">
@@ -216,7 +216,7 @@ const ReportsDashboard = () => {
               </div>
               <span className="bg-white/20 px-2 py-1 rounded-lg text-xs font-bold backdrop-blur-sm">Net</span>
            </div>
-           <p className="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">Résultat Net (Safi Rib7)</p>
+           <p className="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">RÃ©sultat Net (Safi Rib7)</p>
            <h3 className="text-4xl font-black">{formatCurrency(kpiData.netProfit)}</h3>
            <p className="mt-2 text-sm font-medium opacity-90">Marge Nette: {kpiData.margin.toFixed(1)}%</p>
         </div>
@@ -230,7 +230,7 @@ const ReportsDashboard = () => {
            </div>
            <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Chiffre d'Affaires</p>
            <h3 className="text-3xl font-black text-slate-900">{formatCurrency(kpiData.totalRevenue)}</h3>
-           <p className="mt-2 text-sm text-slate-500">{kpiData.totalOrders} Commandes livrées</p>
+           <p className="mt-2 text-sm text-slate-500">{kpiData.totalOrders} Commandes livrÃ©es</p>
         </div>
 
         {/* Expenses */}
@@ -240,9 +240,9 @@ const ReportsDashboard = () => {
                  <TrendingDown size={24} />
               </div>
            </div>
-           <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total Dépenses</p>
+           <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total DÃ©penses</p>
            <h3 className="text-3xl font-black text-slate-900">{formatCurrency(kpiData.totalExpenses)}</h3>
-           <p className="mt-2 text-sm text-slate-500">Coût total (Ads + Goods + Ship)</p>
+           <p className="mt-2 text-sm text-slate-500">CoÃ»t total (Ads + Goods + Ship)</p>
         </div>
 
         {/* Ad Spend Specific */}
@@ -254,7 +254,7 @@ const ReportsDashboard = () => {
            </div>
            <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Budget Ads</p>
            <h3 className="text-3xl font-black text-slate-900">{formatCurrency(kpiData.breakdown[0].value)}</h3>
-           <p className="mt-2 text-sm text-slate-500">Dépensé sur la période</p>
+           <p className="mt-2 text-sm text-slate-500">DÃ©pensÃ© sur la pÃ©riode</p>
         </div>
       </div>
 
@@ -264,7 +264,7 @@ const ReportsDashboard = () => {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
            <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
               <PieIcon size={18} className="text-slate-400"/>
-              Répartition des Coûts
+              RÃ©partition des CoÃ»ts
            </h3>
            <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -315,7 +315,7 @@ const ReportsDashboard = () => {
        {/* DETAILED TABLE */}
        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-             <h3 className="font-bold text-lg text-slate-900">Détails des Ventes</h3>
+             <h3 className="font-bold text-lg text-slate-900">DÃ©tails des Ventes</h3>
              <div className="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
                  <button 
                   onClick={() => setGroupBy('product')}
@@ -336,7 +336,7 @@ const ReportsDashboard = () => {
             <thead className="bg-slate-50 border-b border-slate-100">
               <tr>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  {groupBy === 'product' ? 'Produit' : groupBy === 'city' ? 'Ville' : 'Élément'}
+                  {groupBy === 'product' ? 'Produit' : groupBy === 'city' ? 'Ville' : 'Ã‰lÃ©ment'}
                 </th>
                 <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Commandes</th>
                 <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Chiffre d'Affaires</th>
@@ -346,7 +346,7 @@ const ReportsDashboard = () => {
             <tbody className="divide-y divide-slate-50">
               {chartData.tableData.length === 0 ? (
                 <tr>
-                   <td colSpan="4" className="text-center py-8 text-slate-400 font-medium">Aucune donnée sur cette période</td>
+                   <td colSpan="4" className="text-center py-8 text-slate-400 font-medium">Aucune donnÃ©e sur cette pÃ©riode</td>
                 </tr>
               ) : (
                 chartData.tableData.map((row, idx) => (
@@ -368,3 +368,4 @@ const ReportsDashboard = () => {
 };
 
 export default ReportsDashboard;
+

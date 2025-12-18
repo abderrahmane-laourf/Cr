@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Search, Plus, Edit2, Trash2, Eye, X, Check, 
   Megaphone, Calendar, User, Package, Settings
@@ -16,10 +16,10 @@ const Toast = ({ message, type = 'success', onClose }) => {
   return (
     <div className="fixed top-6 right-6 z-[60] animate-in slide-in-from-right-10 fade-in duration-300">
       <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border backdrop-blur-md
-        ${type === 'success' ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800' : 'bg-red-50/90 border-red-200 text-red-800'}`}>
-        {type === 'success' ? <Check size={24} className="text-emerald-500" /> : <X size={24} className="text-red-500" />}
+        ${type === 'success' ? 'bg-[#2563EB]/10 border-[#2563EB]/20 text-[#2563EB]' : 'bg-red-50/90 border-red-200 text-red-800'}`}>
+        {type === 'success' ? <Check size={24} className="text-[#2563EB]" /> : <X size={24} className="text-red-500" />}
         <div>
-          <h4 className="font-bold text-sm">{type === 'success' ? 'Succès' : 'Erreur'}</h4>
+          <h4 className="font-bold text-sm">{type === 'success' ? 'SuccÃ¨s' : 'Erreur'}</h4>
           <p className="text-xs opacity-90">{message}</p>
         </div>
         <button onClick={onClose} className="ml-4 opacity-50 hover:opacity-100"><X size={16}/></button>
@@ -78,7 +78,7 @@ export default function AdsPage() {
       setEmployees(employeesData);
     } catch (error) {
       console.error('Error loading data:', error);
-      showToast('Erreur de chargement des données', 'error');
+      showToast('Erreur de chargement des donnÃ©es', 'error');
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ export default function AdsPage() {
   const saveSettings = () => {
     localStorage.setItem('adsSettings', JSON.stringify({ targetCPO }));
     setIsSettingsOpen(false);
-    showToast('Paramètres sauvegardés avec succès', 'success');
+    showToast('ParamÃ¨tres sauvegardÃ©s avec succÃ¨s', 'success');
   };
 
   // Auto-fill WhatsApp when employee changes
@@ -129,11 +129,11 @@ export default function AdsPage() {
       if (modalMode === 'add') {
         const newAd = await adsAPI.create(adData);
         setAds([...ads, newAd]);
-        showToast('Publicité ajoutée avec succès !', 'success');
+        showToast('PublicitÃ© ajoutÃ©e avec succÃ¨s !', 'success');
       } else if (modalMode === 'edit') {
         const updatedAd = await adsAPI.update(selectedAd.id, { ...selectedAd, ...adData });
         setAds(ads.map(ad => ad.id === selectedAd.id ? updatedAd : ad));
-        showToast('Modifications enregistrées !', 'success');
+        showToast('Modifications enregistrÃ©es !', 'success');
       }
 
       setIsModalOpen(false);
@@ -146,8 +146,8 @@ export default function AdsPage() {
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
-      title: 'Êtes-vous sûr ?',
-      text: "Cette action est irréversible !",
+      title: 'ÃŠtes-vous sÃ»r ?',
+      text: "Cette action est irrÃ©versible !",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -160,7 +160,7 @@ export default function AdsPage() {
       try {
         await adsAPI.delete(id);
         setAds(ads.filter(ad => ad.id !== id));
-        Swal.fire('Supprimé !', 'La publicité a été supprimée.', 'success');
+        Swal.fire('SupprimÃ© !', 'La publicitÃ© a Ã©tÃ© supprimÃ©e.', 'success');
       } catch (error) {
         console.error('Error deleting:', error);
         Swal.fire('Erreur', 'Erreur lors de la suppression', 'error');
@@ -245,10 +245,10 @@ export default function AdsPage() {
   });
 
   const isViewMode = modalMode === 'view';
-  const modalTitle = modalMode === 'add' ? 'Nouvelle Publicité' : modalMode === 'edit' ? 'Modifier la Publicité' : 'Détails de la Publicité';
+  const modalTitle = modalMode === 'add' ? 'Nouvelle PublicitÃ©' : modalMode === 'edit' ? 'Modifier la PublicitÃ©' : 'DÃ©tails de la PublicitÃ©';
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-8 font-sans text-slate-800 relative">
+    <div className="min-h-screen bg-transparent p-8 font-sans text-slate-800 relative">
       
       {/* Toast Notification */}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
@@ -257,12 +257,12 @@ export default function AdsPage() {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-             <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+             <div className="w-12 h-12 bg-[#2563EB]/10 rounded-xl flex items-center justify-center text-[#2563EB]">
                 <Megaphone size={24} />
              </div>
              <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Liste des Publicités</h1>
-                <p className="text-slate-500 mt-1 font-medium">Gérez vos campagnes publicitaires</p>
+                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Liste des PublicitÃ©s</h1>
+                <p className="text-slate-500 mt-1 font-medium">GÃ©rez vos campagnes publicitaires</p>
              </div>
           </div>
           <div className="flex gap-3">
@@ -270,13 +270,13 @@ export default function AdsPage() {
               onClick={() => setIsSettingsOpen(true)}
               className="flex items-center justify-center gap-2 px-6 py-3 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition-all shadow-lg shadow-slate-500/30 font-semibold"
             >
-              <Settings size={20} /> Paramètres
+              <Settings size={20} /> ParamÃ¨tres
             </button>
             <button 
               onClick={handleOpenAdd}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 font-semibold"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-xl transition-all shadow-lg shadow-blue-900/30 font-semibold"
             >
-              <Plus size={20} /> Nouvelle Publicité
+              <Plus size={20} /> Nouvelle PublicitÃ©
             </button>
           </div>
         </div>
@@ -287,7 +287,7 @@ export default function AdsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <input 
               type="text" 
-              placeholder="Rechercher une campagne, produit, employé..." 
+              placeholder="Rechercher une campagne, produit, employÃ©..." 
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)} 
               className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" 
@@ -306,9 +306,9 @@ export default function AdsPage() {
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Plateforme</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Campagne</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Produit</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Employé</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">EmployÃ©</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Budget/Jour</th>
-                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Dépensé</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">DÃ©pensÃ©</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Commandes</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">CPO</th>
                 <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
@@ -318,7 +318,7 @@ export default function AdsPage() {
               {filteredAds.length > 0 ? (
                 filteredAds.map((ad) => {
                   const cpo = ad.orders > 0 ? (ad.spent / ad.orders).toFixed(2) : 0;
-                  const cpoStatus = cpo > targetCPO ? 'text-red-600' : 'text-emerald-600';
+                  const cpoStatus = cpo > targetCPO ? 'text-red-600' : 'text-[#2563EB]';
                   
                   return (
                     <tr key={ad.id} className="hover:bg-slate-50/80 transition-colors group">
@@ -330,7 +330,7 @@ export default function AdsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
-                          ${ad.platform === 'Facebook' ? 'bg-blue-100 text-blue-800' : 
+                          ${ad.platform === 'Facebook' ? 'bg-indigo-100 text-indigo-800' : 
                             ad.platform === 'TikTok' ? 'bg-pink-100 text-pink-800' :
                             ad.platform === 'Instagram' ? 'bg-purple-100 text-purple-800' :
                             'bg-green-100 text-green-800'}`}>
@@ -345,24 +345,24 @@ export default function AdsPage() {
                       </td>
                       <td className="px-6 py-4">
                          <div className="flex items-center gap-2">
-                           <Package size={16} className="text-blue-500" />
+                           <Package size={16} className="text-[#2563EB]" />
                            <span className="font-medium text-slate-700">{ad.productName}</span>
                          </div>
                       </td>
                       <td className="px-6 py-4">
                          <div className="flex items-center gap-2">
-                           <User size={16} className="text-emerald-500" />
+                           <User size={16} className="text-[#2563EB]" />
                            <span className="font-medium text-slate-700">{ad.employeeName}</span>
                          </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-bold text-blue-600">{parseFloat(ad.dailyBudget).toFixed(2)} MAD</span>
+                        <span className="font-bold text-[#1e3a8a]">{parseFloat(ad.dailyBudget).toFixed(2)} MAD</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className="font-bold text-orange-600">{parseFloat(ad.spent).toFixed(2)} MAD</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#1e3a8a]/10 text-[#1e3a8a]">
                           {ad.orders}
                         </span>
                       </td>
@@ -371,7 +371,7 @@ export default function AdsPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => handleOpenView(ad)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir"><Eye size={18} /></button>
+                          <button onClick={() => handleOpenView(ad)} className="p-2 text-slate-400 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg transition" title="Voir"><Eye size={18} /></button>
                           <button onClick={() => handleOpenEdit(ad)} className="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition" title="Modifier"><Edit2 size={18} /></button>
                           <button onClick={() => handleDelete(ad.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer"><Trash2 size={18} /></button>
                         </div>
@@ -384,7 +384,7 @@ export default function AdsPage() {
                    <td colSpan="10" className="px-6 py-12 text-center text-slate-400">
                       <div className="flex flex-col items-center gap-2">
                          <Megaphone size={32} className="opacity-20" />
-                         <span>Aucune publicité trouvée</span>
+                         <span>Aucune publicitÃ© trouvÃ©e</span>
                       </div>
                    </td>
                 </tr>
@@ -403,7 +403,7 @@ export default function AdsPage() {
                 <div className="bg-slate-50 p-2 rounded-lg text-slate-600">
                   <Settings size={24} />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-800">Paramètres des Publicités</h2>
+                <h2 className="text-2xl font-bold text-slate-800">ParamÃ¨tres des PublicitÃ©s</h2>
               </div>
               <button onClick={() => setIsSettingsOpen(false)} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors"><X size={24} /></button>
             </div>
@@ -411,7 +411,7 @@ export default function AdsPage() {
             <div className="p-8">
               <div className="group">
                 <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider">
-                  Coût par Commande Cible (Target CPO)
+                  CoÃ»t par Commande Cible (Target CPO)
                 </label>
                 <input 
                   type="number"
@@ -422,7 +422,7 @@ export default function AdsPage() {
                   className="w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all duration-200"
                   placeholder="20"
                 />
-                <p className="text-xs text-slate-500 mt-2 ml-1">Les CPO supérieurs à cette valeur seront affichés en rouge</p>
+                <p className="text-xs text-slate-500 mt-2 ml-1">Les CPO supÃ©rieurs Ã  cette valeur seront affichÃ©s en rouge</p>
               </div>
             </div>
 
@@ -435,7 +435,7 @@ export default function AdsPage() {
               </button>
               <button 
                 onClick={saveSettings}
-                className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all"
+                className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-[#1e3a8a] hover:bg-[#1e40af] shadow-lg shadow-blue-900/30 transition-all"
               >
                 <Check size={18} /> Sauvegarder
               </button>
@@ -452,7 +452,7 @@ export default function AdsPage() {
              {/* Modal Header */}
              <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
                <div className="flex items-center gap-3">
-                  <div className="bg-blue-50 p-2 rounded-lg text-blue-600">
+                  <div className="bg-[#2563EB]/10 p-2 rounded-lg text-[#2563EB]">
                      <Megaphone size={24} />
                   </div>
                   <h2 className="text-2xl font-bold text-slate-800">{modalTitle}</h2>
@@ -526,7 +526,7 @@ export default function AdsPage() {
                             disabled={isViewMode}
                             className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all duration-200 appearance-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-500"
                          >
-                            <option value="">Sélectionner un produit</option>
+                            <option value="">SÃ©lectionner un produit</option>
                             {products.map(p => (
                                <option key={p.id} value={p.id}>{p.nom}</option>
                             ))}
@@ -571,7 +571,7 @@ export default function AdsPage() {
                    {/* Employee */}
                    <div className="group">
                       <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-purple-600 transition-colors">
-                         Employé <span className="text-red-400">*</span>
+                         EmployÃ© <span className="text-red-400">*</span>
                       </label>
                       <div className="relative">
                          <select
@@ -580,7 +580,7 @@ export default function AdsPage() {
                             disabled={isViewMode}
                             className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all duration-200 appearance-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-500"
                          >
-                            <option value="">Sélectionner un employé</option>
+                            <option value="">SÃ©lectionner un employÃ©</option>
                             {employees.map(e => (
                                <option key={e.id} value={e.id}>{e.name}</option>
                             ))}
@@ -592,7 +592,7 @@ export default function AdsPage() {
                    {/* WhatsApp Number (Auto-filled) */}
                    <div className="group md:col-span-2">
                       <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider">
-                         Numéro WhatsApp
+                         NumÃ©ro WhatsApp
                       </label>
                       <input 
                          type="text"
@@ -600,7 +600,7 @@ export default function AdsPage() {
                          onChange={(e) => setFormData({...formData, whatsappNumber: e.target.value})}
                          disabled={isViewMode}
                          className="w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500"
-                         placeholder="Auto-rempli depuis l'employé"
+                         placeholder="Auto-rempli depuis l'employÃ©"
                       />
                    </div>
 
@@ -640,7 +640,7 @@ export default function AdsPage() {
                    {/* Spent */}
                    <div className="group md:col-span-2">
                       <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-purple-600 transition-colors">
-                         Dépenses (Spend) (MAD)
+                         DÃ©penses (Spend) (MAD)
                       </label>
                       <input 
                          type="number"
@@ -668,7 +668,7 @@ export default function AdsPage() {
                 {!isViewMode && (
                   <button 
                     onClick={handleSave}
-                    className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all"
+                    className="px-8 py-3 rounded-xl text-white font-semibold flex items-center gap-2 bg-[#1e3a8a] hover:bg-[#1e40af] shadow-lg shadow-blue-900/30 transition-all"
                   >
                     <Check size={18} /> Sauvegarder
                   </button>
@@ -682,3 +682,4 @@ export default function AdsPage() {
     </div>
   );
 }
+

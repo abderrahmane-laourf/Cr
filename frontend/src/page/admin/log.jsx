@@ -70,7 +70,7 @@ export default function LogsPage() {
   const uniqueTypes = ['All', ...new Set(logs.map(l => l.type))];
 
   return (
-    <div className="min-h-screen bg-transparent p-6 md:p-8 font-sans text-slate-800 animate-[fade-in_0.5s_ease-out]">
+    <div className="min-h-screen bg-transparent p-6 md:p-8 font-sans text-slate-800 dark:text-slate-200 animate-[fade-in_0.5s_ease-out]">
       <div className="w-full space-y-6">
         
         {/* Header */}

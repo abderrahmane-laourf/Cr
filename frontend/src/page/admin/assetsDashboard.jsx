@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import SpotlightCard from '../../util/SpotlightCard';
 
-const COLORS = ['#018790', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
 export default function AssetsDashboard() {
   const [assets, setAssets] = useState([]);
@@ -71,7 +71,7 @@ export default function AssetsDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
         <div>
-          <h1 className="text-2xl font-extrabold text-[#018790]">Tableau de Bord des Actifs</h1>
+          <h1 className="text-2xl font-extrabold text-[#2563EB]">Tableau de Bord des Actifs</h1>
           <p className="text-slate-500">Vue d'ensemble de votre inventaire et équipements</p>
         </div>
       </div>
@@ -83,13 +83,13 @@ export default function AssetsDashboard() {
             <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-1"><Search size={12}/> Recherche</label>
                 <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#018790]/50" size={18} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]/50" size={18} />
                     <input 
                         type="text" 
                         placeholder="Nom, catégorie..." 
                         value={filterText} 
                         onChange={(e) => setFilterText(e.target.value)} 
-                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all" 
+                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all" 
                     />
                 </div>
             </div>
@@ -100,7 +100,7 @@ export default function AssetsDashboard() {
                 <select
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 >
                   <option value="All">Toutes les catégories</option>
                   <option value="Électronique">Électronique</option>
@@ -117,7 +117,7 @@ export default function AssetsDashboard() {
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#018790]/10 focus:border-[#018790] transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 />
             </div>
 
@@ -145,12 +145,12 @@ export default function AssetsDashboard() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">Valeur Totale</p>
-              <h3 className="text-2xl font-black text-[#018790] mt-1">
+              <h3 className="text-2xl font-black text-[#2563EB] mt-1">
                 {stats.totalValue.toLocaleString()} DH
               </h3>
             </div>
-            <div className="p-3 bg-[#018790]/10 rounded-xl">
-              <DollarSign className="w-6 h-6 text-[#018790]" />
+            <div className="p-3 bg-[#2563EB]/10 rounded-xl">
+              <DollarSign className="w-6 h-6 text-[#2563EB]" />
             </div>
           </div>
         </SpotlightCard>
@@ -202,7 +202,7 @@ export default function AssetsDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Category Distribution */}
         <SpotlightCard theme="light" className="bg-white border-slate-100">
-          <h3 className="text-lg font-bold text-[#005461] mb-6 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-[#1e3a8a] mb-6 flex items-center gap-2">
             <Building className="w-5 h-5" />
             Répartition par Catégorie
           </h3>
@@ -233,7 +233,7 @@ export default function AssetsDashboard() {
 
         {/* Status Distribution */}
         <SpotlightCard theme="light" className="bg-white border-slate-100">
-          <h3 className="text-lg font-bold text-[#005461] mb-6 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-[#1e3a8a] mb-6 flex items-center gap-2">
             <Wrench className="w-5 h-5" />
             État des Actifs
           </h3>

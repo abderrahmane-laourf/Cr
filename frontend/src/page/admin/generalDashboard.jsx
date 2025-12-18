@@ -212,26 +212,26 @@ export default function GeneralDashboard() {
   const uniqueEmployees = [...new Set(colis.map(c => c.employee).filter(Boolean))];
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-6 space-y-6">
+    <div className="min-h-screen bg-transparent p-6 space-y-6">
        {/* 1. FILTER SECTION (Yellow/Gold Bar) */}
-       <div className="bg-gradient-to-r from-amber-100 to-amber-50 border-b border-amber-200 p-4 rounded-2xl flex flex-wrap gap-4 items-center shadow-sm">
-          <div className="flex items-center gap-2 text-amber-800 font-bold mr-4">
+       <div className="bg-gradient-to-r from-blue-100 to-indigo-50 border-b border-blue-200 p-4 rounded-2xl flex flex-wrap gap-4 items-center shadow-sm">
+          <div className="flex items-center gap-2 text-[#1e3a8a] font-bold mr-4">
               <Filter size={20} />
               <span>Filtres</span>
           </div>
           
-          <div className="bg-white p-1 rounded-lg border border-amber-200 flex items-center shadow-sm">
+          <div className="bg-white p-1 rounded-lg border border-blue-200 flex items-center shadow-sm">
               <input type="date" value={dateRange.startDate} onChange={e => setDateRange({...dateRange, startDate: e.target.value})} className="bg-transparent px-2 py-1 text-sm font-bold text-slate-700 outline-none" />
               <span className="text-slate-400 font-bold px-1">-</span>
               <input type="date" value={dateRange.endDate} onChange={e => setDateRange({...dateRange, endDate: e.target.value})} className="bg-transparent px-2 py-1 text-sm font-bold text-slate-700 outline-none" />
           </div>
 
-          <select value={selectedProduct} onChange={e => setSelectedProduct(e.target.value)} className="px-4 py-2 rounded-lg border border-amber-200 bg-white text-sm font-semibold outline-none focus:ring-2 focus:ring-amber-300">
+          <select value={selectedProduct} onChange={e => setSelectedProduct(e.target.value)} className="px-4 py-2 rounded-lg border border-blue-200 bg-white text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-300">
               <option value="all">Tous les produits</option>
               {products.map(p => <option key={p.id} value={p.id}>{p.nom}</option>)}
           </select>
 
-          <select value={selectedEmployee} onChange={e => setSelectedEmployee(e.target.value)} className="px-4 py-2 rounded-lg border border-amber-200 bg-white text-sm font-semibold outline-none focus:ring-2 focus:ring-amber-300">
+          <select value={selectedEmployee} onChange={e => setSelectedEmployee(e.target.value)} className="px-4 py-2 rounded-lg border border-blue-200 bg-white text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-300">
               <option value="all">Tous les employés</option>
               {uniqueEmployees.map(e => <option key={e} value={e}>{e}</option>)}
           </select>
@@ -243,11 +243,11 @@ export default function GeneralDashboard() {
                 placeholder="Recherche Tel..." 
                 value={phoneSearch}
                 onChange={e => setPhoneSearch(e.target.value)}
-                className="pl-9 pr-4 py-2 rounded-lg border border-amber-200 bg-white text-sm font-semibold outline-none focus:ring-2 focus:ring-amber-300 w-48"
+                className="pl-9 pr-4 py-2 rounded-lg border border-blue-200 bg-white text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-300 w-48"
               />
           </div>
           
-          <button onClick={loadData} className="ml-auto p-2 bg-amber-200 hover:bg-amber-300 rounded-lg text-amber-900 transition-colors">
+          <button onClick={loadData} className="ml-auto p-2 bg-[#2563EB] hover:bg-[#1e40af] rounded-lg text-white transition-colors">
             <RotateCw size={20} />
           </button>
        </div>
@@ -570,3 +570,4 @@ export default function GeneralDashboard() {
     </div>
   );
 }
+

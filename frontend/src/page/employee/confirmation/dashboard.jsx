@@ -28,7 +28,7 @@ const SpotlightCard = ({ children, className = "", onClick }) => {
 
 const InputField = ({ label, type = "text", value, onChange, options }) => (
   <div className="group flex flex-col gap-1">
-    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-focus-within:text-[#018790] transition-colors">
+    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-focus-within:text-[#2563EB] transition-colors">
       {label}
     </label>
     <div className="relative">
@@ -36,7 +36,7 @@ const InputField = ({ label, type = "text", value, onChange, options }) => (
         <select 
           value={value}
           onChange={onChange}
-          className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold focus:bg-white focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/10 outline-none transition-all appearance-none cursor-pointer"
+          className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 outline-none transition-all appearance-none cursor-pointer"
         >
           {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
         </select>
@@ -45,7 +45,7 @@ const InputField = ({ label, type = "text", value, onChange, options }) => (
           type={type} 
           value={value}
           onChange={onChange}
-          className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold focus:bg-white focus:border-[#018790] focus:ring-2 focus:ring-[#018790]/10 outline-none transition-all"
+          className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold focus:bg-white focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 outline-none transition-all"
         />
       )}
     </div>
@@ -279,7 +279,7 @@ const ConfirmationTeamDashboard = () => {
       {/* 1. Header & Filters */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-4 bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
         <div>
-          <h1 className="text-2xl font-extrabold text-[#018790] flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold text-[#2563EB] flex items-center gap-2">
             <Users size={28} />
             Dashboard Confirmation
           </h1>
@@ -314,7 +314,7 @@ const ConfirmationTeamDashboard = () => {
           />
 
           <div className="flex items-end gap-2">
-            <button onClick={applyFilters} className="h-[34px] px-3 bg-[#018790] text-white rounded-lg hover:bg-[#006a70] transition-colors shadow-lg shadow-teal-900/20 flex items-center justify-center">
+            <button onClick={applyFilters} className="h-[34px] px-3 bg-[#2563EB] text-white rounded-lg hover:bg-[#1e40af] transition-colors shadow-lg shadow-blue-900/20 flex items-center justify-center">
               <Filter size={16} />
             </button>
             <button onClick={generateData} className="h-[34px] px-3 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center">
@@ -341,7 +341,7 @@ const ConfirmationTeamDashboard = () => {
                       <div>
                         <div className="text-xs font-bold text-slate-800">{challenge.title}</div>
                         <div className="text-[10px] text-slate-500 font-medium flex items-center gap-1 mt-0.5">
-                            <Wallet size={10} className="text-[#018790]"/> {challenge.reward} à la clé
+                            <Wallet size={10} className="text-[#2563EB]"/> {challenge.reward} à la clé
                         </div>
                       </div>
                       <div className="text-right">
@@ -364,7 +364,7 @@ const ConfirmationTeamDashboard = () => {
 
         {/* Carousel Available Challenges */}
         {availableChallenges.length > 0 && (
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#005461] to-[#018790] text-white p-4 shadow-xl lg:col-span-1 flex flex-col justify-center min-h-[160px]">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1e3a8a] to-[#2563EB] text-white p-4 shadow-xl lg:col-span-1 flex flex-col justify-center min-h-[160px]">
             <div className="absolute top-0 right-0 w-24 h-24 bg-white opacity-5 rounded-full -mr-8 -mt-8 blur-2xl"></div>
             
             <div className="relative z-10">
@@ -381,7 +381,7 @@ const ConfirmationTeamDashboard = () => {
                   </div>
                   <button 
                     onClick={() => registerChallenge(availableChallenges[currentChallengeIndex].id)}
-                    className="px-3 py-1.5 bg-white text-[#005461] rounded-lg text-[10px] font-bold shadow-lg hover:bg-slate-50 transition-colors flex items-center gap-1"
+                    className="px-3 py-1.5 bg-white text-[#1e3a8a] rounded-lg text-[10px] font-bold shadow-lg hover:bg-slate-50 transition-colors flex items-center gap-1"
                   >
                     Participer <ChevronRight size={12} />
                   </button>
@@ -433,7 +433,7 @@ const ConfirmationTeamDashboard = () => {
         </SpotlightCard>
 
         {/* Global Dark Card */}
-        <div className="relative overflow-hidden rounded-2xl bg-[#005461] p-4 shadow-lg text-white border border-slate-700">
+        <div className="relative overflow-hidden rounded-2xl bg-[#1e3a8a] p-4 shadow-lg text-white border border-slate-700">
            <div className="absolute top-0 right-0 p-2 opacity-10"><Package size={48} /></div>
            <div className="relative z-10">
                <div className="text-[10px] font-bold text-slate-300 uppercase tracking-wider mb-1">Total Traité</div>
@@ -569,7 +569,7 @@ const ConfirmationTeamDashboard = () => {
         {/* Delivery Rate Chart (Recharts) */}
         <SpotlightCard className="flex flex-col items-center justify-center">
             <h3 className="text-xs font-bold text-slate-600 uppercase mb-2 flex items-center gap-2">
-                <BarChart3 size={14} className="text-[#018790]" /> Taux de Réussite
+                <BarChart3 size={14} className="text-[#2563EB]" /> Taux de Réussite
             </h3>
             <div className="relative w-32 h-32">
                 <ResponsiveContainer width="100%" height="100%">
@@ -610,7 +610,7 @@ const ConfirmationTeamDashboard = () => {
       {isManager && (
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
-           <Users size={16} className="text-[#018790]" />
+           <Users size={16} className="text-[#2563EB]" />
            <h3 className="font-bold text-slate-800 text-sm">Performance de l'Équipe</h3>
         </div>
         <div className="overflow-x-auto">
@@ -631,7 +631,7 @@ const ConfirmationTeamDashboard = () => {
                 <tr key={emp.name} className="hover:bg-slate-50/80 transition-colors font-medium">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-[#018790]/10 text-[#018790] flex items-center justify-center font-bold text-[10px]">
+                      <div className="w-6 h-6 rounded-full bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center font-bold text-[10px]">
                         {emp.name.charAt(0)}
                       </div>
                       <span className="text-slate-700 font-bold">{emp.name}</span>

@@ -103,7 +103,7 @@ const PetiteCaisseDashboard = () => {
             {/* HEADER & FILTERS */}
             <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent p-6 rounded-3xl border border-slate-100/50">
                 <div>
-                    <h1 className="text-2xl font-extrabold text-[#018790] flex items-center gap-3">
+                    <h1 className="text-2xl font-extrabold text-[#2563EB] flex items-center gap-3">
                         Tableau de Bord Trésorerie
                     </h1>
                     <p className="text-slate-500 mt-1">Suivi des Dépenses & Budget Téléphonie</p>
@@ -155,9 +155,9 @@ const PetiteCaisseDashboard = () => {
                     title="Solde Net (Cash)" 
                     amount={netBalance} 
                     icon={Wallet} 
-                    color="text-[#018790]" 
-                    bg="bg-[#018790]/10" 
-                    border="border-[#018790]/20"
+                    color="text-[#2563EB]" 
+                    bg="bg-[#2563EB]/10" 
+                    border="border-[#2563EB]/20"
                     trend="Available Cash"
                 />
             </div>
@@ -189,7 +189,7 @@ const PetiteCaisseDashboard = () => {
                             <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden mb-4 border border-slate-100">
                                 <div 
                                     className={`h-full rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-1
-                                        ${budgetUsage > 90 ? 'bg-gradient-to-r from-red-500 to-red-600' : 'bg-gradient-to-r from-[#018790] to-emerald-500'}
+                                        ${budgetUsage > 90 ? 'bg-gradient-to-r from-red-500 to-red-600' : 'bg-gradient-to-r from-[#2563EB] to-[#1e3a8a]'}
                                     `}
                                     style={{ width: `${budgetUsage}%` }}
                                 >
@@ -247,7 +247,7 @@ const PetiteCaisseDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                  {/* Chart */}
                 <SpotlightCard theme="light" className="bg-white border-slate-100">
-                    <h3 className="font-bold text-lg text-[#005461] mb-6">Aperçu Financier</h3>
+                    <h3 className="font-bold text-lg text-[#1e3a8a] mb-6">Aperçu Financier</h3>
                     <div className="h-64 w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData}>
@@ -268,8 +268,8 @@ const PetiteCaisseDashboard = () => {
                 {/* Top 5 Consumers List */}
                 <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
                     <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                        <h3 className="font-bold text-lg text-[#005461]">Top Consommation (Téléphone)</h3>
-                        <button className="text-xs font-bold text-[#018790] hover:text-[#005461]">Voir tout</button>
+                        <h3 className="font-bold text-lg text-[#1e3a8a]">Top Consommation (Téléphone)</h3>
+                        <button className="text-xs font-bold text-[#2563EB] hover:text-[#1e3a8a]">Voir tout</button>
                     </div>
                     <div className="p-0">
                         {rankedConsumers.slice(0, 5).map((r, idx) => (

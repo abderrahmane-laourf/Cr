@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Target, TrendingUp, DollarSign, Users, Package, Plus, Trash2, 
   Save, Filter, BarChart3, AlertCircle, CheckCircle, AlertTriangle, XCircle
@@ -66,7 +66,7 @@ const MarketingPlanner = () => {
     { value: 'sales', label: 'Ventes' }
   ];
 
-  // Charger les données depuis les APIs et localStorage
+  // Charger les donnÃ©es depuis les APIs et localStorage
   useEffect(() => {
     loadData();
   }, []);
@@ -75,7 +75,7 @@ const MarketingPlanner = () => {
     try {
       setLoading(true);
       
-      // Charger produits, employés, entreprises et campagnes depuis les APIs
+      // Charger produits, employÃ©s, entreprises et campagnes depuis les APIs
       const [productsData, employeesData, businessesData, adsData] = await Promise.all([
         productAPI.getAll(),
         employeeAPI.getAll(),
@@ -100,7 +100,7 @@ const MarketingPlanner = () => {
       setPlan(savedPlan);
       setRecords(savedRecords);
     } catch (error) {
-      console.error('Erreur lors du chargement des données:', error);
+      console.error('Erreur lors du chargement des donnÃ©es:', error);
     } finally {
       setLoading(false);
     }
@@ -126,7 +126,7 @@ const MarketingPlanner = () => {
       const updated = [...targetProfiles, profile];
       setTargetProfiles(updated);
       saveToStorage('marketing_profiles', updated);
-      alert('Profil cible sauvegardé avec succès!');
+      alert('Profil cible sauvegardÃ© avec succÃ¨s!');
     }
   };
 
@@ -148,7 +148,7 @@ const MarketingPlanner = () => {
   // Sauvegarder le plan
   const savePlan = () => {
     if (!planForm.product) {
-      alert('Veuillez sélectionner un produit');
+      alert('Veuillez sÃ©lectionner un produit');
       return;
     }
     
@@ -160,7 +160,7 @@ const MarketingPlanner = () => {
     
     setPlan(newPlan);
     saveToStorage('marketing_plan', newPlan);
-    alert('Plan sauvegardé avec succès!');
+    alert('Plan sauvegardÃ© avec succÃ¨s!');
     setActiveTab(2);
   };
 
@@ -173,7 +173,7 @@ const MarketingPlanner = () => {
 
     const cpr = recordForm.results > 0 ? recordForm.spent / recordForm.results : 0;
     
-    // Déterminer le statut basé sur le profil cible
+    // DÃ©terminer le statut basÃ© sur le profil cible
     let status = 'none';
     let statusColor = 'gray';
     
@@ -238,7 +238,7 @@ const MarketingPlanner = () => {
     localStorage.setItem('usd_trans_final', JSON.stringify(updatedSold));
     // ------------------------------------
 
-    // Réinitialiser le formulaire
+    // RÃ©initialiser le formulaire
     setRecordForm({
       product: '',
       employee: '',
@@ -250,12 +250,12 @@ const MarketingPlanner = () => {
       targetProfile: ''
     });
 
-    alert('Enregistrement ajouté avec succès! (Synchronisé avec Sold)');
+    alert('Enregistrement ajoutÃ© avec succÃ¨s! (SynchronisÃ© avec Sold)');
   };
 
   // Supprimer un enregistrement
   const deleteRecord = (id) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cet enregistrement?')) {
+    if (confirm('ÃŠtes-vous sÃ»r de vouloir supprimer cet enregistrement?')) {
       const updated = records.filter(r => r.id !== id);
       setRecords(updated);
       saveToStorage('marketing_records', updated);
@@ -294,13 +294,13 @@ const MarketingPlanner = () => {
     }
   }
 
-  // Données pour le graphique de tendance
+  // DonnÃ©es pour le graphique de tendance
   const trendData = filteredRecords.map(r => ({
     date: new Date(r.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
     cpr: r.cpr
   }));
 
-  // Analyse des écarts
+  // Analyse des Ã©carts
   const variance = {
     targetCPR: plan ? (plan.excellent + plan.good) / 2 : 0,
     actualCPR: stats.avgCPR,
@@ -322,17 +322,17 @@ const MarketingPlanner = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 font-semibold">Chargement des données...</p>
+          <p className="text-slate-600 font-semibold">Chargement des donnÃ©es...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 font-sans">
+    <div className="min-h-screen bg-transparent p-6 font-sans">
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
@@ -343,15 +343,15 @@ const MarketingPlanner = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Planificateur Marketing</h1>
-        <p className="text-slate-500">Système de gestion et d'analyse des campagnes publicitaires</p>
+        <p className="text-slate-500">SystÃ¨me de gestion et d'analyse des campagnes publicitaires</p>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-8 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
         {[
-          { id: 1, label: 'Objectif & Stratégie', icon: Target },
+          { id: 1, label: 'Objectif & StratÃ©gie', icon: Target },
           { id: 2, label: 'Suivi Quotidien', icon: BarChart3 },
-          { id: 3, label: 'Évaluation & Analyse', icon: TrendingUp }
+          { id: 3, label: 'Ã‰valuation & Analyse', icon: TrendingUp }
         ].map(tab => {
           const Icon = tab.icon;
           return (
@@ -371,14 +371,14 @@ const MarketingPlanner = () => {
         })}
       </div>
 
-      {/* Tab 1: Objectif & Stratégie */}
+      {/* Tab 1: Objectif & StratÃ©gie */}
       {activeTab === 1 && (
         <div className="space-y-6">
           {/* Inputs de campagne */}
           <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Package size={20} className="text-blue-600" />
-              Paramètres de la Campagne
+              ParamÃ¨tres de la Campagne
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -389,7 +389,7 @@ const MarketingPlanner = () => {
                   onChange={(e) => setPlanForm({ ...planForm, product: e.target.value })}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">Sélectionner...</option>
+                  <option value="">SÃ©lectionner...</option>
                   {products.map(p => (
                     <option key={p} value={p}>{p}</option>
                   ))}
@@ -403,7 +403,7 @@ const MarketingPlanner = () => {
                   onChange={(e) => setPlanForm({ ...planForm, business: e.target.value })}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">Sélectionner...</option>
+                  <option value="">SÃ©lectionner...</option>
                   {businesses.map(b => (
                     <option key={b.id} value={b.name}>{b.name}</option>
                   ))}
@@ -447,7 +447,7 @@ const MarketingPlanner = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Durée (jours)</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">DurÃ©e (jours)</label>
                 <input
                   type="number"
                   value={planForm.duration}
@@ -483,11 +483,11 @@ const MarketingPlanner = () => {
 
           {/* CPR Targets */}
           <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-            <h3 className="text-lg font-bold mb-4">Critères de Coût (CPR Targets)</h3>
+            <h3 className="text-lg font-bold mb-4">CritÃ¨res de CoÃ»t (CPR Targets)</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
               <div className="bg-green-50 border-2 border-green-500 rounded-xl p-4">
-                <label className="block text-xs font-bold text-green-700 mb-2 uppercase">Excellent (≤)</label>
+                <label className="block text-xs font-bold text-green-700 mb-2 uppercase">Excellent (â‰¤)</label>
                 <input
                   type="number"
                   value={planForm.excellent}
@@ -498,7 +498,7 @@ const MarketingPlanner = () => {
               </div>
 
               <div className="bg-blue-50 border-2 border-blue-500 rounded-xl p-4">
-                <label className="block text-xs font-bold text-blue-700 mb-2 uppercase">Bon (≤)</label>
+                <label className="block text-xs font-bold text-blue-700 mb-2 uppercase">Bon (â‰¤)</label>
                 <input
                   type="number"
                   value={planForm.good}
@@ -509,7 +509,7 @@ const MarketingPlanner = () => {
               </div>
 
               <div className="bg-orange-50 border-2 border-orange-500 rounded-xl p-4">
-                <label className="block text-xs font-bold text-orange-700 mb-2 uppercase">Révision (≤)</label>
+                <label className="block text-xs font-bold text-orange-700 mb-2 uppercase">RÃ©vision (â‰¤)</label>
                 <input
                   type="number"
                   value={planForm.review}
@@ -520,7 +520,7 @@ const MarketingPlanner = () => {
               </div>
 
               <div className="bg-red-50 border-2 border-red-500 rounded-xl p-4">
-                <label className="block text-xs font-bold text-red-700 mb-2 uppercase">Arrêt (≥)</label>
+                <label className="block text-xs font-bold text-red-700 mb-2 uppercase">ArrÃªt (â‰¥)</label>
                 <input
                   type="number"
                   value={planForm.stop}
@@ -578,7 +578,7 @@ const MarketingPlanner = () => {
                   onChange={(e) => setRecordForm({ ...recordForm, product: e.target.value })}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Sélectionner...</option>
+                  <option value="">SÃ©lectionner...</option>
                   {products.map(p => (
                     <option key={p} value={p}>{p}</option>
                   ))}
@@ -586,13 +586,13 @@ const MarketingPlanner = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Employé *</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">EmployÃ© *</label>
                 <select
                   value={recordForm.employee}
                   onChange={(e) => setRecordForm({ ...recordForm, employee: e.target.value })}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Sélectionner...</option>
+                  <option value="">SÃ©lectionner...</option>
                   {employees.map(e => (
                     <option key={e} value={e}>{e}</option>
                   ))}
@@ -606,7 +606,7 @@ const MarketingPlanner = () => {
                   onChange={(e) => setRecordForm({ ...recordForm, business: e.target.value })}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Sélectionner...</option>
+                  <option value="">SÃ©lectionner...</option>
                   {businesses.map(b => (
                     <option key={b.id} value={b.name}>{b.name}</option>
                   ))}
@@ -620,7 +620,7 @@ const MarketingPlanner = () => {
                   onChange={(e) => setRecordForm({ ...recordForm, campaignName: e.target.value })}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Sélectionner...</option>
+                  <option value="">SÃ©lectionner...</option>
                   {campaigns.map(campaign => (
                     <option key={campaign} value={campaign}>{campaign}</option>
                   ))}
@@ -638,7 +638,7 @@ const MarketingPlanner = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Dépense ($)</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">DÃ©pense ($)</label>
                 <input
                   type="number"
                   value={recordForm.spent}
@@ -650,7 +650,7 @@ const MarketingPlanner = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Résultats</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">RÃ©sultats</label>
                 <input
                   type="number"
                   value={recordForm.results}
@@ -699,7 +699,7 @@ const MarketingPlanner = () => {
                 onChange={(e) => setFilters({ ...filters, employee: e.target.value })}
                 className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
-                <option value="all">Tous les employés</option>
+                <option value="all">Tous les employÃ©s</option>
                 {employees.map(e => (
                   <option key={e} value={e}>{e}</option>
                 ))}
@@ -758,10 +758,10 @@ const MarketingPlanner = () => {
                 <thead className="bg-slate-50">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">Date</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">Détails</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">DÃ©tails</th>
                     <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">Plateforme</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">Dépense</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">Résultats</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">DÃ©pense</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">RÃ©sultats</th>
                     <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">CPR</th>
                     <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">Statut</th>
                     <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase">Actions</th>
@@ -771,7 +771,7 @@ const MarketingPlanner = () => {
                   {filteredRecords.length === 0 ? (
                     <tr>
                       <td colSpan="8" className="px-4 py-8 text-center text-slate-500">
-                        Aucun enregistrement trouvé
+                        Aucun enregistrement trouvÃ©
                       </td>
                     </tr>
                   ) : (
@@ -785,7 +785,7 @@ const MarketingPlanner = () => {
                           <div className="text-xs text-slate-500">{record.campaignName}</div>
                           <div className="text-xs text-slate-400">{record.employee}</div>
                           {record.business && (
-                            <div className="text-xs text-blue-600 font-semibold mt-1">🏢 {record.business}</div>
+                            <div className="text-xs text-blue-600 font-semibold mt-1">ðŸ¢ {record.business}</div>
                           )}
                         </td>
                         <td className="px-4 py-3">
@@ -806,8 +806,8 @@ const MarketingPlanner = () => {
                           }`}>
                             {record.status === 'excellent' ? 'Excellent' :
                              record.status === 'good' ? 'Bon' :
-                             record.status === 'review' ? 'Révision' :
-                             record.status === 'stop' ? 'Arrêt' :
+                             record.status === 'review' ? 'RÃ©vision' :
+                             record.status === 'stop' ? 'ArrÃªt' :
                              'N/A'}
                           </span>
                         </td>
@@ -829,23 +829,23 @@ const MarketingPlanner = () => {
         </div>
       )}
 
-      {/* Tab 3: Évaluation & Analyse */}
+      {/* Tab 3: Ã‰valuation & Analyse */}
       {activeTab === 3 && (
         <div className="space-y-6">
-          {/* Résumé et Analyse */}
+          {/* RÃ©sumÃ© et Analyse */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Résumé Général */}
+            {/* RÃ©sumÃ© GÃ©nÃ©ral */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-              <h3 className="text-lg font-bold mb-6">Résumé Général</h3>
+              <h3 className="text-lg font-bold mb-6">RÃ©sumÃ© GÃ©nÃ©ral</h3>
               
               <div className="space-y-4">
                 <div>
-                  <div className="text-sm text-slate-500 mb-1">Dépense Totale</div>
+                  <div className="text-sm text-slate-500 mb-1">DÃ©pense Totale</div>
                   <div className="text-3xl font-black text-slate-900">${stats.totalSpent.toFixed(2)}</div>
                 </div>
 
                 <div>
-                  <div className="text-sm text-slate-500 mb-1">Résultats Totaux</div>
+                  <div className="text-sm text-slate-500 mb-1">RÃ©sultats Totaux</div>
                   <div className="text-2xl font-bold text-blue-600">{stats.totalResults}</div>
                 </div>
 
@@ -860,7 +860,7 @@ const MarketingPlanner = () => {
                       <CheckCircle className="text-green-600" size={32} />
                       <div>
                         <div className="font-bold text-green-900 text-lg">Performance Exceptionnelle</div>
-                        <div className="text-sm text-green-700">Objectifs largement dépassés!</div>
+                        <div className="text-sm text-green-700">Objectifs largement dÃ©passÃ©s!</div>
                       </div>
                     </div>
                   )}
@@ -870,7 +870,7 @@ const MarketingPlanner = () => {
                       <CheckCircle className="text-blue-600" size={32} />
                       <div>
                         <div className="font-bold text-blue-900 text-lg">Bonne Performance</div>
-                        <div className="text-sm text-blue-700">Résultats satisfaisants</div>
+                        <div className="text-sm text-blue-700">RÃ©sultats satisfaisants</div>
                       </div>
                     </div>
                   )}
@@ -879,7 +879,7 @@ const MarketingPlanner = () => {
                     <div className="bg-red-100 border-2 border-red-500 rounded-xl p-4 flex items-center gap-3">
                       <AlertCircle className="text-red-600" size={32} />
                       <div>
-                        <div className="font-bold text-red-900 text-lg">Nécessite Amélioration</div>
+                        <div className="font-bold text-red-900 text-lg">NÃ©cessite AmÃ©lioration</div>
                         <div className="text-sm text-red-700">Optimisation requise</div>
                       </div>
                     </div>
@@ -888,9 +888,9 @@ const MarketingPlanner = () => {
               </div>
             </div>
 
-            {/* Analyse des Écarts */}
+            {/* Analyse des Ã‰carts */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-              <h3 className="text-lg font-bold mb-6">Analyse des Écarts</h3>
+              <h3 className="text-lg font-bold mb-6">Analyse des Ã‰carts</h3>
               
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -899,32 +899,32 @@ const MarketingPlanner = () => {
                     <div className="text-xl font-bold text-slate-900">${variance.targetCPR.toFixed(2)}</div>
                   </div>
                   <div className="bg-slate-50 rounded-lg p-3">
-                    <div className="text-xs text-slate-500 mb-1">CPR Réel</div>
+                    <div className="text-xs text-slate-500 mb-1">CPR RÃ©el</div>
                     <div className="text-xl font-bold text-blue-600">${variance.actualCPR.toFixed(2)}</div>
                   </div>
                 </div>
 
                 <div className="bg-slate-50 rounded-lg p-4">
-                  <div className="text-sm text-slate-600 mb-2">Écart de Coût</div>
+                  <div className="text-sm text-slate-600 mb-2">Ã‰cart de CoÃ»t</div>
                   <div className={`text-2xl font-black ${
                     variance.costVariance < 0 ? 'text-green-600' : 'text-red-600'
                   }`}>
                     {variance.costVariance > 0 ? '+' : ''}{variance.costVariance}%
                   </div>
                   <div className="text-xs text-slate-500 mt-1">
-                    {variance.costVariance < 0 ? 'Économie réalisée' : 'Dépassement'}
+                    {variance.costVariance < 0 ? 'Ã‰conomie rÃ©alisÃ©e' : 'DÃ©passement'}
                   </div>
                 </div>
 
                 <div className="bg-slate-50 rounded-lg p-4">
-                  <div className="text-sm text-slate-600 mb-2">Écart Résultats</div>
+                  <div className="text-sm text-slate-600 mb-2">Ã‰cart RÃ©sultats</div>
                   <div className={`text-2xl font-black ${
                     variance.resultsGap > 0 ? 'text-green-600' : 'text-red-600'
                   }`}>
                     {variance.resultsGap > 0 ? '+' : ''}{variance.resultsGap.toFixed(0)}
                   </div>
                   <div className="text-xs text-slate-500 mt-1">
-                    {variance.resultsGap > 0 ? 'Surplus' : 'Déficit'}
+                    {variance.resultsGap > 0 ? 'Surplus' : 'DÃ©ficit'}
                   </div>
                 </div>
 
@@ -936,7 +936,7 @@ const MarketingPlanner = () => {
                   <div className={`font-bold ${
                     variance.budgetStatus === 'within' ? 'text-green-900' : 'text-red-900'
                   }`}>
-                    {variance.budgetStatus === 'within' ? '✓ Dans le Budget' : '⚠ Budget Dépassé'}
+                    {variance.budgetStatus === 'within' ? 'âœ“ Dans le Budget' : 'âš  Budget DÃ©passÃ©'}
                   </div>
                 </div>
               </div>
@@ -968,7 +968,7 @@ const MarketingPlanner = () => {
               </div>
             ) : (
               <div className="h-80 flex items-center justify-center text-slate-400">
-                Aucune donnée disponible pour le graphique
+                Aucune donnÃ©e disponible pour le graphique
               </div>
             )}
           </div>
@@ -979,3 +979,4 @@ const MarketingPlanner = () => {
 };
 
 export default MarketingPlanner;
+

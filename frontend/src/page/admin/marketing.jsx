@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Search, Plus, Edit2, Trash2, X, Check, ChevronDown, 
   Target, Database, FileText, BarChart3, Calendar, DollarSign,
@@ -17,7 +18,7 @@ const SpotlightCard = ({ children, className = "", theme = "light", onClick }) =
       onClick={onClick}
       className={`relative overflow-hidden rounded-2xl border transition-all duration-300 ${
       theme === 'dark' 
-        ? 'bg-[#005461] border-slate-700 shadow-xl' 
+        ? 'bg-[#1e3a8a] border-slate-700 shadow-xl' 
         : 'bg-white border-slate-100 shadow-sm hover:shadow-md'
     } ${className}`}>
       <div className="relative z-10 p-6 h-full">
@@ -29,7 +30,7 @@ const SpotlightCard = ({ children, className = "", theme = "light", onClick }) =
 
 const InputField = ({ label, type = "text", placeholder, options, value, onChange, disabled, required = true }) => (
   <div className="group">
-    <label className="block text-xs font-bold text-slate-500 mb-2 ml-1 uppercase tracking-widest group-focus-within:text-[#018790] transition-colors">
+    <label className="block text-xs font-bold text-slate-500 mb-2 ml-1 uppercase tracking-widest group-focus-within:text-[#2563EB] transition-colors">
       {label} {required && !disabled && <span className="text-red-400">*</span>}
     </label>
     <div className="relative">
@@ -37,7 +38,7 @@ const InputField = ({ label, type = "text", placeholder, options, value, onChang
         <div className="relative">
           <select 
             disabled={disabled}
-            className={`w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer`}
+            className={`w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium focus:bg-white focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all duration-200 appearance-none disabled:bg-slate-100 disabled:text-slate-500 cursor-pointer`}
             value={value}
             onChange={onChange}
           >
@@ -50,7 +51,7 @@ const InputField = ({ label, type = "text", placeholder, options, value, onChang
           type={type} 
           disabled={disabled}
           placeholder={placeholder}
-          className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium placeholder-slate-400 focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500`}
+          className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium placeholder-slate-400 focus:bg-white focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-500`}
           value={value}
           onChange={onChange}
         />
@@ -134,12 +135,12 @@ const AddCampaignModal = ({ isOpen, onClose, onSave, platform, editMode = false,
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4 transition-all">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[90vh] animate-[scale-in_0.2s_ease-out] border border-slate-100">
+  return createPortal(
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[100] p-4 transition-all">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[90vh] animate-[scale-in_0.2s_ease-out] border border-slate-100">
         <div className="flex justify-between items-center px-8 py-6 border-b border-slate-100">
           <div>
-            <h2 className="text-2xl font-extrabold text-[#018790]">{editMode ? 'Modifier' : 'Nouvelle'} Campagne</h2>
+            <h2 className="text-2xl font-extrabold text-[#1e3a8a]">{editMode ? 'Modifier' : 'Nouvelle'} Campagne</h2>
             <p className="text-sm text-slate-500 font-medium mt-1">Plateforme: <span className="font-bold text-slate-700">{platform}</span></p>
           </div>
           <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors">
@@ -150,7 +151,7 @@ const AddCampaignModal = ({ isOpen, onClose, onSave, platform, editMode = false,
         <div className="p-8 overflow-y-auto flex-1 no-scrollbar">
           <div className="mb-8">
             <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider">
-              <div className="p-1.5 bg-[#018790]/10 rounded-lg text-[#018790]"><Target size={16} /></div> 
+              <div className="p-1.5 bg-[#1e3a8a]/10 rounded-lg text-[#1e3a8a]"><Target size={16} /></div> 
               Configuration
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -181,7 +182,7 @@ const AddCampaignModal = ({ isOpen, onClose, onSave, platform, editMode = false,
                 </h3>
                 <div className="px-3 py-1 bg-white border border-slate-200 rounded-lg shadow-sm">
                      <span className="text-xs font-bold text-slate-500 uppercase mr-2">CPA Cible</span>
-                     <span className="text-sm font-black text-[#018790]">${expectedDailyCost}</span>
+                     <span className="text-sm font-black text-[#2563EB]">${expectedDailyCost}</span>
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -196,12 +197,13 @@ const AddCampaignModal = ({ isOpen, onClose, onSave, platform, editMode = false,
           <button onClick={onClose} className="px-6 py-2.5 rounded-xl text-slate-600 font-bold text-sm hover:bg-white border border-transparent hover:border-slate-200 transition-all">
             Annuler
           </button>
-          <button onClick={handleSubmit} className="px-8 py-3 rounded-xl text-white font-bold text-sm flex items-center gap-2 bg-[#018790] hover:bg-[#006a70] shadow-lg shadow-teal-900/20 transition-all">
+          <button onClick={handleSubmit} className="px-8 py-3 rounded-xl text-white font-bold text-sm flex items-center gap-2 bg-[#2563EB] hover:bg-[#1e40af] shadow-lg shadow-blue-900/20 transition-all">
             <Check size={18} /> {editMode ? 'Sauvegarder' : 'Créer la campagne'}
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -249,12 +251,12 @@ const ObjectifsTab = ({ campaigns, onAddCampaign, onDeleteCampaign, onEditCampai
       <SpotlightCard className="p-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-[#018790]/10 rounded-lg text-[#018790]"><Filter size={20} /></div>
+            <div className="p-2 bg-[#1e3a8a]/10 rounded-lg text-[#1e3a8a]"><Filter size={20} /></div>
             <h3 className="font-bold text-slate-800 text-lg">Filtrer les Campagnes</h3>
           </div>
           <button 
             onClick={() => setIsModalOpen(true)} 
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#018790] text-white rounded-xl hover:bg-[#006a70] transition-all font-bold text-sm shadow-lg shadow-teal-900/20"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] text-white rounded-xl hover:bg-[#1e40af] transition-all font-bold text-sm shadow-lg shadow-blue-900/20"
           >
             <Plus size={18} /> Nouvelle Campagne
           </button>
@@ -303,7 +305,7 @@ const ObjectifsTab = ({ campaigns, onAddCampaign, onDeleteCampaign, onEditCampai
                         <div className="h-px w-[140px] bg-slate-100 my-0.5"/>
                          <div className="flex items-center justify-between text-xs max-w-[140px]">
                             <span className="text-slate-500 font-bold">CPA Cible:</span>
-                            <span className="font-black text-[#018790]">${(campaign.plannedDailySpend / campaign.requiredDailyResults).toFixed(2)}</span>
+                            <span className="font-black text-[#2563EB]">${(campaign.plannedDailySpend / campaign.requiredDailyResults).toFixed(2)}</span>
                         </div>
                      </div>
                   </td>
@@ -352,7 +354,7 @@ const ObjectifsTab = ({ campaigns, onAddCampaign, onDeleteCampaign, onEditCampai
 
       {selectedCampaign && (
          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-             <div className="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl relative">
+             <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 w-full max-w-lg shadow-2xl relative">
                  <button onClick={() => setSelectedCampaign(null)} className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full"><X size={20}/></button>
                  <h3 className="text-xl font-bold text-slate-800 mb-1">{selectedCampaign.product}</h3>
                  <p className="text-sm text-slate-500 mb-6">{selectedCampaign.employee} • {selectedCampaign.type}</p>
@@ -422,9 +424,9 @@ const DataEntryModal = ({ campaigns, onSave, onClose }) => {
     ? (parseFloat(formData.actualSpend) / parseInt(formData.actualResults)).toFixed(2) 
     : '0.00';
 
-  return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg animate-[scale-in_0.2s_ease-out] border border-slate-100">
+  return createPortal(
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-lg animate-[scale-in_0.2s_ease-out] border border-slate-100">
          <div className="flex justify-between items-center px-6 py-5 border-b border-slate-100">
              <h3 className="font-bold text-lg text-slate-800">Saisie des Performances</h3>
              <button onClick={onClose}><X size={20} className="text-slate-400 hover:text-red-500"/></button>
@@ -436,7 +438,7 @@ const DataEntryModal = ({ campaigns, onSave, onClose }) => {
                     <select 
                         value={formData.campaignId} 
                         onChange={(e) => setFormData({...formData, campaignId: e.target.value})}
-                        className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium focus:bg-white focus:border-[#018790] focus:ring-4 focus:ring-[#018790]/10 outline-none appearance-none cursor-pointer"
+                        className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium focus:bg-white focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none appearance-none cursor-pointer"
                     >
                         <option value="">Sélectionner...</option>
                         {campaigns.map(c => (
@@ -451,17 +453,18 @@ const DataEntryModal = ({ campaigns, onSave, onClose }) => {
                 <InputField label="Dépense ($)" type="number" placeholder="0.00" value={formData.actualSpend} onChange={(e) => setFormData({...formData, actualSpend: e.target.value})} />
                 <InputField label="Résultats" type="number" placeholder="0" value={formData.actualResults} onChange={(e) => setFormData({...formData, actualResults: e.target.value})} />
              </div>
-             <div className="bg-[#018790]/5 rounded-xl p-4 border border-[#018790]/10 flex justify-between items-center">
-                 <span className="text-sm font-bold text-[#018790]">CPA Calculé</span>
-                 <span className="text-xl font-black text-[#018790]">${cpa}</span>
+             <div className="bg-[#2563EB]/5 rounded-xl p-4 border border-[#2563EB]/10 flex justify-between items-center">
+                 <span className="text-sm font-bold text-[#2563EB]">CPA Calculé</span>
+                 <span className="text-xl font-black text-[#2563EB]">${cpa}</span>
              </div>
          </div>
          <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-3xl flex justify-end gap-3">
              <button onClick={onClose} className="px-5 py-2.5 rounded-xl text-slate-500 font-bold text-sm hover:bg-white border border-transparent hover:border-slate-200">Annuler</button>
-             <button onClick={handleSubmit} className="px-6 py-2.5 rounded-xl bg-[#018790] text-white font-bold text-sm hover:bg-[#006a70] shadow-lg shadow-teal-900/20">Enregistrer</button>
+             <button onClick={handleSubmit} className="px-6 py-2.5 rounded-xl bg-[#2563EB] text-white font-bold text-sm hover:bg-[#1e40af] shadow-lg shadow-blue-900/20">Enregistrer</button>
          </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -559,7 +562,7 @@ const RapportTab = ({ dataEntries, campaigns, onDeleteEntry, onSaveData }) => {
                 </div>
                 <button 
                     onClick={() => setIsEntryModalOpen(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-[#018790] text-white rounded-xl hover:bg-[#006a70] transition-all font-bold text-sm shadow-lg shadow-teal-900/20"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] text-white rounded-xl hover:bg-[#1e40af] transition-all font-bold text-sm shadow-lg shadow-blue-900/20"
                 >
                     <Plus size={18} /> Ajouter Donnée
                 </button>
@@ -605,7 +608,7 @@ const RapportTab = ({ dataEntries, campaigns, onDeleteEntry, onSaveData }) => {
                                      </td>
                                      <td className="px-6 py-4 text-center font-bold text-slate-800">${entry.actualSpend.toFixed(2)}</td>
                                      <td className="px-6 py-4 text-center font-bold text-slate-800">{entry.actualResults}</td>
-                                     <td className="px-6 py-4 text-center font-black text-[#018790]">${entry.cost.toFixed(2)}</td>
+                                     <td className="px-6 py-4 text-center font-black text-[#2563EB]">${entry.cost.toFixed(2)}</td>
                                      <td className="px-6 py-4 text-center">
                                          <Badge color={status.color} label={status.label} />
                                      </td>
@@ -936,18 +939,18 @@ export default function MarketingPage({ platform = 'WhatsApp' }) {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-transparent p-6 font-sans text-slate-800 animate-[fade-in_0.5s_ease-out]">
+    <div className="w-full min-h-screen bg-transparent p-6 font-sans text-slate-800 dark:text-slate-200 animate-[fade-in_0.5s_ease-out]">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4 bg-white p-6 rounded-3xl border border-slate-100/50">
           <div>
             <div className="flex items-center gap-3 mb-1">
-                 <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100"><Megaphone className="text-[#018790]" size={24}/></div>
+                 <div className="p-2 bg-slate-50 rounded-xl shadow-sm border border-slate-100"><Megaphone className="text-[#018790]" size={24}/></div>
                  <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Marketing <span className="text-[#018790]">{platform}</span></h1>
             </div>
             <p className="text-slate-500 font-medium ml-1">Gérez vos campagnes, suivez les coûts et analysez la rentabilité.</p>
           </div>
-          <div className="flex bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100">
+          <div className="flex bg-slate-50 p-1.5 rounded-2xl shadow-sm border border-slate-100">
              {tabs.map(tab => (
                  <button 
                     key={tab.id}
@@ -955,7 +958,7 @@ export default function MarketingPage({ platform = 'WhatsApp' }) {
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
                         activeTab === tab.id 
                         ? 'bg-[#018790] text-white shadow-lg shadow-teal-900/20' 
-                        : 'text-slate-500 hover:bg-slate-50'
+                        : 'text-slate-500 hover:bg-white'
                     }`}
                  >
                      <tab.icon size={16} /> {tab.label}

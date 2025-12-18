@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Search, Plus, Edit2, Trash2, X, Check,
   Phone, MessageCircle, AlertCircle, CheckCircle,
@@ -49,14 +50,14 @@ const AffectationDetailsModal = ({ isOpen, onClose, affectation, employees, prod
   const getProductName = (id) => products.find(p => p.id === id)?.name || 'Inconnu';
   const getProduct = (id) => products.find(p => p.id === id);
 
-  return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in zoom-in-95 duration-300">
-      <SpotlightCard theme="light" className="w-full max-w-lg flex flex-col !p-0 overflow-hidden border border-slate-200 max-h-[90vh]">
+  return createPortal(
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[100] p-4 animate-in fade-in zoom-in-95 duration-300">
+      <SpotlightCard theme="light" className="w-full max-w-lg flex flex-col !p-0 overflow-hidden border border-slate-200 max-h-[90vh] bg-white dark:bg-slate-900">
         
         {/* Header */}
-        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-[#005461]/5">
+        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-[#2563EB]/5">
            <div>
-             <h3 className="font-bold text-xl text-[#005461]">Détails Affectation</h3>
+             <h3 className="font-bold text-xl text-[#1e3a8a]">Détails Affectation</h3>
              <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">ID: #{affectation.id}</p>
            </div>
            <button onClick={onClose} className="p-2 bg-white/50 hover:bg-white rounded-full text-slate-400 hover:text-slate-600 transition-colors border border-transparent hover:border-slate-100">
@@ -65,7 +66,7 @@ const AffectationDetailsModal = ({ isOpen, onClose, affectation, employees, prod
         </div>
         
         {/* Scrollable Content */}
-        <div className="p-8 overflow-y-auto custom-scrollbar flex-1 space-y-8 bg-white">
+        <div className="p-8 overflow-y-auto custom-scrollbar flex-1 space-y-8 bg-white dark:bg-slate-900">
           
           {/* Employee Profile Card */}
           <div className="flex items-center gap-5 p-4 bg-slate-50 rounded-2xl border border-slate-100">
@@ -78,11 +79,11 @@ const AffectationDetailsModal = ({ isOpen, onClose, affectation, employees, prod
             <div>
               <h2 className="text-xl font-bold text-slate-900">{employee?.name}</h2>
               <div className="flex flex-wrap items-center gap-3 mt-1.5">
-                <span className="text-[10px] font-extrabold px-2.5 py-1 bg-[#005461]/10 text-[#005461] rounded-full uppercase tracking-wide border border-[#005461]/20">
+                <span className="text-[10px] font-extrabold px-2.5 py-1 bg-[#2563EB]/10 text-[#2563EB] rounded-full uppercase tracking-wide border border-[#2563EB]/20">
                   {employee?.role}
                 </span>
                 <span className="flex items-center gap-1.5 text-slate-500 text-xs font-bold">
-                  <Calendar size={14} className="text-[#018790]"/>
+                  <Calendar size={14} className="text-[#2563EB]"/>
                   {new Date(affectation.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
               </div>
@@ -92,12 +93,12 @@ const AffectationDetailsModal = ({ isOpen, onClose, affectation, employees, prod
           <div className="grid grid-cols-1 gap-6">
             {/* Active Product Section */}
             <div>
-              <h4 className="flex items-center gap-2 text-xs font-extrabold text-[#005461] uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
-                <Briefcase size={16} className="text-[#018790]" /> Matériel Actif
+              <h4 className="flex items-center gap-2 text-xs font-extrabold text-[#1e3a8a] uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+                <Briefcase size={16} className="text-[#2563EB]" /> Matériel Actif
               </h4>
               {affectation.productIdsActifs && affectation.productIdsActifs.length > 0 ? (
-                <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#005461]/5 border border-[#005461]/10">
-                    <div className="w-12 h-12 rounded-xl bg-white text-[#005461] flex items-center justify-center shadow-sm border border-[#005461]/20">
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#2563EB]/5 border border-[#2563EB]/10">
+                    <div className="w-12 h-12 rounded-xl bg-white text-[#2563EB] flex items-center justify-center shadow-sm border border-[#2563EB]/20">
                         {React.createElement(getProductIcon(getProduct(affectation.productIdsActifs[0])?.category), { size: 24 })}
                     </div>
                     <div>
@@ -114,7 +115,7 @@ const AffectationDetailsModal = ({ isOpen, onClose, affectation, employees, prod
 
             {/* Products to Sell Section */}
             <div>
-              <h4 className="flex items-center gap-2 text-xs font-extrabold text-[#005461] uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+              <h4 className="flex items-center gap-2 text-xs font-extrabold text-[#1e3a8a] uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
                 <Package size={16} className="text-emerald-500" /> Produits à Vendre
               </h4>
               <div className="flex flex-wrap gap-3">
@@ -184,7 +185,8 @@ const AffectationDetailsModal = ({ isOpen, onClose, affectation, employees, prod
           </button>
         </div>
       </SpotlightCard>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -239,21 +241,21 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
   // Input Field Component to match Employee Page style
   const InputField = ({ label, children, required }) => (
     <div className="group">
-        <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-[#005461] transition-colors">
+        <label className="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-wider group-focus-within:text-[#2563EB] transition-colors">
             {label} {required && <span className="text-red-400">*</span>}
         </label>
         {children}
     </div>
   );
 
-  return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all">
-      <SpotlightCard theme="light" className="w-full max-w-4xl max-h-[90vh] flex flex-col !p-0 overflow-hidden border border-slate-200">
+  return createPortal(
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[100] p-4 transition-all">
+      <SpotlightCard theme="light" className="w-full max-w-4xl max-h-[90vh] flex flex-col !p-0 overflow-hidden border border-slate-200 bg-white dark:bg-slate-900">
         
         {/* Header */}
-        <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-[#005461]/5 shrink-0">
+        <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-[#2563EB]/5 shrink-0">
           <div>
-            <h2 className="text-2xl font-extrabold text-[#005461]">{affectation ? 'Modifier l\'affectation' : 'Nouvelle Affectation'}</h2>
+            <h2 className="text-2xl font-extrabold text-[#1e3a8a]">{affectation ? 'Modifier l\'affectation' : 'Nouvelle Affectation'}</h2>
             <p className="text-slate-500 text-xs font-bold mt-1">Configurez les ressources assignées à l'employé.</p>
           </div>
           <button onClick={onClose} className="p-2 bg-white hover:bg-slate-50 rounded-full text-slate-400 hover:text-slate-600 transition-all border border-transparent hover:border-slate-200">
@@ -262,14 +264,14 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-white">
+        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-white dark:bg-slate-900">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             {/* Left Column: Core Info */}
             <div className="space-y-6">
                <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
-                  <h3 className="font-extrabold text-[#005461] mb-6 flex items-center gap-2 text-sm uppercase tracking-wide">
-                    <User size={18} className="text-[#018790]"/> Informations Principales
+                  <h3 className="font-extrabold text-[#1e3a8a] mb-6 flex items-center gap-2 text-sm uppercase tracking-wide">
+                    <User size={18} className="text-[#2563EB]"/> Informations Principales
                   </h3>
                   
                   <div className="space-y-5">
@@ -278,7 +280,7 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
                         <select 
                           value={formData.employeeId} 
                           onChange={(e) => setFormData(prev => ({ ...prev, employeeId: e.target.value }))} 
-                          className="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-[#005461] focus:ring-4 focus:ring-[#005461]/10 transition-all appearance-none text-sm"
+                          className="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all appearance-none text-sm"
                         >
                           <option value="">Choisir un employé...</option>{employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                         </select>
@@ -293,7 +295,7 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
                           type="date" 
                           value={formData.date} 
                           onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))} 
-                          className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-[#005461] focus:ring-4 focus:ring-[#005461]/10 transition-all text-sm"
+                          className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all text-sm"
                         />
                       </div>
                     </InputField>
@@ -301,15 +303,15 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
                </div>
 
                <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
-                  <h3 className="font-extrabold text-[#005461] mb-6 flex items-center gap-2 text-sm uppercase tracking-wide">
-                    <Briefcase size={18} className="text-[#018790]"/> Matériel de Travail
+                  <h3 className="font-extrabold text-[#1e3a8a] mb-6 flex items-center gap-2 text-sm uppercase tracking-wide">
+                    <Briefcase size={18} className="text-[#2563EB]"/> Matériel de Travail
                   </h3>
                   <InputField label="Actif Assigné (Usage Interne)">
                     <div className="relative">
                       <select 
                         value={formData.productIdActif} 
                         onChange={(e) => setFormData(prev => ({ ...prev, productIdActif: e.target.value }))} 
-                        className="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-[#005461] focus:ring-4 focus:ring-[#005461]/10 transition-all appearance-none text-sm"
+                        className="w-full pl-4 pr-10 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all appearance-none text-sm"
                       >
                         <option value="">Aucun actif...</option>{products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                       </select>
@@ -323,7 +325,7 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
             {/* Right Column: Products & Contact */}
             <div className="space-y-6">
               <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
-                 <h3 className="font-extrabold text-[#005461] mb-6 flex items-center gap-2 text-sm uppercase tracking-wide">
+                 <h3 className="font-extrabold text-[#1e3a8a] mb-6 flex items-center gap-2 text-sm uppercase tracking-wide">
                    <Package size={18} className="text-emerald-600"/> Stock à Vendre
                  </h3>
                  <InputField label="Produits confiés">
@@ -356,7 +358,7 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
               </div>
 
               <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
-                  <h3 className="font-extrabold text-[#005461] mb-6 flex items-center gap-2 text-sm uppercase tracking-wide">
+                  <h3 className="font-extrabold text-[#1e3a8a] mb-6 flex items-center gap-2 text-sm uppercase tracking-wide">
                     <Phone size={18} className="text-slate-700"/> Coordonnées
                   </h3>
                   
@@ -399,14 +401,15 @@ const AffectationModal = ({ isOpen, onClose, onSave, products, employees, affect
           <button onClick={onClose} className="px-6 py-3 rounded-xl text-slate-500 font-bold hover:bg-white border border-transparent hover:border-slate-200 transition-all">
             Annuler
           </button>
-          <button onClick={handleSave} className="px-8 py-3 rounded-xl bg-[#005461] text-white font-bold hover:bg-[#016f76] shadow-lg shadow-cyan-900/20 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+          <button onClick={handleSave} className="px-8 py-3 rounded-xl bg-[#1e3a8a] text-white font-bold hover:bg-[#1e40af] shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
             <CheckCircle size={20} />
             Enregistrer l'affectation
           </button>
         </div>
 
       </SpotlightCard>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -458,7 +461,7 @@ export default function AffectationsPage() {
   const handleDelete = (id) => {
     Swal.fire({ 
       title: 'Êtes-vous sûr ?', text: "Cette action est irréversible.", icon: 'warning', 
-      showCancelButton: true, confirmButtonColor: '#005461', cancelButtonColor: '#94a3b8', 
+      showCancelButton: true, confirmButtonColor: '#1e3a8a', cancelButtonColor: '#94a3b8', 
       confirmButtonText: 'Oui, supprimer', cancelButtonText: 'Annuler',
       background: '#fff', borderRadius: '1rem'
     }).then(r => {
@@ -480,7 +483,7 @@ export default function AffectationsPage() {
   const getProduct = (id) => products.find(p => p.id == id);
 
   return (
-    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 relative">
+    <div className="w-full min-h-screen bg-transparent animate-[fade-in_0.6s_ease-out] p-8 font-sans text-slate-800 dark:text-slate-200 relative">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       
       <div className="w-full space-y-8">
@@ -489,8 +492,8 @@ export default function AffectationsPage() {
         <SpotlightCard theme="light" className="mb-6">
            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                 <h1 className="text-3xl font-extrabold text-[#018790] tracking-tight flex items-center gap-3">
-                    <Briefcase className="text-[#005461]" size={32} />
+                 <h1 className="text-3xl font-extrabold text-[#2563EB] tracking-tight flex items-center gap-3">
+                    <Briefcase className="text-[#1e3a8a]" size={32} />
                     Affectations & Matériel
                  </h1>
                  <p className="text-slate-500 font-bold mt-1">Gérez et suivez les ressources assignées aux équipes.</p>
@@ -499,7 +502,7 @@ export default function AffectationsPage() {
               <div className="flex items-center gap-3 w-full md:w-auto">
                  <button 
                    onClick={() => { setSelectedAffectation(null); setModalOpen(true); }} 
-                   className="w-full md:w-auto px-8 py-3.5 bg-[#005461] text-white rounded-xl hover:bg-[#016f76] shadow-lg shadow-cyan-900/20 font-bold transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                   className="w-full md:w-auto px-8 py-3.5 bg-[#1e3a8a] text-white rounded-xl hover:bg-[#1e40af] shadow-lg shadow-blue-900/20 font-bold transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
                  >
                    <Plus size={20} /> Nouvelle Affectation
                  </button>
@@ -510,13 +513,13 @@ export default function AffectationsPage() {
         {/* Search & Stats */}
         <div className="flex flex-col md:flex-row gap-4 px-2">
            <div className="relative flex-1 group max-w-md">
-             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#005461] transition-colors" size={20} />
+             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#2563EB] transition-colors" size={20} />
              <input 
                type="text" 
                placeholder="Rechercher par nom d'employé..." 
                value={searchTerm}
                onChange={(e) => setSearchTerm(e.target.value)}
-               className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-700 font-bold focus:outline-none focus:ring-4 focus:ring-[#005461]/10 focus:border-[#005461] transition-all shadow-sm placeholder:text-slate-400" 
+               className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-700 font-bold focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all shadow-sm placeholder:text-slate-400" 
              />
            </div>
         </div>
@@ -525,7 +528,7 @@ export default function AffectationsPage() {
         <SpotlightCard theme="light" className="!p-0 overflow-hidden border border-slate-200">
            {loading ? (
              <div className="p-12 text-center text-slate-400 flex flex-col items-center gap-3">
-                <div className="w-8 h-8 rounded-full border-4 border-[#005461]/20 border-t-[#005461] animate-spin"></div>
+                <div className="w-8 h-8 rounded-full border-4 border-[#2563EB]/20 border-t-[#2563EB] animate-spin"></div>
                 <span className="font-bold">Chargement des données...</span>
              </div>
            ) : filtered.length === 0 ? (
@@ -564,14 +567,14 @@ export default function AffectationsPage() {
                                </div>
                                <div>
                                   <div className="font-bold text-slate-800 text-sm">{emp.name}</div>
-                                  <div className="text-[10px] font-extrabold text-[#005461] uppercase tracking-wide mt-0.5">{emp.role}</div>
+                                  <div className="text-[10px] font-extrabold text-[#1e3a8a] uppercase tracking-wide mt-0.5">{emp.role}</div>
                                </div>
                             </div>
                          </td>
                          <td className="px-6 py-5">
                             {activeProduct ? (
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-[#005461]/5 text-[#005461] flex items-center justify-center shrink-0 border border-[#005461]/10">
+                                <div className="w-10 h-10 rounded-xl bg-[#2563EB]/5 text-[#2563EB] flex items-center justify-center shrink-0 border border-[#2563EB]/10">
                                    {React.createElement(getProductIcon(activeProduct.category), { size: 18 })}
                                 </div>
                                 <div className="leading-tight">
@@ -608,7 +611,7 @@ export default function AffectationsPage() {
                          </td>
                          <td className="px-6 py-5 text-right">
                             <div className="flex items-center justify-end gap-2">
-                               <button onClick={() => { setSelectedAffectation(aff); setDetailsModalOpen(true); }} className="p-2 text-slate-400 hover:text-[#005461] hover:bg-[#005461]/5 rounded-lg transition-colors"><Eye size={18}/></button>
+                               <button onClick={() => { setSelectedAffectation(aff); setDetailsModalOpen(true); }} className="p-2 text-slate-400 hover:text-[#2563EB] hover:bg-[#2563EB]/5 rounded-lg transition-colors"><Eye size={18}/></button>
                                <button onClick={() => { setSelectedAffectation(aff); setModalOpen(true); }} className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"><Edit2 size={18}/></button>
                                <button onClick={() => handleDelete(aff.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18}/></button>
                             </div>

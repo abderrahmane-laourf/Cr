@@ -1,6 +1,14 @@
 import { useRef, useState } from 'react';
 
-const SpotlightCard = ({ children, className = '', spotlightColor = 'rgba(255, 255, 255, 0.25)', theme = 'dark' }) => {
+/**
+ * SpotlightCard - Premium card component with spotlight hover effect
+ * Automatically adapts to light/dark mode via Tailwind's dark: classes
+ */
+const SpotlightCard = ({ 
+  children, 
+  className = '', 
+  spotlightColor = 'rgba(59, 130, 246, 0.15)' // Blue tint for spotlight
+}) => {
   const divRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -8,7 +16,6 @@ const SpotlightCard = ({ children, className = '', spotlightColor = 'rgba(255, 2
 
   const handleMouseMove = e => {
     if (!divRef.current || isFocused) return;
-
     const rect = divRef.current.getBoundingClientRect();
     setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
@@ -23,19 +30,8 @@ const SpotlightCard = ({ children, className = '', spotlightColor = 'rgba(255, 2
     setOpacity(0);
   };
 
-  const handleMouseEnter = () => {
-    setOpacity(0.6);
-  };
-
-  const handleMouseLeave = () => {
-    setOpacity(0);
-  };
-
-  const getThemeStyles = () => {
-    return theme === 'light' 
-      ? 'bg-white border-slate-200 shadow-sm hover:shadow-md' 
-      : 'bg-neutral-900 border-neutral-800';
-  };
+  const handleMouseEnter = () => setOpacity(0.6);
+  const handleMouseLeave = () => setOpacity(0);
 
   return (
     <div
@@ -45,8 +41,17 @@ const SpotlightCard = ({ children, className = '', spotlightColor = 'rgba(255, 2
       onBlur={handleBlur}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative rounded-3xl border overflow-hidden p-8 transition-shadow duration-300 ${getThemeStyles()} ${className}`}
+      className={`
+        relative rounded-2xl border overflow-hidden p-6 
+        transition-all duration-300 ease-out
+        bg-white/95 dark:bg-slate-900/40 
+        dark:backdrop-blur-xl dark:backdrop-saturate-150
+        border-slate-200 dark:border-blue-500/20 
+        shadow-sm hover:shadow-xl dark:shadow-black/50
+        ${className}
+      `}
     >
+      {/* Spotlight effect overlay */}
       <div
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-in-out"
         style={{

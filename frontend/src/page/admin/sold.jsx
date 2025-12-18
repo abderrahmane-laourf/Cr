@@ -160,7 +160,7 @@ const SoldPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50/50 p-6 md:p-8 font-sans text-slate-800">
+        <div className="min-h-screen bg-transparent p-6 md:p-8 font-sans text-slate-800">
             
             {/* HERADER */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
@@ -475,3 +475,4 @@ const KpiCard = ({ title, value, unit, color, bg, border, icon: Icon }) => (
 );
 
 export default SoldPage;
+
